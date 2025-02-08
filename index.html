@@ -934,20 +934,21 @@ tbody tr:hover {
                             "concorrente-generale";
 
                     return `
-                                    <tr>
-                                        <td class="posizione-generale">${index + 1}</td>
-                                        <td class="${categoriaClasse}" onclick="apriPopupTempi(${concorrente.NumeroConcorrente}, '${concorrente.Nome}', '${concorrente.Cognome}', ${index + 1})">${concorrente.NumeroConcorrente}</td>
-                                        <td class="bold-text">${concorrente.Nome}</td>
-                                        <td class="bold-text">${concorrente.Cognome}</td>
-                                        <td class="bold-text">${formattaTempo(concorrente.SommaTempo)}</td>
-                                        <td>${concorrente.NumeroGiri}</td>
-                                        <td>${concorrente.Squadra}</td>
-                                        <td>${concorrente.Categoria}</td>
-                                    </tr>
-                                `;
+                <tr>
+                    <td class="posizione-generale">${index + 1}</td>
+                    <td class="${categoriaClasse}" onclick="apriPopupTempi(${concorrente.NumeroConcorrente}, '${concorrente.Nome}', '${concorrente.Cognome}', '${concorrente.Categoria}')">${concorrente.NumeroConcorrente}</td>
+                    <td class="bold-text">${concorrente.Nome}</td>
+                    <td class="bold-text">${concorrente.Cognome}</td>
+                    <td class="bold-text">${formattaTempo(concorrente.SommaTempo)}</td>
+                    <td>${concorrente.NumeroGiri}</td>
+                    <td>${concorrente.Squadra}</td>
+                    <td>${concorrente.Categoria}</td>
+                </tr>
+            `;
                 }).join("");
             });
         }
+
 
 
 
@@ -1625,7 +1626,7 @@ tbody tr:hover {
             });
         }
 
-        function apriPopupTempi(numeroConcorrente, nome, cognome) {
+        function apriPopupTempi(numeroConcorrente, nome, cognome, categoria = null) {
             const classificaRef = db.ref("giro");
 
             classificaRef.once("value", (snapshot) => {
@@ -1634,6 +1635,9 @@ tbody tr:hover {
                 let datiGiri = [];
                 let datiPerGara = {};
                 let classificaGenerale = [];
+                let classificaDonne = [];
+                let classificaSenior = [];
+                let categoriaPilota = categoria; // Se non viene passata, la cerchiamo
 
                 snapshot.forEach((childSnapshot) => {
                     let giro = childSnapshot.val();
@@ -1647,32 +1651,51 @@ tbody tr:hover {
                             Gara: giro.Gara
                         });
 
-                        // Costruiamo la classifica generale
+                        // Se il pilota è quello selezionato, assicuriamoci di ottenere la sua categoria
+                        if (giro.NumeroConcorrente == numeroConcorrente && !categoriaPilota) {
+                            categoriaPilota = giro.Categoria;
+                        }
+
                         let esistente = classificaGenerale.find(c => c.NumeroConcorrente === giro.NumeroConcorrente);
                         if (esistente) {
                             esistente.TempoTotale += parseInt(giro.Tempoms);
                             esistente.NumeroGiri++;
                         } else {
-                            classificaGenerale.push({
+                            let nuovoConcorrente = {
                                 NumeroConcorrente: giro.NumeroConcorrente,
                                 Nome: giro.Nome,
                                 Cognome: giro.Cognome,
                                 TempoTotale: parseInt(giro.Tempoms),
-                                NumeroGiri: 1
-                            });
+                                NumeroGiri: 1,
+                                Categoria: giro.Categoria
+                            };
+                            classificaGenerale.push(nuovoConcorrente);
+
+                            if (giro.Categoria === "D") classificaDonne.push(nuovoConcorrente);
+                            if (giro.Categoria === "O") classificaSenior.push(nuovoConcorrente);
                         }
                     }
                 });
 
-                // Ordiniamo la classifica generale
+                // Ordiniamo le classifiche per calcolare la posizione corretta
                 classificaGenerale.sort((a, b) =>
                     b.NumeroGiri !== a.NumeroGiri ? b.NumeroGiri - a.NumeroGiri : a.TempoTotale - b.TempoTotale
                 );
 
-                // Trova la posizione generale del pilota
-                let posizioneGenerale = classificaGenerale.findIndex(c => c.NumeroConcorrente == numeroConcorrente) + 1;
+                classificaDonne.sort((a, b) =>
+                    b.NumeroGiri !== a.NumeroGiri ? b.NumeroGiri - a.NumeroGiri : a.TempoTotale - b.TempoTotale
+                );
 
-                // Calcolo della posizione in ogni gara
+                classificaSenior.sort((a, b) =>
+                    b.NumeroGiri !== a.NumeroGiri ? b.NumeroGiri - a.NumeroGiri : a.TempoTotale - b.TempoTotale
+                );
+
+                // Trova la posizione nelle classifiche
+                let posizioneGenerale = classificaGenerale.findIndex(c => c.NumeroConcorrente == numeroConcorrente) + 1;
+                let posizioneDonne = categoriaPilota === "D" ? classificaDonne.findIndex(c => c.NumeroConcorrente == numeroConcorrente) + 1 : null;
+                let posizioneSenior = categoriaPilota === "O" ? classificaSenior.findIndex(c => c.NumeroConcorrente == numeroConcorrente) + 1 : null;
+
+                // Calcola la posizione nelle singole gare
                 Object.keys(datiPerGara).forEach(gara => {
                     datiPerGara[gara].sort((a, b) => a.Tempo - b.Tempo);
                     datiPerGara[gara].forEach((giro, index) => {
@@ -1685,18 +1708,30 @@ tbody tr:hover {
 
                 let popupBody = document.getElementById("popupBody");
                 popupBody.innerHTML = datiGiri.map(giro => `
-                <tr>
-                    <td>${giro.Gara}</td>
-                    <td>${giro.PosizioneGara}</td>
-                    <td>${formattaTempo(giro.Tempo)}</td>
-                </tr>
-            `).join("");
+            <tr>
+                <td>${giro.Gara}</td>
+                <td>${giro.PosizioneGara}</td>
+                <td>${formattaTempo(giro.Tempo)}</td>
+            </tr>
+        `).join("");
 
-                document.getElementById("popupTitle").innerText = `Tempi di #${numeroConcorrente} ${nome} ${cognome} - Pos. Gen: ${posizioneGenerale}`;
+                let titoloPopup = `Tempi di #${numeroConcorrente} ${nome} ${cognome} - <span style="color: red;">Pos. Gen: ${posizioneGenerale}</span>`;
+
+                if (categoriaPilota === "D" && posizioneDonne) {
+                    titoloPopup += ` - <span style="color: purple;">Pos. Donne: ${posizioneDonne}</span>`;
+                }
+                if (categoriaPilota === "O" && posizioneSenior) {
+                    titoloPopup += ` - <span style="color: blue;">Pos. Senior: ${posizioneSenior}</span>`;
+                }
+
+                document.getElementById("popupTitle").innerHTML = titoloPopup;
                 document.getElementById("popup").style.display = "block";
                 document.getElementById("popupOverlay").style.display = "block";
             });
         }
+
+
+
 
 
 
@@ -1733,41 +1768,12 @@ tbody tr:hover {
                 }
 
                 let concorrenteTrovato = null;
-                let datiGiri = [];
-                let datiPerGara = {};
-                let classificaGenerale = [];
-
+                let categoriaConcorrente = "";
                 snapshot.forEach((childSnapshot) => {
                     let giro = childSnapshot.val();
-                    if (giro.Arrivato === "SI") {
-                        // Memorizziamo tutti i giri per ogni gara
-                        if (!datiPerGara[giro.Gara]) {
-                            datiPerGara[giro.Gara] = [];
-                        }
-                        datiPerGara[giro.Gara].push({
-                            NumeroConcorrente: giro.NumeroConcorrente,
-                            Tempo: parseInt(giro.Tempoms),
-                            Gara: giro.Gara
-                        });
-
-                        // Costruiamo la classifica generale
-                        let esistente = classificaGenerale.find(c => c.NumeroConcorrente === giro.NumeroConcorrente);
-                        if (esistente) {
-                            esistente.TempoTotale += parseInt(giro.Tempoms);
-                            esistente.NumeroGiri++;
-                        } else {
-                            classificaGenerale.push({
-                                NumeroConcorrente: giro.NumeroConcorrente,
-                                Nome: giro.Nome,
-                                Cognome: giro.Cognome,
-                                TempoTotale: parseInt(giro.Tempoms),
-                                NumeroGiri: 1
-                            });
-                        }
-
-                        if (giro.NumeroConcorrente == numeroPilota) {
-                            concorrenteTrovato = giro;
-                        }
+                    if (giro.Arrivato === "SI" && giro.NumeroConcorrente == numeroPilota) {
+                        concorrenteTrovato = giro;
+                        categoriaConcorrente = giro.Categoria;
                     }
                 });
 
@@ -1776,38 +1782,11 @@ tbody tr:hover {
                     return;
                 }
 
-                // Ordiniamo la classifica generale per trovare la posizione del pilota
-                classificaGenerale.sort((a, b) =>
-                    b.NumeroGiri !== a.NumeroGiri ? b.NumeroGiri - a.NumeroGiri : a.TempoTotale - b.TempoTotale
-                );
-
-                let posizioneGenerale = classificaGenerale.findIndex(c => c.NumeroConcorrente == numeroPilota) + 1;
-
-                // Calcolo della posizione in ogni gara
-                Object.keys(datiPerGara).forEach(gara => {
-                    datiPerGara[gara].sort((a, b) => a.Tempo - b.Tempo);
-                    datiPerGara[gara].forEach((giro, index) => {
-                        giro.PosizioneGara = index + 1;
-                        if (giro.NumeroConcorrente == numeroPilota) {
-                            datiGiri.push(giro);
-                        }
-                    });
-                });
-
-                let popupBody = document.getElementById("popupBody");
-                popupBody.innerHTML = datiGiri.map(giro => `
-            <tr>
-                <td>${giro.Gara}</td>
-                <td>${giro.PosizioneGara}</td>
-                <td>${formattaTempo(giro.Tempo)}</td>
-            </tr>
-        `).join("");
-
-                document.getElementById("popupTitle").innerText = `Tempi di #${concorrenteTrovato.NumeroConcorrente} ${concorrenteTrovato.Nome} ${concorrenteTrovato.Cognome} - Pos. Gen: ${posizioneGenerale}`;
-                document.getElementById("popup").style.display = "block";
-                document.getElementById("popupOverlay").style.display = "block";
+                apriPopupTempi(numeroPilota, concorrenteTrovato.Nome, concorrenteTrovato.Cognome, categoriaConcorrente);
             });
         }
+
+
 
 
 
