@@ -657,6 +657,7 @@ tbody tr:hover {
 
 
 
+
     <!-- CLASSIFICA GENERALE -->
     <div id="generale" class="tab-content active">
         <h2>Classifica Generale</h2>
@@ -933,17 +934,17 @@ tbody tr:hover {
                             "concorrente-generale";
 
                     return `
-                                <tr>
-                                    <td class="posizione-generale">${index + 1}</td>
-                                    <td class="${categoriaClasse}" onclick="apriPopupTempi(${concorrente.NumeroConcorrente}, '${concorrente.Nome}', '${concorrente.Cognome}', ${index + 1})">${concorrente.NumeroConcorrente}</td>
-                                    <td class="bold-text">${concorrente.Nome}</td>
-                                    <td class="bold-text">${concorrente.Cognome}</td>
-                                    <td class="bold-text">${formattaTempo(concorrente.SommaTempo)}</td>
-                                    <td>${concorrente.NumeroGiri}</td>
-                                    <td>${concorrente.Squadra}</td>
-                                    <td>${concorrente.Categoria}</td>
-                                </tr>
-                            `;
+                                    <tr>
+                                        <td class="posizione-generale">${index + 1}</td>
+                                        <td class="${categoriaClasse}" onclick="apriPopupTempi(${concorrente.NumeroConcorrente}, '${concorrente.Nome}', '${concorrente.Cognome}', ${index + 1})">${concorrente.NumeroConcorrente}</td>
+                                        <td class="bold-text">${concorrente.Nome}</td>
+                                        <td class="bold-text">${concorrente.Cognome}</td>
+                                        <td class="bold-text">${formattaTempo(concorrente.SommaTempo)}</td>
+                                        <td>${concorrente.NumeroGiri}</td>
+                                        <td>${concorrente.Squadra}</td>
+                                        <td>${concorrente.Categoria}</td>
+                                    </tr>
+                                `;
                 }).join("");
             });
         }
@@ -1092,9 +1093,9 @@ tbody tr:hover {
                             let tipoCategoria = punteggiConcorrenti[id].tipo ? ` ${punteggiConcorrenti[id].tipo}` : "";
 
                             return `<div class="team-pilot ${pilot.Categoria === 'D' ? 'pilota-donne' : pilot.Categoria === 'O' ? 'pilota-senior' : 'pilota-generale'}">
-                                    #${id} ${pilot.Nome} ${pilot.Cognome} - <span class="punti-singolo">${totalePunti}pt</span>
-                                    (${puntiGen} gen${puntiExtra ? ` + ${puntiExtra}${tipoCategoria}` : ""})
-                                </div>`;
+                                        #${id} ${pilot.Nome} ${pilot.Cognome} - <span class="punti-singolo">${totalePunti}pt</span>
+                                        (${puntiGen} gen${puntiExtra ? ` + ${puntiExtra}${tipoCategoria}` : ""})
+                                    </div>`;
                         })
                         .join("");
 
@@ -1138,16 +1139,16 @@ tbody tr:hover {
                             "concorrente-generale";
 
                     return `
-                    <tr>
-                        <td class="posizione-generale">${index + 1}</td>
-                        <td class="${categoriaClasse}">${concorrente.NumeroConcorrente}</td>
-                        <td class="bold-text">${concorrente.Nome}</td>
-                        <td class="bold-text">${concorrente.Cognome}</td>
-                        <td class="bold-text">${formattaTempo(concorrente.Tempo)}</td>
-                        <td>${concorrente.Squadra}</td>
-                        <td>${concorrente.Categoria}</td>
-                    </tr>
-                `;
+                        <tr>
+                            <td class="posizione-generale">${index + 1}</td>
+                            <td class="${categoriaClasse}">${concorrente.NumeroConcorrente}</td>
+                            <td class="bold-text">${concorrente.Nome}</td>
+                            <td class="bold-text">${concorrente.Cognome}</td>
+                            <td class="bold-text">${formattaTempo(concorrente.Tempo)}</td>
+                            <td>${concorrente.Squadra}</td>
+                            <td>${concorrente.Categoria}</td>
+                        </tr>
+                    `;
                 }).join("");
             });
         }
@@ -1186,15 +1187,15 @@ tbody tr:hover {
                             "concorrente-generale";
 
                     return `
-        <tr>
-            <td class="posizione-generale">${index + 1}</td>
-            <td class="${categoriaClasse}">${concorrente.NumeroConcorrente}</td>
-            <td class="bold-text">${concorrente.Nome}</td>
-            <td class="bold-text">${concorrente.Cognome}</td>
-            <td class="bold-text">${formattaTempo(concorrente.Tempo)}</td>
-            <td>${concorrente.Squadra}</td>
-            <td>${concorrente.Categoria}</td>
-        </tr>
+            <tr>
+                <td class="posizione-generale">${index + 1}</td>
+                <td class="${categoriaClasse}">${concorrente.NumeroConcorrente}</td>
+                <td class="bold-text">${concorrente.Nome}</td>
+                <td class="bold-text">${concorrente.Cognome}</td>
+                <td class="bold-text">${formattaTempo(concorrente.Tempo)}</td>
+                <td>${concorrente.Squadra}</td>
+                <td>${concorrente.Categoria}</td>
+            </tr>
 `;
                 }).join("");
             });
@@ -1233,15 +1234,15 @@ tbody tr:hover {
                             "concorrente-generale";
 
                     return `
-        <tr>
-            <td class="posizione-generale">${index + 1}</td>
-            <td class="${categoriaClasse}">${concorrente.NumeroConcorrente}</td>
-            <td class="bold-text">${concorrente.Nome}</td>
-            <td class="bold-text">${concorrente.Cognome}</td>
-            <td class="bold-text">${formattaTempo(concorrente.Tempo)}</td>
-            <td>${concorrente.Squadra}</td>
-            <td>${concorrente.Categoria}</td>
-        </tr>
+            <tr>
+                <td class="posizione-generale">${index + 1}</td>
+                <td class="${categoriaClasse}">${concorrente.NumeroConcorrente}</td>
+                <td class="bold-text">${concorrente.Nome}</td>
+                <td class="bold-text">${concorrente.Cognome}</td>
+                <td class="bold-text">${formattaTempo(concorrente.Tempo)}</td>
+                <td>${concorrente.Squadra}</td>
+                <td>${concorrente.Categoria}</td>
+            </tr>
 `;
                 }).join("");
             });
@@ -1280,15 +1281,15 @@ tbody tr:hover {
                             "concorrente-generale";
 
                     return `
-        <tr>
-            <td class="posizione-generale">${index + 1}</td>
-            <td class="${categoriaClasse}">${concorrente.NumeroConcorrente}</td>
-            <td class="bold-text">${concorrente.Nome}</td>
-            <td class="bold-text">${concorrente.Cognome}</td>
-            <td class="bold-text">${formattaTempo(concorrente.Tempo)}</td>
-            <td>${concorrente.Squadra}</td>
-            <td>${concorrente.Categoria}</td>
-        </tr>
+            <tr>
+                <td class="posizione-generale">${index + 1}</td>
+                <td class="${categoriaClasse}">${concorrente.NumeroConcorrente}</td>
+                <td class="bold-text">${concorrente.Nome}</td>
+                <td class="bold-text">${concorrente.Cognome}</td>
+                <td class="bold-text">${formattaTempo(concorrente.Tempo)}</td>
+                <td>${concorrente.Squadra}</td>
+                <td>${concorrente.Categoria}</td>
+            </tr>
 `;
                 }).join("");
             });
@@ -1327,15 +1328,15 @@ tbody tr:hover {
                             "concorrente-generale";
 
                     return `
-        <tr>
-            <td class="posizione-generale">${index + 1}</td>
-            <td class="${categoriaClasse}">${concorrente.NumeroConcorrente}</td>
-            <td class="bold-text">${concorrente.Nome}</td>
-            <td class="bold-text">${concorrente.Cognome}</td>
-            <td class="bold-text">${formattaTempo(concorrente.Tempo)}</td>
-            <td>${concorrente.Squadra}</td>
-            <td>${concorrente.Categoria}</td>
-        </tr>
+            <tr>
+                <td class="posizione-generale">${index + 1}</td>
+                <td class="${categoriaClasse}">${concorrente.NumeroConcorrente}</td>
+                <td class="bold-text">${concorrente.Nome}</td>
+                <td class="bold-text">${concorrente.Cognome}</td>
+                <td class="bold-text">${formattaTempo(concorrente.Tempo)}</td>
+                <td>${concorrente.Squadra}</td>
+                <td>${concorrente.Categoria}</td>
+            </tr>
 `;
                 }).join("");
             });
@@ -1374,15 +1375,15 @@ tbody tr:hover {
                             "concorrente-generale";
 
                     return `
-        <tr>
-            <td class="posizione-generale">${index + 1}</td>
-            <td class="${categoriaClasse}">${concorrente.NumeroConcorrente}</td>
-            <td class="bold-text">${concorrente.Nome}</td>
-            <td class="bold-text">${concorrente.Cognome}</td>
-            <td class="bold-text">${formattaTempo(concorrente.Tempo)}</td>
-            <td>${concorrente.Squadra}</td>
-            <td>${concorrente.Categoria}</td>
-        </tr>
+            <tr>
+                <td class="posizione-generale">${index + 1}</td>
+                <td class="${categoriaClasse}">${concorrente.NumeroConcorrente}</td>
+                <td class="bold-text">${concorrente.Nome}</td>
+                <td class="bold-text">${concorrente.Cognome}</td>
+                <td class="bold-text">${formattaTempo(concorrente.Tempo)}</td>
+                <td>${concorrente.Squadra}</td>
+                <td>${concorrente.Categoria}</td>
+            </tr>
 `;
                 }).join("");
             });
@@ -1420,15 +1421,15 @@ tbody tr:hover {
                             "concorrente-generale";
 
                     return `
-        <tr>
-            <td class="posizione-generale">${index + 1}</td>
-            <td class="${categoriaClasse}">${concorrente.NumeroConcorrente}</td>
-            <td class="bold-text">${concorrente.Nome}</td>
-            <td class="bold-text">${concorrente.Cognome}</td>
-            <td class="bold-text">${formattaTempo(concorrente.Tempo)}</td>
-            <td>${concorrente.Squadra}</td>
-            <td>${concorrente.Categoria}</td>
-        </tr>
+            <tr>
+                <td class="posizione-generale">${index + 1}</td>
+                <td class="${categoriaClasse}">${concorrente.NumeroConcorrente}</td>
+                <td class="bold-text">${concorrente.Nome}</td>
+                <td class="bold-text">${concorrente.Cognome}</td>
+                <td class="bold-text">${formattaTempo(concorrente.Tempo)}</td>
+                <td>${concorrente.Squadra}</td>
+                <td>${concorrente.Categoria}</td>
+            </tr>
 `;
                 }).join("");
             });
@@ -1471,17 +1472,17 @@ tbody tr:hover {
                 dati.sort((a, b) => b.NumeroGiri !== a.NumeroGiri ? b.NumeroGiri - a.NumeroGiri : a.SommaTempo - b.SommaTempo);
 
                 classificaBody.innerHTML = dati.map((concorrente, index) => `
-                <tr>
-                    <td class="posizione-generale">${index + 1}</td>
-                    <td class="concorrente-donna">${concorrente.NumeroConcorrente}</td>
-                    <td class="bold-text">${concorrente.Nome}</td>
-                    <td class="bold-text">${concorrente.Cognome}</td>
-                    <td class="bold-text">${formattaTempo(concorrente.SommaTempo)}</td>
-                    <td>${concorrente.NumeroGiri}</td>
-                    <td>${concorrente.Squadra}</td>
-                    <td>${concorrente.Categoria}</td>
-                </tr>
-            `).join("");
+                    <tr>
+                        <td class="posizione-generale">${index + 1}</td>
+                        <td class="concorrente-donna">${concorrente.NumeroConcorrente}</td>
+                        <td class="bold-text">${concorrente.Nome}</td>
+                        <td class="bold-text">${concorrente.Cognome}</td>
+                        <td class="bold-text">${formattaTempo(concorrente.SommaTempo)}</td>
+                        <td>${concorrente.NumeroGiri}</td>
+                        <td>${concorrente.Squadra}</td>
+                        <td>${concorrente.Categoria}</td>
+                    </tr>
+                `).join("");
             });
         }
 
@@ -1521,17 +1522,17 @@ tbody tr:hover {
                 dati.sort((a, b) => b.NumeroGiri !== a.NumeroGiri ? b.NumeroGiri - a.NumeroGiri : a.SommaTempo - b.SommaTempo);
 
                 classificaBody.innerHTML = dati.map((concorrente, index) => `
-                <tr>
-                    <td class="posizione-generale">${index + 1}</td>
-                    <td class="concorrente-senior">${concorrente.NumeroConcorrente}</td>
-                    <td class="bold-text">${concorrente.Nome}</td>
-                    <td class="bold-text">${concorrente.Cognome}</td>
-                    <td class="bold-text">${formattaTempo(concorrente.SommaTempo)}</td>
-                    <td>${concorrente.NumeroGiri}</td>
-                    <td>${concorrente.Squadra}</td>
-                    <td>${concorrente.Categoria}</td>
-                </tr>
-            `).join("");
+                    <tr>
+                        <td class="posizione-generale">${index + 1}</td>
+                        <td class="concorrente-senior">${concorrente.NumeroConcorrente}</td>
+                        <td class="bold-text">${concorrente.Nome}</td>
+                        <td class="bold-text">${concorrente.Cognome}</td>
+                        <td class="bold-text">${formattaTempo(concorrente.SommaTempo)}</td>
+                        <td>${concorrente.NumeroGiri}</td>
+                        <td>${concorrente.Squadra}</td>
+                        <td>${concorrente.Categoria}</td>
+                    </tr>
+                `).join("");
             });
         }
 
@@ -1570,10 +1571,10 @@ tbody tr:hover {
 
                 giri.forEach(giro => {
                     let row = `<tr>
-                                        <td>${giro.NumeroConcorrente}</td>
-                                        <td>${giro.Nome} ${giro.Cognome}</td>
-                                        <td>${formattaTempo(giro.Tempoms)}</td>
-                                    </tr>`;
+                                            <td>${giro.NumeroConcorrente}</td>
+                                            <td>${giro.Nome} ${giro.Cognome}</td>
+                                            <td>${formattaTempo(giro.Tempoms)}</td>
+                                        </tr>`;
                     latestKartsBody.innerHTML += row;
                 });
             });
@@ -1624,19 +1625,19 @@ tbody tr:hover {
             });
         }
 
-        function apriPopupTempi(numeroConcorrente, nome, cognome, posizioneGenerale) {
+        function apriPopupTempi(numeroConcorrente, nome, cognome) {
             const classificaRef = db.ref("giro");
 
             classificaRef.once("value", (snapshot) => {
                 if (!snapshot.exists()) return;
 
                 let datiGiri = [];
-                let datiPerGara = {}; // Ogni gara avrà un array di giri ordinati
+                let datiPerGara = {};
+                let classificaGenerale = [];
 
                 snapshot.forEach((childSnapshot) => {
                     let giro = childSnapshot.val();
                     if (giro.Arrivato === "SI") {
-                        // Memorizziamo tutti i giri per ogni gara
                         if (!datiPerGara[giro.Gara]) {
                             datiPerGara[giro.Gara] = [];
                         }
@@ -1645,28 +1646,51 @@ tbody tr:hover {
                             Tempo: parseInt(giro.Tempoms),
                             Gara: giro.Gara
                         });
+
+                        // Costruiamo la classifica generale
+                        let esistente = classificaGenerale.find(c => c.NumeroConcorrente === giro.NumeroConcorrente);
+                        if (esistente) {
+                            esistente.TempoTotale += parseInt(giro.Tempoms);
+                            esistente.NumeroGiri++;
+                        } else {
+                            classificaGenerale.push({
+                                NumeroConcorrente: giro.NumeroConcorrente,
+                                Nome: giro.Nome,
+                                Cognome: giro.Cognome,
+                                TempoTotale: parseInt(giro.Tempoms),
+                                NumeroGiri: 1
+                            });
+                        }
                     }
                 });
 
-                // Ora dobbiamo ordinare i tempi per ogni gara e assegnare la posizione
+                // Ordiniamo la classifica generale
+                classificaGenerale.sort((a, b) =>
+                    b.NumeroGiri !== a.NumeroGiri ? b.NumeroGiri - a.NumeroGiri : a.TempoTotale - b.TempoTotale
+                );
+
+                // Trova la posizione generale del pilota
+                let posizioneGenerale = classificaGenerale.findIndex(c => c.NumeroConcorrente == numeroConcorrente) + 1;
+
+                // Calcolo della posizione in ogni gara
                 Object.keys(datiPerGara).forEach(gara => {
-                    datiPerGara[gara].sort((a, b) => a.Tempo - b.Tempo); // Ordina dal più veloce al più lento
+                    datiPerGara[gara].sort((a, b) => a.Tempo - b.Tempo);
                     datiPerGara[gara].forEach((giro, index) => {
-                        giro.PosizioneGara = index + 1; // Assegna la posizione
+                        giro.PosizioneGara = index + 1;
                         if (giro.NumeroConcorrente == numeroConcorrente) {
-                            datiGiri.push(giro); // Solo i tempi del concorrente selezionato
+                            datiGiri.push(giro);
                         }
                     });
                 });
 
                 let popupBody = document.getElementById("popupBody");
                 popupBody.innerHTML = datiGiri.map(giro => `
-                        <tr>
-                            <td>${giro.Gara}</td>
-                            <td>${giro.PosizioneGara}</td>
-                            <td>${formattaTempo(giro.Tempo)}</td>
-                        </tr>
-                    `).join("");
+                <tr>
+                    <td>${giro.Gara}</td>
+                    <td>${giro.PosizioneGara}</td>
+                    <td>${formattaTempo(giro.Tempo)}</td>
+                </tr>
+            `).join("");
 
                 document.getElementById("popupTitle").innerText = `Tempi di #${numeroConcorrente} ${nome} ${cognome} - Pos. Gen: ${posizioneGenerale}`;
                 document.getElementById("popup").style.display = "block";
@@ -1675,16 +1699,13 @@ tbody tr:hover {
         }
 
 
+
         function chiudiPopup() {
             document.getElementById("popup").style.display = "none";
             document.getElementById("popupOverlay").style.display = "none";
         }
 
 
-        function chiudiPopup() {
-            document.getElementById("popup").style.display = "none";
-            document.getElementById("popupOverlay").style.display = "none";
-        }
 
 
 
@@ -1714,13 +1735,12 @@ tbody tr:hover {
                 let concorrenteTrovato = null;
                 let datiGiri = [];
                 let datiPerGara = {};
+                let classificaGenerale = [];
 
                 snapshot.forEach((childSnapshot) => {
                     let giro = childSnapshot.val();
                     if (giro.Arrivato === "SI") {
-                        if (giro.NumeroConcorrente == numeroPilota) {
-                            concorrenteTrovato = giro;
-                        }
+                        // Memorizziamo tutti i giri per ogni gara
                         if (!datiPerGara[giro.Gara]) {
                             datiPerGara[giro.Gara] = [];
                         }
@@ -1729,6 +1749,25 @@ tbody tr:hover {
                             Tempo: parseInt(giro.Tempoms),
                             Gara: giro.Gara
                         });
+
+                        // Costruiamo la classifica generale
+                        let esistente = classificaGenerale.find(c => c.NumeroConcorrente === giro.NumeroConcorrente);
+                        if (esistente) {
+                            esistente.TempoTotale += parseInt(giro.Tempoms);
+                            esistente.NumeroGiri++;
+                        } else {
+                            classificaGenerale.push({
+                                NumeroConcorrente: giro.NumeroConcorrente,
+                                Nome: giro.Nome,
+                                Cognome: giro.Cognome,
+                                TempoTotale: parseInt(giro.Tempoms),
+                                NumeroGiri: 1
+                            });
+                        }
+
+                        if (giro.NumeroConcorrente == numeroPilota) {
+                            concorrenteTrovato = giro;
+                        }
                     }
                 });
 
@@ -1737,31 +1776,39 @@ tbody tr:hover {
                     return;
                 }
 
+                // Ordiniamo la classifica generale per trovare la posizione del pilota
+                classificaGenerale.sort((a, b) =>
+                    b.NumeroGiri !== a.NumeroGiri ? b.NumeroGiri - a.NumeroGiri : a.TempoTotale - b.TempoTotale
+                );
+
+                let posizioneGenerale = classificaGenerale.findIndex(c => c.NumeroConcorrente == numeroPilota) + 1;
+
                 // Calcolo della posizione in ogni gara
                 Object.keys(datiPerGara).forEach(gara => {
-                    datiPerGara[gara].sort((a, b) => a.Tempo - b.Tempo); // Ordina i tempi
+                    datiPerGara[gara].sort((a, b) => a.Tempo - b.Tempo);
                     datiPerGara[gara].forEach((giro, index) => {
-                        giro.PosizioneGara = index + 1; // Assegna posizione
+                        giro.PosizioneGara = index + 1;
                         if (giro.NumeroConcorrente == numeroPilota) {
-                            datiGiri.push(giro); // Filtra solo i giri del concorrente cercato
+                            datiGiri.push(giro);
                         }
                     });
                 });
 
                 let popupBody = document.getElementById("popupBody");
                 popupBody.innerHTML = datiGiri.map(giro => `
-                    <tr>
-                        <td>${giro.Gara}</td>
-                        <td>${giro.PosizioneGara}</td>
-                        <td>${formattaTempo(giro.Tempo)}</td>
-                    </tr>
-                `).join("");
+            <tr>
+                <td>${giro.Gara}</td>
+                <td>${giro.PosizioneGara}</td>
+                <td>${formattaTempo(giro.Tempo)}</td>
+            </tr>
+        `).join("");
 
-                document.getElementById("popupTitle").innerText = `Tempi di #${concorrenteTrovato.NumeroConcorrente} ${concorrenteTrovato.Nome} ${concorrenteTrovato.Cognome}`;
+                document.getElementById("popupTitle").innerText = `Tempi di #${concorrenteTrovato.NumeroConcorrente} ${concorrenteTrovato.Nome} ${concorrenteTrovato.Cognome} - Pos. Gen: ${posizioneGenerale}`;
                 document.getElementById("popup").style.display = "block";
                 document.getElementById("popupOverlay").style.display = "block";
             });
         }
+
 
 
 
