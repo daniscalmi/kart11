@@ -1,0 +1,1791 @@
+<!DOCTYPE html>
+<html lang="it">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=1024">
+    <title>Classifiche Gara</title>
+
+    <style>
+      /* 🌟 Stile generale */
+body {
+    font-family: Arial, sans-serif;
+    background-color: #ffffff; /* Sfondo bianco */
+    color: #333333; /* Testo scuro */
+    text-align: center;
+}
+
+        /* 📌 Allineamento logo a sinistra */
+        .logo {
+            max-width: 600px;
+            height: auto;
+            display: block;
+            margin-right: 30px; /* Mantiene spazio tra logo e contenuto */
+            margin-left: 0; /* Allineato a sinistra */
+        }
+
+        /* 📌 Allinea il contenitore superiore */
+        .top-container {
+            display: flex;
+            justify-content: flex-start; /* Allinea gli elementi a sinistra */
+            align-items: center;
+            padding: 20px 5%;
+            flex-wrap: wrap;
+        }
+
+/* 🔥 Contenitore informazioni */
+.info-container {
+    text-align: center;
+}
+
+/* 🔥 Stile per il giro più veloce */
+.fastest-lap {
+    font-size: 22px; /* Più grande */
+    font-weight: bold;
+    color: #ff0000; /* Rosso acceso */
+    margin-bottom: 10px;
+}
+
+/* 📌 Tabella ultimi 5 kart (ora centrata meglio) */
+.latest-karts-table {
+    width: 350px; /* Leggermente più larga */
+    margin: 0 auto; /* Centrata */
+    border-collapse: collapse;
+    background-color: #f8f9fa;
+    border-radius: 8px;
+    overflow: hidden;
+    text-align: center;
+    margin-top: 15px;
+}
+
+.latest-karts-table th, .latest-karts-table td {
+    padding: 7px;
+    border: 1px solid #ddd;
+}
+
+.latest-karts-table th {
+    background-color: #007bff;
+    color: #ffffff;
+    font-weight: bold;
+}
+
+.latest-karts-table tbody tr:nth-child(even) {
+    background-color: #f1f1f1;
+}
+
+/* 🔥 Più spazio tra la tabella ultimi 5 e le classifiche */
+.classifica-container {
+    margin-top: 30px;
+}
+
+/* 📌 Stile per i tab */
+.tab-container {
+    display: flex;
+    justify-content: center;
+    margin-bottom: 20px;
+}
+
+.tab-button {
+    background-color: #e0e0e0;
+    border: 1px solid #007bff;
+    color: #007bff;
+    padding: 10px 20px;
+    margin: 0 5px;
+    cursor: pointer;
+    font-size: 16px;
+    font-weight: bold;
+    transition: 0.3s;
+    border-radius: 5px;
+}
+
+.tab-button:hover, .tab-button.active {
+    background-color: #007bff;
+    color: #ffffff;
+}
+
+.tab-content {
+    display: none;
+}
+
+.tab-content.active {
+    display: block;
+}
+
+/* 📌 Stile tabella Classifiche */
+table {
+    width: 90%;
+    margin: auto;
+    border-collapse: collapse;
+    background-color: #f8f9fa;
+    border-radius: 8px;
+    overflow: hidden;
+}
+
+th, td {
+    padding: 10px;
+    border: 1px solid #ddd;
+    text-align: center;
+}
+
+th {
+    background-color: #007bff;
+    color: #ffffff;
+    font-weight: bold;
+}
+
+tbody tr:nth-child(even) {
+    background-color: #f1f1f1;
+}
+
+tbody tr:hover {
+    background-color: #d4e4ff;
+    color: #000;
+}
+/* 📌 STILE CLASSIFICA TEAM */
+.team-table {
+    width: 90%;
+    margin: auto;
+    border-collapse: collapse;
+    background-color: #f8f9fa;
+    border-radius: 8px;
+    overflow: hidden;
+}
+
+.team-table th, .team-table td {
+    padding: 10px;
+    border: 1px solid #ddd;
+    text-align: center;
+}
+
+/* 🏆 TESTA DELLA CLASSIFICA TEAM */
+.team-table th {
+    background-color: #007bff; /* Blu acceso */
+    color: #ffffff;
+    font-weight: bold;
+}
+
+/* 📌 Alternanza colori righe */
+.team-table tbody tr:nth-child(even) {
+    background-color: #f1f1f1;
+}
+
+/* 📌 Hover sulle righe */
+.team-table tbody tr:hover {
+    background-color: #d4e4ff;
+    color: #000;
+}
+
+/* 🌟 POSIZIONE E PUNTI - INGRANDITI */
+.team-position, .punti-totali {
+    font-size: 30px;
+    font-weight: bold;
+    color: #ff0000; /* Rosso acceso */
+}
+
+/* 🏆 NOME SQUADRA - GRANDE E GIALLO */
+.team-name {
+    font-size:30px; /* Più grande */
+    font-weight: bold;
+    color: #006400; /* Giallo per squadre */
+}
+
+/* 🏎️ PILOTI - PIÙ PICCOLI RISPETTO AL TEAM */
+.team-pilot {
+    font-size: 18px; /* Più piccolo */
+    margin-top: 3px;
+}
+        /* 📌 Aggiunge spazio tra il logo e le tabelle */
+        .info-container {
+            text-align: center;
+            margin-left: 100px; /* Sposta leggermente a destra le tabelle */
+        }
+
+        /* 📌 Aggiunge spazio tra le tabelle */
+        .fastest-lap-table,
+        .latest-karts-table {
+            margin-top: 20px; /* Spazio sopra le tabelle */
+        }
+
+/* 🎨 COLORI DIVERSI PER LE CATEGORIE */
+.pilota-generale { color: #ff9900; } /* Arancione */
+.pilota-donne { color: #ff69b4; } /* Rosa */
+.pilota-senior { color: #007bff; } /* Blu */
+
+        /* 📌 Stile per la colorazione del numero concorrente */
+        .concorrente-donna {
+            background-color: #ff69b4; /* Rosa */
+            font-weight: bold;
+        }
+
+        .concorrente-senior {
+            background-color: #87CEFA; /* Azzurro */
+            font-weight: bold;
+        }
+
+        .concorrente-generale {
+            background-color: #FFD580; /* Arancio Chiaro */
+            font-weight: bold;
+        }
+
+        /* 📌 Stile per rendere Nome, Cognome e Tempo in grassetto */
+        .bold-text {
+            font-weight: bold;
+        }
+
+        /* 📌 Stile per il popup */
+        .popup {
+            display: none;
+            position: fixed;
+            left: 50%;
+            top: 50%;
+            transform: translate(-50%, -50%);
+            width: 60%;
+            background: white;
+            border: 2px solid #007bff;
+            padding: 20px;
+            z-index: 1000;
+            box-shadow: 0px 0px 10px rgba(0, 0, 0, 0.3);
+        }
+
+            .popup table {
+                width: 100%;
+                border-collapse: collapse;
+            }
+
+            .popup th, .popup td {
+                padding: 10px;
+                border: 1px solid #ddd;
+                text-align: center;
+            }
+
+            .popup th {
+                background-color: #007bff;
+                color: #ffffff;
+            }
+
+        /* 📌 Sfondo trasparente dietro il popup */
+        .popup-overlay {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.5);
+            z-index: 999;
+        }
+
+        /* 📌 Sfondo verde chiaro per la posizione nella classifica generale */
+        .posizione-generale {
+            background-color: #90EE90; /* Verde chiaro */
+            font-weight: bold;
+        }
+
+        /* 📌 Mantiene gli stili dei concorrenti */
+        .concorrente-donna {
+            background-color: #ff69b4; /* Rosa */
+            font-weight: bold;
+        }
+
+        .concorrente-senior {
+            background-color: #87CEFA; /* Azzurro */
+            font-weight: bold;
+        }
+
+        .concorrente-generale {
+            background-color: #FFD580; /* Arancio Chiaro */
+            font-weight: bold;
+        }
+
+        /* 📌 Stile per il popup */
+        .popup {
+            display: none;
+            position: fixed;
+            left: 50%;
+            top: 50%;
+            transform: translate(-50%, -50%);
+            width: 60%;
+            background: white;
+            border: 2px solid #007bff;
+            padding: 20px;
+            z-index: 1000;
+            box-shadow: 0px 0px 10px rgba(0, 0, 0, 0.3);
+        }
+
+        /* 📌 Sfondo trasparente dietro il popup */
+        .popup-overlay {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.5);
+            z-index: 999;
+        }
+        /* 📌 Bottone "Chiudi" più elegante */
+        .popup button {
+            display: block;
+            width: 150px;
+            margin: 20px auto 10px; /* Aggiunge spazio sotto la tabella */
+            padding: 12px;
+            font-size: 16px;
+            font-weight: bold;
+            background-color: #007bff;
+            color: white;
+            border: none;
+            border-radius: 8px; /* Angoli arrotondati */
+            cursor: pointer;
+            transition: background 0.3s, transform 0.2s;
+            box-shadow: 2px 2px 5px rgba(0, 0, 0, 0.2);
+        }
+
+            /* 📌 Effetto Hover */
+            .popup button:hover {
+                background-color: #0056b3;
+                transform: scale(1.05);
+            }
+
+
+
+
+        /* 📌 Allinea la barra di ricerca a sinistra */
+        .search-container {
+            display: flex;
+            align-items: center;
+            justify-content: flex-start; /* Allinea tutto a sinistra */
+            margin-bottom: 20px;
+        }
+
+            /* 📌 Stile della scritta "Cerca Pilota" */
+            .search-container label {
+                font-size: 18px;
+                font-weight: bold;
+                margin-right: 10px;
+            }
+
+            /* 📌 Stile per il campo di input */
+            .search-container input {
+                padding: 10px;
+                font-size: 16px;
+                width: 200px;
+                border: 2px solid #007bff;
+                border-radius: 5px;
+                margin-right: 10px;
+            }
+
+            /* 📌 Stile per il bottone di ricerca */
+            .search-container button {
+                padding: 10px 15px;
+                font-size: 16px;
+                font-weight: bold;
+                background-color: #007bff;
+                color: white;
+                border: none;
+                border-radius: 5px;
+                cursor: pointer;
+                transition: background 0.3s, transform 0.2s;
+            }
+
+                /* 📌 Effetto hover sul bottone */
+                .search-container button:hover {
+                    background-color: #0056b3;
+                    transform: scale(1.05);
+                }
+
+        /* 📌 Testo in grassetto per Posizione, Numero, Nome e Tempo in tutte le classifiche */
+        table tbody tr td:nth-child(1), /* Posizione */
+        table tbody tr td:nth-child(2), /* Numero */
+        table tbody tr td:nth-child(3), /* Nome */
+        table tbody tr td:nth-child(4), /* Nome */
+        table tbody tr td:nth-child(5) /* Tempo */ {
+            font-weight: bold;
+        }
+
+
+        /* 📌 Stile personalizzato per i bottoni delle classifiche */
+
+        /* 🔴 Bottone Classifica Donne → Rosa */
+        .tab-button[onclick="apriTab('donne')"] {
+            background-color: #ff69b4; /* Rosa */
+            color: white;
+        }
+
+        /* 🔵 Bottone Classifica Senior → Azzurro Chiaro */
+        .tab-button[onclick="apriTab('senior')"] {
+            background-color: #87CEFA; /* Azzurro Chiaro */
+            color: white;
+        }
+
+        /* 🟢 Bottone Classifica Team → Verde Chiaro */
+        .tab-button[onclick="apriTab('team')"] {
+            background-color: #90EE90; /* Verde Chiaro */
+            color: black;
+        }
+
+        /* 📌 Bottone Classifica Donne → Rosa */
+        .tab-button[onclick="apriTab('donne')"] {
+            background-color: #ff69b4; /* Rosa */
+            color: white;
+        }
+
+        /* 📌 Bottone Classifica Senior → Azzurro Chiaro */
+        .tab-button[onclick="apriTab('senior')"] {
+            background-color: #87CEFA; /* Azzurro Chiaro */
+            color: white;
+        }
+
+        /* 📌 Bottone Classifica Team → Verde Chiaro */
+        .tab-button[onclick="apriTab('team')"] {
+            background-color: #90EE90; /* Verde Chiaro */
+            color: black;
+        }
+
+        /* 📌 Bottoni delle Prove Speciali (PS1-PS7) → Giallo */
+        .tab-button[onclick="apriTab('ps1')"],
+        .tab-button[onclick="apriTab('ps2')"],
+        .tab-button[onclick="apriTab('ps3')"],
+        .tab-button[onclick="apriTab('ps4')"],
+        .tab-button[onclick="apriTab('ps5')"],
+        .tab-button[onclick="apriTab('ps6')"],
+        .tab-button[onclick="apriTab('ps7')"] {
+            background-color: #FFD700; /* Giallo */
+            color: black;
+        }
+
+        /* 📌 Effetto Hover per tutti i bottoni */
+        .tab-button:hover {
+            opacity: 0.8;
+        }
+
+
+        /* 📌 Effetto Hover per tutti i bottoni */
+        .tab-button:hover {
+            opacity: 0.8;
+        }
+
+        /* 📌 Sfondo verde chiaro per la posizione nelle classifiche PS */
+        .ps-table td:nth-child(1) { /* Posizione */
+            background-color: #90EE90; /* Verde Chiaro */
+            font-weight: bold;
+        }
+
+        /* 📌 Colore del numero concorrente in base alla categoria */
+        .ps-table .concorrente-donna {
+            background-color: #ff69b4;
+            font-weight: bold;
+        }
+        /* Rosa */
+        .ps-table .concorrente-senior {
+            background-color: #87CEFA;
+            font-weight: bold;
+        }
+        /* Azzurro */
+        .ps-table .concorrente-generale {
+            background-color: #FFD580;
+            font-weight: bold;
+        }
+        /* Arancio Chiaro */
+
+        /* 📌 Testo in grassetto per Numero, Nome, Cognome e Tempo */
+        .ps-table td:nth-child(2), /* Numero */
+        .ps-table td:nth-child(3), /* Nome */
+        .ps-table td:nth-child(4), /* Cognome */
+        .ps-table td:nth-child(5) /* Tempo */ {
+            font-weight: bold;
+        }
+
+
+        /* 📌 Sfondo verde chiaro per la posizione nelle classifiche Generale, PS, Donne e Senior */
+        .ps-table td:nth-child(1),
+        .team-table td:nth-child(1),
+        .donne-table td:nth-child(1),
+        .senior-table td:nth-child(1) {
+            background-color: #90EE90; /* Verde Chiaro */
+            font-weight: bold;
+        }
+
+        /* 📌 Sfondo per i numeri nelle classifiche Donne e Senior */
+        .donne-table .concorrente-donna {
+            background-color: #ff69b4; /* Rosa */
+            font-weight: bold;
+        }
+
+        .senior-table .concorrente-senior {
+            background-color: #87CEFA; /* Azzurro Chiaro */
+            font-weight: bold;
+        }
+
+        /* 📌 Testo in grassetto per Numero, Nome, Cognome e Tempo */
+        .ps-table td:nth-child(2), /* Numero */
+        .ps-table td:nth-child(3), /* Nome */
+        .ps-table td:nth-child(4), /* Cognome */
+        .ps-table td:nth-child(5),
+        .donne-table td:nth-child(2),
+        .donne-table td:nth-child(3),
+        .donne-table td:nth-child(4),
+        .donne-table td:nth-child(5),
+        .senior-table td:nth-child(2),
+        .senior-table td:nth-child(3),
+        .senior-table td:nth-child(4),
+        .senior-table td:nth-child(5) {
+            font-weight: bold;
+        }
+
+
+        /* 📌 Stile per il messaggio sotto la classifica generale */
+        .info-click-tempi {
+            text-align: left;
+            font-size: 20px;
+            font-style: normal;
+            color: #333;
+            margin-bottom: 10px;
+            margin-left: 5px; /* Leggera spaziatura a sinistra */
+        }
+
+        /* 📌 Sfondo verde chiaro per la posizione nella classifica team */
+        #classificaTeamBody tr td:first-child {
+            background-color: #90EE90; /* Verde Chiaro */
+            font-weight: bold;
+        }
+
+        /* 📌 Sfondo giallo per la colonna dei punti */
+        #classificaTeamBody tr td:last-child {
+            background-color: #FFD700; /* Giallo */
+            font-weight: bold;
+        }
+
+
+
+    </style>
+</head>
+<body>
+    <!-- 🏁 LOGO e INFORMAZIONI -->
+    <div class="top-container">
+        <img src="logo.jpeg" alt="Logo Gara" class="logo">
+
+
+
+        <div class="info-container">
+
+            <!-- 📌 Titolo per il giro più veloce -->
+            <h3>Giro Più Veloce</h3>
+
+            <!-- 📌 Tabella per il giro più veloce -->
+            <table class="fastest-lap-table">
+                <thead>
+                    <tr>
+                        <th>NR</th>
+                        <th>Pilota</th>
+                        <th>Tempo</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td id="fastestLapNR">-</td>
+                        <td id="fastestLapPilot">-</td>
+                        <td id="fastestLapTime">-</td>
+                    </tr>
+                </tbody>
+            </table>
+
+
+            <!-- 📌 Titolo per gli ultimi 5 arrivi -->
+            <h3>Ultimi 5 Arrivi</h3><!-- 📌 Titolo per gli ultimi 5 arrivi -->
+            <!-- 📌 Tabella ultimi 5 kart arrivati -->
+            <table class="latest-karts-table">
+                <thead>
+                    <tr>
+                        <th>NR</th>
+                        <th>Pilota</th>
+                        <th>Tempo</th>
+                    </tr>
+                </thead>
+                <tbody id="latestKartsBody">
+                    <!-- Ultimi 5 kart verranno caricati qui -->
+                </tbody>
+            </table>
+        </div>
+    </div>
+
+    <!-- 📌 Campo di ricerca pilota allineato a sinistra -->
+    <div class="search-container">
+        <label for="searchPilotInput">Cerca Pilota:</label>
+        <input type="number" id="searchPilotInput" placeholder="Inserisci numero pilota">
+        <button onclick="cercaPilota()">Cerca</button>
+    </div>
+
+    <!-- 📌 Messaggio informativo sotto il titolo -->
+    <p class="info-click-tempi">Utilizza la funzione di ricerca oppure clicca il tuo numero nella classifica generale e visualizza i tuoi tempi!</p>
+
+
+
+    <!-- TAB SELEZIONE -->
+    <div class="tab-container">
+        <button class="tab-button active" onclick="apriTab('generale')">Classifica Generale</button>
+        <button class="tab-button" onclick="apriTab('team')">Classifica Team</button>
+        <button class="tab-button" onclick="apriTab('donne')">Donne</button>
+        <button class="tab-button" onclick="apriTab('senior')">Senior</button>
+        <button class="tab-button" onclick="apriTab('ps1')">PS1</button>
+        <button class="tab-button" onclick="apriTab('ps2')">PS2</button>
+        <button class="tab-button" onclick="apriTab('ps3')">PS3</button>
+        <button class="tab-button" onclick="apriTab('ps4')">PS4</button>
+        <button class="tab-button" onclick="apriTab('ps5')">PS5</button>
+        <button class="tab-button" onclick="apriTab('ps6')">PS6</button>
+        <button class="tab-button" onclick="apriTab('ps7')">PW Stage</button>
+    </div>
+
+    <!-- 📌 Sfondo scuro dietro al popup -->
+    <div id="popupOverlay" class="popup-overlay" onclick="chiudiPopup()"></div>
+
+
+
+    <!-- 📌 Popup per i tempi del concorrente -->
+    <div id="popup" class="popup">
+        <h2 id="popupTitle">Tempi del Concorrente</h2>
+        <table>
+            <thead>
+                <tr>
+                    <th>Gara</th>
+                    <th>Posizione</th>
+                    <th>Tempo</th>
+                </tr>
+            </thead>
+            <tbody id="popupBody"></tbody>
+        </table>
+        <button onclick="chiudiPopup()">Chiudi</button>
+    </div>
+
+
+
+    <!-- CLASSIFICA GENERALE -->
+    <div id="generale" class="tab-content active">
+        <h2>Classifica Generale</h2>
+        <table>
+            <thead>
+                <tr>
+                    <th>Pos</th>
+                    <th>NR</th>
+                    <th>Nome</th>
+                    <th>Cognome</th>
+                    <th>Tempo</th>
+                    <th>Giri</th>
+                    <th>Team</th>
+                    <th>C</th>
+                </tr>
+            </thead>
+            <tbody id="classificaGeneraleBody"></tbody>
+        </table>
+    </div>
+
+    <!-- CLASSIFICA TEAM -->
+    <div id="team" class="tab-content">
+        <h2>Classifica Team</h2>
+        <table>
+            <thead>
+                <tr>
+                    <th>Pos</th>
+                    <th>Team</th>
+                    <th>Punti</th>
+                </tr>
+            </thead>
+            <tbody id="classificaTeamBody"></tbody>
+        </table>
+    </div>
+
+    <!-- CLASSIFICA GENERALE -->
+    <div id="donne" class="tab-content">
+        <h2>Classifica Donne</h2>
+        <table>
+            <thead>
+                <tr>
+                    <th>Pos</th>
+                    <th>NR</th>
+                    <th>Nome</th>
+                    <th>Cognome</th>
+                    <th>Tempo</th>
+                    <th>Giri</th>
+                    <th>Team</th>
+                    <th>C</th>
+                </tr>
+            </thead>
+            <tbody id="classificaGeneraleBodyD"></tbody>
+        </table>
+    </div>
+    <!-- CLASSIFICA GENERALE -->
+    <div id="senior" class="tab-content">
+        <h2>Classifica Senior</h2>
+        <table>
+            <thead>
+                <tr>
+                    <th>Pos</th>
+                    <th>NR</th>
+                    <th>Nome</th>
+                    <th>Cognome</th>
+                    <th>Tempo</th>
+                    <th>Giri</th>
+                    <th>Team</th>
+                    <th>C</th>
+                </tr>
+            </thead>
+            <tbody id="classificaGeneraleBodyS"></tbody>
+        </table>
+    </div>
+
+    <!-- CLASSIFICA PS1 -->
+    <div id="ps1" class="tab-content">
+        <h2>Classifica PS1</h2>
+        <table>
+            <thead>
+                <tr>
+                    <th>Pos</th>
+                    <th>NR</th>
+                    <th>Nome</th>
+                    <th>Cognome</th>
+                    <th>Tempo</th>
+                    <th>Team</th>
+                    <th>C</th>
+                </tr>
+            </thead>
+            <tbody id="classificaPS1Body"></tbody>
+        </table>
+    </div>
+
+    <!-- CLASSIFICA PS1 -->
+    <div id="ps2" class="tab-content">
+        <h2>Classifica PS2</h2>
+        <table>
+            <thead>
+                <tr>
+                    <th>Pos</th>
+                    <th>NR</th>
+                    <th>Nome</th>
+                    <th>Cognome</th>
+                    <th>Tempo</th>
+                    <th>Team</th>
+                    <th>C</th>
+                </tr>
+            </thead>
+            <tbody id="classificaPS2Body"></tbody>
+        </table>
+    </div>
+
+    <!-- CLASSIFICA PS1 -->
+    <div id="ps3" class="tab-content">
+        <h2>Classifica PS3</h2>
+        <table>
+            <thead>
+                <tr>
+                    <th>Pos</th>
+                    <th>NR</th>
+                    <th>Nome</th>
+                    <th>Cognome</th>
+                    <th>Tempo</th>
+                    <th>Team</th>
+                    <th>C</th>
+                </tr>
+            </thead>
+            <tbody id="classificaPS3Body"></tbody>
+        </table>
+    </div>
+
+    <!-- CLASSIFICA PS1 -->
+    <div id="ps4" class="tab-content">
+        <h2>Classifica PS4</h2>
+        <table>
+            <thead>
+                <tr>
+                    <th>Pos</th>
+                    <th>NR</th>
+                    <th>Nome</th>
+                    <th>Cognome</th>
+                    <th>Tempo</th>
+                    <th>Team</th>
+                    <th>C</th>
+                </tr>
+            </thead>
+            <tbody id="classificaPS4Body"></tbody>
+        </table>
+    </div>
+
+    <!-- CLASSIFICA PS1 -->
+    <div id="ps5" class="tab-content">
+        <h2>Classifica PS5</h2>
+        <table>
+            <thead>
+                <tr>
+                    <th>Pos</th>
+                    <th>NR</th>
+                    <th>Nome</th>
+                    <th>Cognome</th>
+                    <th>Tempo</th>
+                    <th>Team</th>
+                    <th>C</th>
+                </tr>
+            </thead>
+            <tbody id="classificaPS5Body"></tbody>
+        </table>
+    </div>
+
+    <!-- CLASSIFICA PS1 -->
+    <div id="ps6" class="tab-content">
+        <h2>Classifica PS6</h2>
+        <table>
+            <thead>
+                <tr>
+                    <th>Pos</th>
+                    <th>NR</th>
+                    <th>Nome</th>
+                    <th>Cognome</th>
+                    <th>Tempo</th>
+                    <th>Team</th>
+                    <th>C</th>
+                </tr>
+            </thead>
+            <tbody id="classificaPS6Body"></tbody>
+        </table>
+    </div>
+
+    <!-- CLASSIFICA PS1 -->
+    <div id="ps7" class="tab-content">
+        <h2>Classifica Power Stage</h2>
+        <table>
+            <thead>
+                <tr>
+                    <th>Pos</th>
+                    <th>NR</th>
+                    <th>Nome</th>
+                    <th>Cognome</th>
+                    <th>Tempo</th>
+                    <th>Team</th>
+                    <th>C</th>
+                </tr>
+            </thead>
+            <tbody id="classificaPS7Body"></tbody>
+        </table>
+    </div>
+
+    <!-- Firebase -->
+    <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-app.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-database.js"></script>
+
+    <script>
+        // Inizializza Firebase
+        const firebaseConfig = {
+            apiKey: "AIzaSyA4xpOxt0tbRHwIwAQkNkZ_403MHiEbJ_w",
+            authDomain: "kartlive-4e0ca.firebaseapp.com",
+            databaseURL: "https://kartlive-4e0ca-default-rtdb.europe-west1.firebasedatabase.app/",
+            projectId: "kartlive-4e0ca",
+            storageBucket: "kartlive-4e0ca.appspot.com",
+            messagingSenderId: "517645685489",
+            appId: "1:517645685489:web:1e67912cba32a6f5b54f50"
+        };
+
+        if (!firebase.apps.length) {
+            firebase.initializeApp(firebaseConfig);
+        }
+        const db = firebase.database();
+
+        function apriTab(nomeTab) {
+            document.querySelectorAll(".tab-content").forEach(tab => tab.classList.remove("active"));
+            document.querySelectorAll(".tab-button").forEach(button => button.classList.remove("active"));
+            document.getElementById(nomeTab).classList.add("active");
+            document.querySelector(`button[onclick="apriTab('${nomeTab}')"]`).classList.add("active");
+        }
+
+        function caricaClassificaGenerale() {
+            const classificaRef = db.ref("giro");
+
+            classificaRef.on("value", (snapshot) => {
+                let classificaBody = document.getElementById("classificaGeneraleBody");
+                classificaBody.innerHTML = "";
+
+                if (!snapshot.exists()) return;
+
+                let dati = [];
+                snapshot.forEach((childSnapshot) => {
+                    let concorrente = childSnapshot.val();
+                    if (concorrente.Arrivato === "SI") {
+                        let tempo = parseInt(concorrente.Tempoms) || 0;
+                        let esistente = dati.find(c => c.NumeroConcorrente === concorrente.NumeroConcorrente);
+
+                        if (esistente) {
+                            esistente.SommaTempo += tempo;
+                            esistente.NumeroGiri++;
+                        } else {
+                            dati.push({
+                                NumeroConcorrente: concorrente.NumeroConcorrente,
+                                Nome: concorrente.Nome,
+                                Cognome: concorrente.Cognome,
+                                Categoria: concorrente.Categoria,
+                                SommaTempo: tempo,
+                                NumeroGiri: 1,
+                                Squadra: concorrente.Squadra
+                            });
+                        }
+                    }
+                });
+
+                dati.sort((a, b) => b.NumeroGiri !== a.NumeroGiri ? b.NumeroGiri - a.NumeroGiri : a.SommaTempo - b.SommaTempo);
+
+                classificaBody.innerHTML = dati.map((concorrente, index) => {
+                    let categoriaClasse = concorrente.Categoria === "D" ? "concorrente-donna" :
+                        concorrente.Categoria === "O" ? "concorrente-senior" :
+                            "concorrente-generale";
+
+                    return `
+                                <tr>
+                                    <td class="posizione-generale">${index + 1}</td>
+                                    <td class="${categoriaClasse}" onclick="apriPopupTempi(${concorrente.NumeroConcorrente}, '${concorrente.Nome}', '${concorrente.Cognome}', ${index + 1})">${concorrente.NumeroConcorrente}</td>
+                                    <td class="bold-text">${concorrente.Nome}</td>
+                                    <td class="bold-text">${concorrente.Cognome}</td>
+                                    <td class="bold-text">${formattaTempo(concorrente.SommaTempo)}</td>
+                                    <td>${concorrente.NumeroGiri}</td>
+                                    <td>${concorrente.Squadra}</td>
+                                    <td>${concorrente.Categoria}</td>
+                                </tr>
+                            `;
+                }).join("");
+            });
+        }
+
+
+
+        function formattaTempo(ms) {
+            let min = Math.floor(ms / 60000);
+            let sec = Math.floor((ms % 60000) / 1000);
+            let milli = ms % 1000;
+            return `${min}:${sec.toString().padStart(2, "0")}:${milli.toString().padStart(3, "0")}`;
+        }
+
+
+
+        function caricaClassificaTeam() {
+            const classificaRef = db.ref("giro");
+
+            classificaRef.on("value", (snapshot) => {
+                if (!snapshot.exists()) {
+                    console.error("❌ Nessun dato trovato!");
+                    return;
+                }
+
+                const giri = snapshot.val();
+                let concorrenti = {};
+                let teamPunti = {};
+                let punteggiConcorrenti = {};
+
+                // 🔴 **DICHIARA LE VARIABILI PUNTEGGIO QUI!**
+                let puntiGenerale = 30;
+                let puntiDonne = 10;
+                let puntiSenior = 10;
+
+                // Raggruppa dati per concorrente
+                Object.values(giri).forEach(giro => {
+                    const id = giro.NumeroConcorrente;
+                    const team = giro.Squadra || "Senza Team";
+                    const categoria = giro.Categoria;
+
+                    if (!concorrenti[id]) {
+                        concorrenti[id] = {
+                            NumeroConcorrente: id,
+                            Nome: giro.Nome,
+                            Cognome: giro.Cognome,
+                            Team: team,
+                            Categoria: categoria,
+                            Giri: 0,
+                            TempoTotale: 0
+                        };
+                    }
+
+                    concorrenti[id].Giri++;
+                    concorrenti[id].TempoTotale += parseFloat(giro.Tempoms);
+                });
+
+                // Ordina le classifiche
+                let classificaGenerale = Object.values(concorrenti).sort((a, b) => {
+                    if (b.Giri !== a.Giri) return b.Giri - a.Giri;
+                    return a.TempoTotale - b.TempoTotale;
+                });
+
+                let classificaDonne = classificaGenerale.filter(c => c.Categoria === "D");
+                let classificaSenior = classificaGenerale.filter(c => c.Categoria === "O");
+
+
+
+
+
+                classificaGenerale.forEach((concorrente, index) => {
+                    if (concorrente.Team !== "SINGOLO" && puntiGenerale > 0) {
+                        let id = concorrente.NumeroConcorrente;
+
+                        // ✅ Inizializziamo il punteggio se non esiste
+                        if (!punteggiConcorrenti[id]) {
+                            punteggiConcorrenti[id] = { totale: 0, gen: 0, extra: 0, tipo: "" };
+                        }
+
+                        teamPunti[concorrente.Team] = (teamPunti[concorrente.Team] || 0) + puntiGenerale;
+                        punteggiConcorrenti[id].totale += puntiGenerale;
+                        punteggiConcorrenti[id].gen = puntiGenerale;
+                        puntiGenerale--;
+                    }
+                });
+
+                classificaDonne.forEach((concorrente, index) => {
+                    if (concorrente.Team !== "SINGOLO" && puntiDonne > 0) {
+                        let id = concorrente.NumeroConcorrente;
+
+                        // ✅ Inizializziamo il punteggio se non esiste
+                        if (!punteggiConcorrenti[id]) {
+                            punteggiConcorrenti[id] = { totale: 0, gen: 0, extra: 0, tipo: "" };
+                        }
+
+                        teamPunti[concorrente.Team] = (teamPunti[concorrente.Team] || 0) + puntiDonne;
+                        punteggiConcorrenti[id].totale += puntiDonne;
+                        punteggiConcorrenti[id].extra = puntiDonne;
+                        punteggiConcorrenti[id].tipo = "donne";
+                        puntiDonne--;
+                    }
+                });
+
+                classificaSenior.forEach((concorrente, index) => {
+                    if (concorrente.Team !== "SINGOLO" && puntiSenior > 0) {
+                        let id = concorrente.NumeroConcorrente;
+
+                        // ✅ Inizializziamo il punteggio se non esiste
+                        if (!punteggiConcorrenti[id]) {
+                            punteggiConcorrenti[id] = { totale: 0, gen: 0, extra: 0, tipo: "" };
+                        }
+
+                        teamPunti[concorrente.Team] = (teamPunti[concorrente.Team] || 0) + puntiSenior;
+                        punteggiConcorrenti[id].totale += puntiSenior;
+                        punteggiConcorrenti[id].extra = puntiSenior;
+                        punteggiConcorrenti[id].tipo = "sen";
+                        puntiSenior--;
+                    }
+                });
+
+                // Ordina i team per punteggio
+                let classificaTeam = Object.entries(teamPunti).map(([team, punti]) => ({ team, punti }));
+                classificaTeam.sort((a, b) => b.punti - a.punti);
+
+                // Mostra i dati nella tabella
+                const classificaTeamBody = document.getElementById("classificaTeamBody");
+                classificaTeamBody.innerHTML = "";
+
+
+
+                classificaTeam.forEach((team, index) => {
+                    let pilotiDelTeam = classificaGenerale.filter(p => p.Team === team.team);
+
+                    let pilotiHTML = pilotiDelTeam
+                        .filter(pilot => punteggiConcorrenti[pilot.NumeroConcorrente] && punteggiConcorrenti[pilot.NumeroConcorrente].totale > 0) // ❌ Esclude piloti con 0 punti
+                        .map(pilot => {
+                            let id = pilot.NumeroConcorrente;
+
+                            // ✅ Assicuriamoci che il punteggio sia inizializzato
+                            if (!punteggiConcorrenti[id]) {
+                                punteggiConcorrenti[id] = { totale: 0, gen: 0, extra: 0, tipo: "" };
+                            }
+
+                            let totalePunti = punteggiConcorrenti[id].totale;
+                            let puntiGen = punteggiConcorrenti[id].gen;
+                            let puntiExtra = punteggiConcorrenti[id].extra;
+                            let tipoCategoria = punteggiConcorrenti[id].tipo ? ` ${punteggiConcorrenti[id].tipo}` : "";
+
+                            return `<div class="team-pilot ${pilot.Categoria === 'D' ? 'pilota-donne' : pilot.Categoria === 'O' ? 'pilota-senior' : 'pilota-generale'}">
+                                    #${id} ${pilot.Nome} ${pilot.Cognome} - <span class="punti-singolo">${totalePunti}pt</span>
+                                    (${puntiGen} gen${puntiExtra ? ` + ${puntiExtra}${tipoCategoria}` : ""})
+                                </div>`;
+                        })
+                        .join("");
+
+
+
+                    classificaTeamBody.innerHTML += `<tr><td class="team-position"> ${index + 1}</td><td class="team-name">${team.team}<br>${pilotiHTML}</td><td class="punti-totali">${team.punti}</td></tr>`;
+                });
+            });
+        }
+
+        function caricaClassificaPS1() {
+            const classificaRef = db.ref("giro");
+
+            classificaRef.on("value", (snapshot) => {
+                let classificaBody = document.getElementById("classificaPS1Body");
+                classificaBody.innerHTML = "";
+
+                if (!snapshot.exists()) return;
+
+                let dati = [];
+                snapshot.forEach((childSnapshot) => {
+                    let concorrente = childSnapshot.val();
+                    if (concorrente.Arrivato === "SI" && concorrente.Gara === 1) {
+                        let tempo = parseInt(concorrente.Tempoms) || 0;
+                        dati.push({
+                            NumeroConcorrente: concorrente.NumeroConcorrente,
+                            Nome: concorrente.Nome,
+                            Cognome: concorrente.Cognome,
+                            Tempo: tempo,
+                            Squadra: concorrente.Squadra,
+                            Categoria: concorrente.Categoria
+                        });
+                    }
+                });
+
+                dati.sort((a, b) => a.Tempo - b.Tempo);
+
+                classificaBody.innerHTML = dati.map((concorrente, index) => {
+                    let categoriaClasse = concorrente.Categoria === "D" ? "concorrente-donna" :
+                        concorrente.Categoria === "O" ? "concorrente-senior" :
+                            "concorrente-generale";
+
+                    return `
+                    <tr>
+                        <td class="posizione-generale">${index + 1}</td>
+                        <td class="${categoriaClasse}">${concorrente.NumeroConcorrente}</td>
+                        <td class="bold-text">${concorrente.Nome}</td>
+                        <td class="bold-text">${concorrente.Cognome}</td>
+                        <td class="bold-text">${formattaTempo(concorrente.Tempo)}</td>
+                        <td>${concorrente.Squadra}</td>
+                        <td>${concorrente.Categoria}</td>
+                    </tr>
+                `;
+                }).join("");
+            });
+        }
+
+
+        function caricaClassificaPS2() {
+            const classificaRef = db.ref("giro");
+
+            classificaRef.on("value", (snapshot) => {
+                let classificaBody = document.getElementById("classificaPS2Body");
+                classificaBody.innerHTML = "";
+
+                if (!snapshot.exists()) return;
+
+                let dati = [];
+                snapshot.forEach((childSnapshot) => {
+                    let concorrente = childSnapshot.val();
+                    if (concorrente.Arrivato === "SI" && concorrente.Gara === 2) {
+                        let tempo = parseInt(concorrente.Tempoms) || 0;
+                        dati.push({
+                            NumeroConcorrente: concorrente.NumeroConcorrente,
+                            Nome: concorrente.Nome,
+                            Cognome: concorrente.Cognome,
+                            Tempo: tempo,
+                            Squadra: concorrente.Squadra,
+                            Categoria: concorrente.Categoria
+                        });
+                    }
+                });
+
+                dati.sort((a, b) => a.Tempo - b.Tempo);
+
+                classificaBody.innerHTML = dati.map((concorrente, index) => {
+                    let categoriaClasse = concorrente.Categoria === "D" ? "concorrente-donna" :
+                        concorrente.Categoria === "O" ? "concorrente-senior" :
+                            "concorrente-generale";
+
+                    return `
+        <tr>
+            <td class="posizione-generale">${index + 1}</td>
+            <td class="${categoriaClasse}">${concorrente.NumeroConcorrente}</td>
+            <td class="bold-text">${concorrente.Nome}</td>
+            <td class="bold-text">${concorrente.Cognome}</td>
+            <td class="bold-text">${formattaTempo(concorrente.Tempo)}</td>
+            <td>${concorrente.Squadra}</td>
+            <td>${concorrente.Categoria}</td>
+        </tr>
+`;
+                }).join("");
+            });
+        }
+
+        function caricaClassificaPS3() {
+            const classificaRef = db.ref("giro");
+
+            classificaRef.on("value", (snapshot) => {
+                let classificaBody = document.getElementById("classificaPS3Body");
+                classificaBody.innerHTML = "";
+
+                if (!snapshot.exists()) return;
+
+                let dati = [];
+                snapshot.forEach((childSnapshot) => {
+                    let concorrente = childSnapshot.val();
+                    if (concorrente.Arrivato === "SI" && concorrente.Gara === 3) {
+                        let tempo = parseInt(concorrente.Tempoms) || 0;
+                        dati.push({
+                            NumeroConcorrente: concorrente.NumeroConcorrente,
+                            Nome: concorrente.Nome,
+                            Cognome: concorrente.Cognome,
+                            Tempo: tempo,
+                            Squadra: concorrente.Squadra,
+                            Categoria: concorrente.Categoria
+                        });
+                    }
+                });
+
+                dati.sort((a, b) => a.Tempo - b.Tempo);
+
+                classificaBody.innerHTML = dati.map((concorrente, index) => {
+                    let categoriaClasse = concorrente.Categoria === "D" ? "concorrente-donna" :
+                        concorrente.Categoria === "O" ? "concorrente-senior" :
+                            "concorrente-generale";
+
+                    return `
+        <tr>
+            <td class="posizione-generale">${index + 1}</td>
+            <td class="${categoriaClasse}">${concorrente.NumeroConcorrente}</td>
+            <td class="bold-text">${concorrente.Nome}</td>
+            <td class="bold-text">${concorrente.Cognome}</td>
+            <td class="bold-text">${formattaTempo(concorrente.Tempo)}</td>
+            <td>${concorrente.Squadra}</td>
+            <td>${concorrente.Categoria}</td>
+        </tr>
+`;
+                }).join("");
+            });
+        }
+
+        function caricaClassificaPS4() {
+            const classificaRef = db.ref("giro");
+
+            classificaRef.on("value", (snapshot) => {
+                let classificaBody = document.getElementById("classificaPS4Body");
+                classificaBody.innerHTML = "";
+
+                if (!snapshot.exists()) return;
+
+                let dati = [];
+                snapshot.forEach((childSnapshot) => {
+                    let concorrente = childSnapshot.val();
+                    if (concorrente.Arrivato === "SI" && concorrente.Gara === 4) {
+                        let tempo = parseInt(concorrente.Tempoms) || 0;
+                        dati.push({
+                            NumeroConcorrente: concorrente.NumeroConcorrente,
+                            Nome: concorrente.Nome,
+                            Cognome: concorrente.Cognome,
+                            Tempo: tempo,
+                            Squadra: concorrente.Squadra,
+                            Categoria: concorrente.Categoria
+                        });
+                    }
+                });
+
+                dati.sort((a, b) => a.Tempo - b.Tempo);
+
+                classificaBody.innerHTML = dati.map((concorrente, index) => {
+                    let categoriaClasse = concorrente.Categoria === "D" ? "concorrente-donna" :
+                        concorrente.Categoria === "O" ? "concorrente-senior" :
+                            "concorrente-generale";
+
+                    return `
+        <tr>
+            <td class="posizione-generale">${index + 1}</td>
+            <td class="${categoriaClasse}">${concorrente.NumeroConcorrente}</td>
+            <td class="bold-text">${concorrente.Nome}</td>
+            <td class="bold-text">${concorrente.Cognome}</td>
+            <td class="bold-text">${formattaTempo(concorrente.Tempo)}</td>
+            <td>${concorrente.Squadra}</td>
+            <td>${concorrente.Categoria}</td>
+        </tr>
+`;
+                }).join("");
+            });
+        }
+
+        function caricaClassificaPS5() {
+            const classificaRef = db.ref("giro");
+
+            classificaRef.on("value", (snapshot) => {
+                let classificaBody = document.getElementById("classificaPS5Body");
+                classificaBody.innerHTML = "";
+
+                if (!snapshot.exists()) return;
+
+                let dati = [];
+                snapshot.forEach((childSnapshot) => {
+                    let concorrente = childSnapshot.val();
+                    if (concorrente.Arrivato === "SI" && concorrente.Gara === 5) {
+                        let tempo = parseInt(concorrente.Tempoms) || 0;
+                        dati.push({
+                            NumeroConcorrente: concorrente.NumeroConcorrente,
+                            Nome: concorrente.Nome,
+                            Cognome: concorrente.Cognome,
+                            Tempo: tempo,
+                            Squadra: concorrente.Squadra,
+                            Categoria: concorrente.Categoria
+                        });
+                    }
+                });
+
+                dati.sort((a, b) => a.Tempo - b.Tempo);
+
+                classificaBody.innerHTML = dati.map((concorrente, index) => {
+                    let categoriaClasse = concorrente.Categoria === "D" ? "concorrente-donna" :
+                        concorrente.Categoria === "O" ? "concorrente-senior" :
+                            "concorrente-generale";
+
+                    return `
+        <tr>
+            <td class="posizione-generale">${index + 1}</td>
+            <td class="${categoriaClasse}">${concorrente.NumeroConcorrente}</td>
+            <td class="bold-text">${concorrente.Nome}</td>
+            <td class="bold-text">${concorrente.Cognome}</td>
+            <td class="bold-text">${formattaTempo(concorrente.Tempo)}</td>
+            <td>${concorrente.Squadra}</td>
+            <td>${concorrente.Categoria}</td>
+        </tr>
+`;
+                }).join("");
+            });
+        }
+
+        function caricaClassificaPS6() {
+            const classificaRef = db.ref("giro");
+
+            classificaRef.on("value", (snapshot) => {
+                let classificaBody = document.getElementById("classificaPS6Body");
+                classificaBody.innerHTML = "";
+
+                if (!snapshot.exists()) return;
+
+                let dati = [];
+                snapshot.forEach((childSnapshot) => {
+                    let concorrente = childSnapshot.val();
+                    if (concorrente.Arrivato === "SI" && concorrente.Gara === 6) {
+                        let tempo = parseInt(concorrente.Tempoms) || 0;
+                        dati.push({
+                            NumeroConcorrente: concorrente.NumeroConcorrente,
+                            Nome: concorrente.Nome,
+                            Cognome: concorrente.Cognome,
+                            Tempo: tempo,
+                            Squadra: concorrente.Squadra,
+                            Categoria: concorrente.Categoria
+                        });
+                    }
+                });
+
+                dati.sort((a, b) => a.Tempo - b.Tempo);
+
+                classificaBody.innerHTML = dati.map((concorrente, index) => {
+                    let categoriaClasse = concorrente.Categoria === "D" ? "concorrente-donna" :
+                        concorrente.Categoria === "O" ? "concorrente-senior" :
+                            "concorrente-generale";
+
+                    return `
+        <tr>
+            <td class="posizione-generale">${index + 1}</td>
+            <td class="${categoriaClasse}">${concorrente.NumeroConcorrente}</td>
+            <td class="bold-text">${concorrente.Nome}</td>
+            <td class="bold-text">${concorrente.Cognome}</td>
+            <td class="bold-text">${formattaTempo(concorrente.Tempo)}</td>
+            <td>${concorrente.Squadra}</td>
+            <td>${concorrente.Categoria}</td>
+        </tr>
+`;
+                }).join("");
+            });
+        }
+
+        function caricaClassificaPS7() {
+            const classificaRef = db.ref("giro");
+
+            classificaRef.on("value", (snapshot) => {
+                let classificaBody = document.getElementById("classificaPS7Body");
+                classificaBody.innerHTML = "";
+
+                if (!snapshot.exists()) return;
+
+                let dati = [];
+                snapshot.forEach((childSnapshot) => {
+                    let concorrente = childSnapshot.val();
+                    if (concorrente.Arrivato === "SI" && concorrente.Gara === 7) {
+                        let tempo = parseInt(concorrente.Tempoms) || 0;
+                        dati.push({
+                            NumeroConcorrente: concorrente.NumeroConcorrente,
+                            Nome: concorrente.Nome,
+                            Cognome: concorrente.Cognome,
+                            Tempo: tempo,
+                            Squadra: concorrente.Squadra,
+                            Categoria: concorrente.Categoria
+                        });
+                    }
+                });
+
+                dati.sort((a, b) => a.Tempo - b.Tempo);
+                classificaBody.innerHTML = dati.map((concorrente, index) => {
+                    let categoriaClasse = concorrente.Categoria === "D" ? "concorrente-donna" :
+                        concorrente.Categoria === "O" ? "concorrente-senior" :
+                            "concorrente-generale";
+
+                    return `
+        <tr>
+            <td class="posizione-generale">${index + 1}</td>
+            <td class="${categoriaClasse}">${concorrente.NumeroConcorrente}</td>
+            <td class="bold-text">${concorrente.Nome}</td>
+            <td class="bold-text">${concorrente.Cognome}</td>
+            <td class="bold-text">${formattaTempo(concorrente.Tempo)}</td>
+            <td>${concorrente.Squadra}</td>
+            <td>${concorrente.Categoria}</td>
+        </tr>
+`;
+                }).join("");
+            });
+        }
+
+
+        function caricaClassificaGeneraleD() {
+            const classificaRef = db.ref("giro");
+
+            classificaRef.on("value", (snapshot) => {
+                let classificaBody = document.getElementById("classificaGeneraleBodyD");
+                classificaBody.innerHTML = "";
+
+                if (!snapshot.exists()) return;
+
+                let dati = [];
+                snapshot.forEach((childSnapshot) => {
+                    let concorrente = childSnapshot.val();
+                    if (concorrente.Arrivato === "SI" && concorrente.Categoria === "D") {
+                        let tempo = parseInt(concorrente.Tempoms) || 0;
+                        let esistente = dati.find(c => c.NumeroConcorrente === concorrente.NumeroConcorrente);
+
+                        if (esistente) {
+                            esistente.SommaTempo += tempo;
+                            esistente.NumeroGiri++;
+                        } else {
+                            dati.push({
+                                NumeroConcorrente: concorrente.NumeroConcorrente,
+                                Nome: concorrente.Nome,
+                                Cognome: concorrente.Cognome,
+                                Categoria: concorrente.Categoria,
+                                SommaTempo: tempo,
+                                NumeroGiri: 1,
+                                Squadra: concorrente.Squadra
+                            });
+                        }
+                    }
+                });
+
+                dati.sort((a, b) => b.NumeroGiri !== a.NumeroGiri ? b.NumeroGiri - a.NumeroGiri : a.SommaTempo - b.SommaTempo);
+
+                classificaBody.innerHTML = dati.map((concorrente, index) => `
+                <tr>
+                    <td class="posizione-generale">${index + 1}</td>
+                    <td class="concorrente-donna">${concorrente.NumeroConcorrente}</td>
+                    <td class="bold-text">${concorrente.Nome}</td>
+                    <td class="bold-text">${concorrente.Cognome}</td>
+                    <td class="bold-text">${formattaTempo(concorrente.SommaTempo)}</td>
+                    <td>${concorrente.NumeroGiri}</td>
+                    <td>${concorrente.Squadra}</td>
+                    <td>${concorrente.Categoria}</td>
+                </tr>
+            `).join("");
+            });
+        }
+
+        function caricaClassificaGeneraleS() {
+            const classificaRef = db.ref("giro");
+
+            classificaRef.on("value", (snapshot) => {
+                let classificaBody = document.getElementById("classificaGeneraleBodyS");
+                classificaBody.innerHTML = "";
+
+                if (!snapshot.exists()) return;
+
+                let dati = [];
+                snapshot.forEach((childSnapshot) => {
+                    let concorrente = childSnapshot.val();
+                    if (concorrente.Arrivato === "SI" && concorrente.Categoria === "O") {
+                        let tempo = parseInt(concorrente.Tempoms) || 0;
+                        let esistente = dati.find(c => c.NumeroConcorrente === concorrente.NumeroConcorrente);
+
+                        if (esistente) {
+                            esistente.SommaTempo += tempo;
+                            esistente.NumeroGiri++;
+                        } else {
+                            dati.push({
+                                NumeroConcorrente: concorrente.NumeroConcorrente,
+                                Nome: concorrente.Nome,
+                                Cognome: concorrente.Cognome,
+                                Categoria: concorrente.Categoria,
+                                SommaTempo: tempo,
+                                NumeroGiri: 1,
+                                Squadra: concorrente.Squadra
+                            });
+                        }
+                    }
+                });
+
+                dati.sort((a, b) => b.NumeroGiri !== a.NumeroGiri ? b.NumeroGiri - a.NumeroGiri : a.SommaTempo - b.SommaTempo);
+
+                classificaBody.innerHTML = dati.map((concorrente, index) => `
+                <tr>
+                    <td class="posizione-generale">${index + 1}</td>
+                    <td class="concorrente-senior">${concorrente.NumeroConcorrente}</td>
+                    <td class="bold-text">${concorrente.Nome}</td>
+                    <td class="bold-text">${concorrente.Cognome}</td>
+                    <td class="bold-text">${formattaTempo(concorrente.SommaTempo)}</td>
+                    <td>${concorrente.NumeroGiri}</td>
+                    <td>${concorrente.Squadra}</td>
+                    <td>${concorrente.Categoria}</td>
+                </tr>
+            `).join("");
+            });
+        }
+
+        function aggiornaGiroPiuVeloce() {
+            const classificaRef = db.ref("giro");
+
+            classificaRef.on("value", (snapshot) => {
+                if (!snapshot.exists()) return;
+
+                let giri = Object.values(snapshot.val());
+                let giroPiuVeloce = giri
+                    .filter(giro => giro.Arrivato === "SI")
+                    .reduce((acc, giro) => acc === null || giro.Tempoms < acc.Tempoms ? giro : acc, null);
+
+                if (giroPiuVeloce) {
+                    document.getElementById("fastestLapNR").innerText = giroPiuVeloce.NumeroConcorrente;
+                    document.getElementById("fastestLapPilot").innerText = `${giroPiuVeloce.Nome} ${giroPiuVeloce.Cognome}`;
+                    document.getElementById("fastestLapTime").innerText = formattaTempo(giroPiuVeloce.Tempoms);
+                }
+            });
+        }
+
+        function aggiornaUltimi5KartArrivati() {
+            const classificaRef = db.ref("giro");
+
+            classificaRef.on("value", (snapshot) => {
+                if (!snapshot.exists()) return;
+
+                let giri = Object.values(snapshot.val())
+                    .filter(giro => giro.Arrivato === "SI")
+                    .sort((a, b) => b.ID - a.ID)  // Ordina per ID decrescente
+                    .slice(0, 5); // Prendi gli ultimi 5
+
+                let latestKartsBody = document.getElementById("latestKartsBody");
+                latestKartsBody.innerHTML = "";
+
+                giri.forEach(giro => {
+                    let row = `<tr>
+                                        <td>${giro.NumeroConcorrente}</td>
+                                        <td>${giro.Nome} ${giro.Cognome}</td>
+                                        <td>${formattaTempo(giro.Tempoms)}</td>
+                                    </tr>`;
+                    latestKartsBody.innerHTML += row;
+                });
+            });
+        }
+
+        function assegnaPuntiGiroVeloce() {
+            const classificaRef = db.ref("giro");
+
+            classificaRef.once("value", (snapshot) => {
+                if (!snapshot.exists()) {
+                    console.error("❌ Nessun dato trovato!");
+                    return;
+                }
+
+                let giri = snapshot.val();
+                let migliorGiro = null;
+
+                Object.values(giri).forEach(giro => {
+                    if (giro.Arrivato === "SI") {
+                        let tempo = parseInt(giro.Tempoms);
+                        if (!migliorGiro || tempo < migliorGiro.tempo) {
+                            migliorGiro = {
+                                NumeroConcorrente: giro.NumeroConcorrente,
+                                Nome: giro.Nome,
+                                Cognome: giro.Cognome,
+                                Squadra: giro.Squadra,
+                                Tempo: tempo
+                            };
+                        }
+                    }
+                });
+
+                if (migliorGiro && migliorGiro.Squadra !== "SINGOLO" && migliorGiro.Squadra) {
+                    // Aggiungi 20 punti alla squadra del miglior giro
+                    teamPunti[migliorGiro.Squadra] = (teamPunti[migliorGiro.Squadra] || 0) + 20;
+
+                    // 🔥 Mostra un'indicazione accanto al nome della squadra nella Team
+                    let classificaTeamBody = document.getElementById("classificaTeamBody");
+                    let righe = classificaTeamBody.querySelectorAll("tr");
+
+                    righe.forEach(riga => {
+                        let nomeSquadra = riga.querySelector(".team-name");
+                        if (nomeSquadra && nomeSquadra.innerText.includes(migliorGiro.Squadra)) {
+                            nomeSquadra.innerHTML += ` <span style="color: red; font-size: 16px;">🔥 +20pt Giro Veloce!</span>`;
+                        }
+                    });
+                }
+            });
+        }
+
+        function apriPopupTempi(numeroConcorrente, nome, cognome, posizioneGenerale) {
+            const classificaRef = db.ref("giro");
+
+            classificaRef.once("value", (snapshot) => {
+                if (!snapshot.exists()) return;
+
+                let datiGiri = [];
+                let datiPerGara = {}; // Ogni gara avrà un array di giri ordinati
+
+                snapshot.forEach((childSnapshot) => {
+                    let giro = childSnapshot.val();
+                    if (giro.Arrivato === "SI") {
+                        // Memorizziamo tutti i giri per ogni gara
+                        if (!datiPerGara[giro.Gara]) {
+                            datiPerGara[giro.Gara] = [];
+                        }
+                        datiPerGara[giro.Gara].push({
+                            NumeroConcorrente: giro.NumeroConcorrente,
+                            Tempo: parseInt(giro.Tempoms),
+                            Gara: giro.Gara
+                        });
+                    }
+                });
+
+                // Ora dobbiamo ordinare i tempi per ogni gara e assegnare la posizione
+                Object.keys(datiPerGara).forEach(gara => {
+                    datiPerGara[gara].sort((a, b) => a.Tempo - b.Tempo); // Ordina dal più veloce al più lento
+                    datiPerGara[gara].forEach((giro, index) => {
+                        giro.PosizioneGara = index + 1; // Assegna la posizione
+                        if (giro.NumeroConcorrente == numeroConcorrente) {
+                            datiGiri.push(giro); // Solo i tempi del concorrente selezionato
+                        }
+                    });
+                });
+
+                let popupBody = document.getElementById("popupBody");
+                popupBody.innerHTML = datiGiri.map(giro => `
+                        <tr>
+                            <td>${giro.Gara}</td>
+                            <td>${giro.PosizioneGara}</td>
+                            <td>${formattaTempo(giro.Tempo)}</td>
+                        </tr>
+                    `).join("");
+
+                document.getElementById("popupTitle").innerText = `Tempi di #${numeroConcorrente} ${nome} ${cognome} - Pos. Gen: ${posizioneGenerale}`;
+                document.getElementById("popup").style.display = "block";
+                document.getElementById("popupOverlay").style.display = "block";
+            });
+        }
+
+
+        function chiudiPopup() {
+            document.getElementById("popup").style.display = "none";
+            document.getElementById("popupOverlay").style.display = "none";
+        }
+
+
+        function chiudiPopup() {
+            document.getElementById("popup").style.display = "none";
+            document.getElementById("popupOverlay").style.display = "none";
+        }
+
+
+
+        function formattaTempo(ms) {
+            let min = Math.floor(ms / 60000);
+            let sec = Math.floor((ms % 60000) / 1000);
+            let milli = ms % 1000;
+            return `${min}:${sec.toString().padStart(2, "0")}:${milli.toString().padStart(3, "0")}`;
+        }
+
+        function cercaPilota() {
+            let numeroPilota = document.getElementById("searchPilotInput").value.trim();
+
+            if (numeroPilota === "") {
+                alert("Inserisci un numero pilota valido!");
+                return;
+            }
+
+            const classificaRef = db.ref("giro");
+
+            classificaRef.once("value", (snapshot) => {
+                if (!snapshot.exists()) {
+                    alert("Nessun dato trovato nel database!");
+                    return;
+                }
+
+                let concorrenteTrovato = null;
+                let datiGiri = [];
+                let datiPerGara = {};
+
+                snapshot.forEach((childSnapshot) => {
+                    let giro = childSnapshot.val();
+                    if (giro.Arrivato === "SI") {
+                        if (giro.NumeroConcorrente == numeroPilota) {
+                            concorrenteTrovato = giro;
+                        }
+                        if (!datiPerGara[giro.Gara]) {
+                            datiPerGara[giro.Gara] = [];
+                        }
+                        datiPerGara[giro.Gara].push({
+                            NumeroConcorrente: giro.NumeroConcorrente,
+                            Tempo: parseInt(giro.Tempoms),
+                            Gara: giro.Gara
+                        });
+                    }
+                });
+
+                if (!concorrenteTrovato) {
+                    alert("Pilota non trovato!");
+                    return;
+                }
+
+                // Calcolo della posizione in ogni gara
+                Object.keys(datiPerGara).forEach(gara => {
+                    datiPerGara[gara].sort((a, b) => a.Tempo - b.Tempo); // Ordina i tempi
+                    datiPerGara[gara].forEach((giro, index) => {
+                        giro.PosizioneGara = index + 1; // Assegna posizione
+                        if (giro.NumeroConcorrente == numeroPilota) {
+                            datiGiri.push(giro); // Filtra solo i giri del concorrente cercato
+                        }
+                    });
+                });
+
+                let popupBody = document.getElementById("popupBody");
+                popupBody.innerHTML = datiGiri.map(giro => `
+                    <tr>
+                        <td>${giro.Gara}</td>
+                        <td>${giro.PosizioneGara}</td>
+                        <td>${formattaTempo(giro.Tempo)}</td>
+                    </tr>
+                `).join("");
+
+                document.getElementById("popupTitle").innerText = `Tempi di #${concorrenteTrovato.NumeroConcorrente} ${concorrenteTrovato.Nome} ${concorrenteTrovato.Cognome}`;
+                document.getElementById("popup").style.display = "block";
+                document.getElementById("popupOverlay").style.display = "block";
+            });
+        }
+
+
+
+
+
+
+        // Carica le classifiche all'avvio
+
+        caricaClassificaPS1();
+        caricaClassificaPS2();
+        caricaClassificaPS3();
+        caricaClassificaPS4();
+        caricaClassificaPS5();
+        caricaClassificaPS6();
+        caricaClassificaPS7();
+        caricaClassificaGenerale();
+        caricaClassificaGeneraleD();
+        caricaClassificaGeneraleS();
+        caricaClassificaTeam();
+
+        // 🚀 Avvia il caricamento dei dati
+        aggiornaGiroPiuVeloce();
+        aggiornaUltimi5KartArrivati();
+    </script>
+
+</body>
+</html>
