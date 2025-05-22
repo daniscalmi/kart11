@@ -893,7 +893,7 @@ tbody tr:hover {
             document.querySelector(`button[onclick="apriTab('${nomeTab}')"]`).classList.add("active");
         }
 
-       function caricaClassificaGenerale() {
+        function caricaClassificaGenerale() {
             const classificaRef = db.ref("giro");
 
             classificaRef.on("value", (snapshot) => {
@@ -933,7 +933,7 @@ tbody tr:hover {
                         concorrente.Categoria === "O" ? "concorrente-senior" :
                             "concorrente-generale";
 
-                    return 
+                    return `
                 <tr>
                     <td class="posizione-generale">${index + 1}</td>
                     <td class="${categoriaClasse}" onclick="apriPopupTempi(${concorrente.NumeroConcorrente}, '${concorrente.Nome}', '${concorrente.Cognome}', '${concorrente.Categoria}')">${concorrente.NumeroConcorrente}</td>
@@ -944,11 +944,10 @@ tbody tr:hover {
                     <td>${concorrente.Squadra}</td>
                     <td>${concorrente.Categoria}</td>
                 </tr>
-            ;
+            `;
                 }).join("");
             });
         }
-
 
 
 
