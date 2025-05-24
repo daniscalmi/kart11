@@ -894,7 +894,7 @@ tbody tr:hover {
             document.querySelector(`button[onclick="apriTab('${nomeTab}')"]`).classList.add("active");
         }
 
-        function caricaClassificaGenerale() {
+       function caricaClassificaGenerale() {
     const classificaRef = db.ref("giro");
 
     classificaRef.on("value", (snapshot) => {
@@ -930,43 +930,95 @@ tbody tr:hover {
             }
         });
 
-        // Ordina prima di calcolare i punti
+        // Ordina
         dati.sort((a, b) =>
             b.NumeroGiri !== a.NumeroGiri ? b.NumeroGiri - a.NumeroGiri : a.SommaTempo - b.SommaTempo
         );
 
-        // Calcolo punti totali
+        // Calcola punti
         const punteggi = calcolaPuntiConcorrenti(dati);
-
-        // Salva tempo del primo per il Delta
         const tempoPrimo = dati.length > 0 ? dati[0].SommaTempo : 0;
 
-        // Genera righe tabella
-        classificaBody.innerHTML = dati.map((concorrente, index) => {
-            const categoriaClasse = concorrente.Categoria === "D" ? "concorrente-donna" :
-                                     concorrente.Categoria === "O" ? "concorrente-senior" :
-                                                                     "concorrente-generale";
+        classificaBody.innerHTML = dati.map((c, index) => {
+            let categoriaClasse = c.Categoria === "D" ? "concorrente-donna" :
+                                   c.Categoria === "O" ? "concorrente-senior" :
+                                                         "concorrente-generale";
 
-            const delta = concorrente.SommaTempo - tempoPrimo;
-            const deltaFormatted = index === 0 ? "-" : `+${formattaTempo(Math.abs(delta))}`;
+            let deltaFormatted = "-";
+            if (index !== 0 && typeof c.SommaTempo === "number" && typeof tempoPrimo === "number") {
+                let delta = c.SommaTempo - tempoPrimo;
+                deltaFormatted = `+${formattaTempo(Math.abs(delta))}`;
+            }
 
-            const puntiTotali = punteggi[concorrente.NumeroConcorrente]?.totale || 0;
+            let puntiTotali = (punteggi && punteggi[c.NumeroConcorrente])
+                ? punteggi[c.NumeroConcorrente].totale
+                : 0;
 
             return `
                 <tr>
                     <td class="posizione-generale">${index + 1}</td>
-                    <td class="${categoriaClasse}" onclick="apriPopupTempi(${concorrente.NumeroConcorrente}, '${concorrente.Nome}', '${concorrente.Cognome}', '${concorrente.Categoria}')">${concorrente.NumeroConcorrente}</td>
-                    <td class="bold-text">${concorrente.Nome}</td>
-                    <td class="bold-text">${concorrente.Cognome}</td>
-                    <td class="bold-text">${formattaTempo(concorrente.SommaTempo)}</td>
+                    <td class="${categoriaClasse}" onclick="apriPopupTempi(${c.NumeroConcorrente}, '${c.Nome}', '${c.Cognome}', '${c.Categoria}')">${c.NumeroConcorrente}</td>
+                    <td class="bold-text">${c.Nome}</td>
+                    <td class="bold-text">${c.Cognome}</td>
+                    <td class="bold-text">${formattaTempo(c.SommaTempo)}</td>
                     <td class="bold-text">${deltaFormatted}</td>
-                    <td>${concorrente.NumeroGiri} <span style="color: green; font-weight:bold;">(${puntiTotali}pt)</span></td>
-                    <td>${concorrente.Squadra}</td>
-                    <td>${concorrente.Categoria}</td>
+                    <td>${c.NumeroGiri} <span style="color: green; font-weight:bold;">(${puntiTotali}pt)</span></td>
+                    <td>${c.Squadra}</td>
+                    <td>${c.Categoria}</td>
                 </tr>
             `;
         }).join("");
     });
+}
+
+function calcolaPuntiConcorrenti(dati) {
+    let punteggi = {};
+    let classificaGenerale = [...dati];
+    let classificaDonne = dati.filter(c => c.Categoria === "D");
+    let classificaSenior = dati.filter(c => c.Categoria === "O");
+
+    // Ordina le classifiche
+    classificaGenerale.sort((a, b) =>
+        b.NumeroGiri !== a.NumeroGiri ? b.NumeroGiri - a.NumeroGiri : a.SommaTempo - b.SommaTempo
+    );
+    classificaDonne.sort((a, b) =>
+        b.NumeroGiri !== a.NumeroGiri ? b.NumeroGiri - a.NumeroGiri : a.SommaTempo - b.SommaTempo
+    );
+    classificaSenior.sort((a, b) =>
+        b.NumeroGiri !== a.NumeroGiri ? b.NumeroGiri - a.NumeroGiri : a.SommaTempo - b.SommaTempo
+    );
+
+    // Assegna punti generali (max 30)
+    classificaGenerale.forEach((c, i) => {
+        punteggi[c.NumeroConcorrente] = {
+            totale: Math.max(30 - i, 0),
+            gen: Math.max(30 - i, 0),
+            extra: 0,
+            tipo: ""
+        };
+    });
+
+    // Assegna bonus Donne (max 10)
+    classificaDonne.forEach((c, i) => {
+        let bonus = Math.max(10 - i, 0);
+        if (punteggi[c.NumeroConcorrente]) {
+            punteggi[c.NumeroConcorrente].totale += bonus;
+            punteggi[c.NumeroConcorrente].extra += bonus;
+            punteggi[c.NumeroConcorrente].tipo = "donne";
+        }
+    });
+
+    // Assegna bonus Senior (max 10)
+    classificaSenior.forEach((c, i) => {
+        let bonus = Math.max(10 - i, 0);
+        if (punteggi[c.NumeroConcorrente]) {
+            punteggi[c.NumeroConcorrente].totale += bonus;
+            punteggi[c.NumeroConcorrente].extra += bonus;
+            punteggi[c.NumeroConcorrente].tipo = "senior";
+        }
+    });
+
+    return punteggi;
 }
 
 
