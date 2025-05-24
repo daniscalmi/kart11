@@ -939,7 +939,8 @@ tbody tr:hover {
             let categoriaClasse = c.Categoria === "D" ? "concorrente-donna" :
                                    c.Categoria === "O" ? "concorrente-senior" : "concorrente-generale";
             let delta = concorrente.SommaTempo - tempoPrimo;
-            let deltaFormatted = index === 0 ? "-" : `+${formattaTempo(Math.abs(delta))}`;
+			let deltaFormatted = (index === 0 || isNaN(delta)) ? "-" : `+${formattaTempo(Math.abs(delta))}`;
+
             let puntiTotali = punteggi[c.NumeroConcorrente]?.totale || 0;
 
             return `
