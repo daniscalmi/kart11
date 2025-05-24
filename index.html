@@ -1038,150 +1038,94 @@ function calcolaPuntiConcorrenti(dati) {
 
 
         function caricaClassificaTeam() {
-            const classificaRef = db.ref("giro");
+    const classificaRef = db.ref("giro");
 
-            classificaRef.on("value", (snapshot) => {
-                if (!snapshot.exists()) {
-                    console.error("❌ Nessun dato trovato!");
-                    return;
+    classificaRef.on("value", (snapshot) => {
+        if (!snapshot.exists()) return;
+
+        const giri = Object.values(snapshot.val());
+        let concorrenti = {};
+
+        // Raggruppa giri per concorrente (solo validi)
+        giri.forEach(g => {
+            if (g.Arrivato === "SI" && parseInt(g.Gara) > 0) {
+                const id = g.NumeroConcorrente;
+                const team = g.Squadra || "Senza Team";
+                const tempo = parseInt(g.Tempoms) || 0;
+
+                if (!concorrenti[id]) {
+                    concorrenti[id] = {
+                        NumeroConcorrente: id,
+                        Nome: g.Nome,
+                        Cognome: g.Cognome,
+                        Categoria: g.Categoria,
+                        Squadra: team,
+                        Giri: 0,
+                        TempoTotale: 0
+                    };
                 }
 
-                const giri = snapshot.val();
-                let concorrenti = {};
-                let teamPunti = {};
-                let punteggiConcorrenti = {};
+                concorrenti[id].Giri++;
+                concorrenti[id].TempoTotale += tempo;
+            }
+        });
 
-                // 🔴 **DICHIARA LE VARIABILI PUNTEGGIO QUI!**
-                let puntiGenerale = 30;
-                let puntiDonne = 10;
-                let puntiSenior = 10;
+        // Array ordinato per classifica
+        let classificaArray = Object.values(concorrenti).sort((a, b) =>
+            b.Giri !== a.Giri ? b.Giri - a.Giri : a.TempoTotale - b.TempoTotale
+        );
 
-                // Raggruppa dati per concorrente
-                Object.values(giri).forEach(giro => {
-                    const id = giro.NumeroConcorrente;
-                    const team = giro.Squadra || "Senza Team";
-                    const categoria = giro.Categoria;
+        // Calcolo punti unico e coerente
+        const punteggiConcorrenti = calcolaPuntiConcorrenti(classificaArray);
 
-                    if (!concorrenti[id]) {
-                        concorrenti[id] = {
-                            NumeroConcorrente: id,
-                            Nome: giro.Nome,
-                            Cognome: giro.Cognome,
-                            Team: team,
-                            Categoria: categoria,
-                            Giri: 0,
-                            TempoTotale: 0
-                        };
-                    }
+        // Somma punti per team
+        let teamPunti = {};
+        classificaArray.forEach(c => {
+            const pt = punteggiConcorrenti[c.NumeroConcorrente];
+            if (pt && c.Squadra !== "SINGOLO") {
+                teamPunti[c.Squadra] = (teamPunti[c.Squadra] || 0) + pt.totale;
+            }
+        });
 
-                    concorrenti[id].Giri++;
-                    concorrenti[id].TempoTotale += parseFloat(giro.Tempoms);
-                });
+        // Ordina i team per punti
+        const classificaTeam = Object.entries(teamPunti).map(([team, punti]) => ({ team, punti }))
+            .sort((a, b) => b.punti - a.punti);
 
-                // Ordina le classifiche
-                let classificaGenerale = Object.values(concorrenti).sort((a, b) => {
-                    if (b.Giri !== a.Giri) return b.Giri - a.Giri;
-                    return a.TempoTotale - b.TempoTotale;
-                });
+        // Scrivi tabella
+        const classificaTeamBody = document.getElementById("classificaTeamBody");
+        classificaTeamBody.innerHTML = "";
 
-                let classificaDonne = classificaGenerale.filter(c => c.Categoria === "D");
-                let classificaSenior = classificaGenerale.filter(c => c.Categoria === "O");
+        classificaTeam.forEach((team, index) => {
+            const pilotiDelTeam = classificaArray.filter(p => p.Squadra === team.team);
 
+            const pilotiHTML = pilotiDelTeam
+                .filter(p => punteggiConcorrenti[p.NumeroConcorrente]?.totale > 0)
+                .map(p => {
+                    const pt = punteggiConcorrenti[p.NumeroConcorrente];
+                    const classe = p.Categoria === "D" ? "pilota-donne" :
+                                   p.Categoria === "O" ? "pilota-senior" : "pilota-generale";
+                    const bonus = pt.extra > 0 ? ` + ${pt.extra} ${pt.tipo}` : "";
 
+                    return `
+                        <div class="team-pilot ${classe}">
+                            #${p.NumeroConcorrente} ${p.Nome} ${p.Cognome} - 
+                            <span class="punti-singolo">${pt.totale}pt</span>
+                            (${pt.gen} gen${bonus})
+                        </div>
+                    `;
+                }).join("");
 
+            classificaTeamBody.innerHTML += `
+                <tr>
+                    <td class="team-position">${index + 1}</td>
+                    <td class="team-name">${team.team}<br>${pilotiHTML}</td>
+                    <td class="punti-totali">${team.punti}</td>
+                </tr>
+            `;
+        });
+    });
+}
 
-
-                classificaGenerale.forEach((concorrente, index) => {
-                    if (concorrente.Team !== "SINGOLO" && puntiGenerale > 0) {
-                        let id = concorrente.NumeroConcorrente;
-
-                        // ✅ Inizializziamo il punteggio se non esiste
-                        if (!punteggiConcorrenti[id]) {
-                            punteggiConcorrenti[id] = { totale: 0, gen: 0, extra: 0, tipo: "" };
-                        }
-
-                        teamPunti[concorrente.Team] = (teamPunti[concorrente.Team] || 0) + puntiGenerale;
-                        punteggiConcorrenti[id].totale += puntiGenerale;
-                        punteggiConcorrenti[id].gen = puntiGenerale;
-                        puntiGenerale--;
-                    }
-                });
-
-                classificaDonne.forEach((concorrente, index) => {
-                    if (concorrente.Team !== "SINGOLO" && puntiDonne > 0) {
-                        let id = concorrente.NumeroConcorrente;
-
-                        // ✅ Inizializziamo il punteggio se non esiste
-                        if (!punteggiConcorrenti[id]) {
-                            punteggiConcorrenti[id] = { totale: 0, gen: 0, extra: 0, tipo: "" };
-                        }
-
-                        teamPunti[concorrente.Team] = (teamPunti[concorrente.Team] || 0) + puntiDonne;
-                        punteggiConcorrenti[id].totale += puntiDonne;
-                        punteggiConcorrenti[id].extra = puntiDonne;
-                        punteggiConcorrenti[id].tipo = "donne";
-                        puntiDonne--;
-                    }
-                });
-
-                classificaSenior.forEach((concorrente, index) => {
-                    if (concorrente.Team !== "SINGOLO" && puntiSenior > 0) {
-                        let id = concorrente.NumeroConcorrente;
-
-                        // ✅ Inizializziamo il punteggio se non esiste
-                        if (!punteggiConcorrenti[id]) {
-                            punteggiConcorrenti[id] = { totale: 0, gen: 0, extra: 0, tipo: "" };
-                        }
-
-                        teamPunti[concorrente.Team] = (teamPunti[concorrente.Team] || 0) + puntiSenior;
-                        punteggiConcorrenti[id].totale += puntiSenior;
-                        punteggiConcorrenti[id].extra = puntiSenior;
-                        punteggiConcorrenti[id].tipo = "sen";
-                        puntiSenior--;
-                    }
-                });
-
-                // Ordina i team per punteggio
-                let classificaTeam = Object.entries(teamPunti).map(([team, punti]) => ({ team, punti }));
-                classificaTeam.sort((a, b) => b.punti - a.punti);
-
-                // Mostra i dati nella tabella
-                const classificaTeamBody = document.getElementById("classificaTeamBody");
-                classificaTeamBody.innerHTML = "";
-
-
-
-                classificaTeam.forEach((team, index) => {
-                    let pilotiDelTeam = classificaGenerale.filter(p => p.Team === team.team);
-
-                    let pilotiHTML = pilotiDelTeam
-                        .filter(pilot => punteggiConcorrenti[pilot.NumeroConcorrente] && punteggiConcorrenti[pilot.NumeroConcorrente].totale > 0) // ❌ Esclude piloti con 0 punti
-                        .map(pilot => {
-                            let id = pilot.NumeroConcorrente;
-
-                            // ✅ Assicuriamoci che il punteggio sia inizializzato
-                            if (!punteggiConcorrenti[id]) {
-                                punteggiConcorrenti[id] = { totale: 0, gen: 0, extra: 0, tipo: "" };
-                            }
-
-                            let totalePunti = punteggiConcorrenti[id].totale;
-                            let puntiGen = punteggiConcorrenti[id].gen;
-                            let puntiExtra = punteggiConcorrenti[id].extra;
-                            let tipoCategoria = punteggiConcorrenti[id].tipo ? ` ${punteggiConcorrenti[id].tipo}` : "";
-
-                            return `<div class="team-pilot ${pilot.Categoria === 'D' ? 'pilota-donne' : pilot.Categoria === 'O' ? 'pilota-senior' : 'pilota-generale'}">
-                                        #${id} ${pilot.Nome} ${pilot.Cognome} - <span class="punti-singolo">${totalePunti}pt</span>
-                                        (${puntiGen} gen${puntiExtra ? ` + ${puntiExtra}${tipoCategoria}` : ""})
-                                    </div>`;
-                        })
-                        .join("");
-
-
-
-                    classificaTeamBody.innerHTML += `<tr><td class="team-position"> ${index + 1}</td><td class="team-name">${team.team}<br>${pilotiHTML}</td><td class="punti-totali">${team.punti}</td></tr>`;
-                });
-            });
-        }
 
         function caricaClassificaPS1() {
             const classificaRef = db.ref("giro");
