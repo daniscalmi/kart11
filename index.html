@@ -895,60 +895,72 @@ tbody tr:hover {
         }
 
         function caricaClassificaGenerale() {
-            const classificaRef = db.ref("giro");
+    const classificaRef = db.ref("giro");
 
-            classificaRef.on("value", (snapshot) => {
-                let classificaBody = document.getElementById("classificaGeneraleBody");
-                classificaBody.innerHTML = "";
+    classificaRef.on("value", (snapshot) => {
+        let classificaBody = document.getElementById("classificaGeneraleBody");
+        classificaBody.innerHTML = "";
 
-                if (!snapshot.exists()) return;
+        if (!snapshot.exists()) return;
 
-                let dati = [];
-                snapshot.forEach((childSnapshot) => {
-                    let concorrente = childSnapshot.val();
-                    if (concorrente.Arrivato === "SI") {
-                        let tempo = parseInt(concorrente.Tempoms) || 0;
-                        let esistente = dati.find(c => c.NumeroConcorrente === concorrente.NumeroConcorrente);
+        let dati = [];
 
-                        if (esistente) {
-                            esistente.SommaTempo += tempo;
-                            esistente.NumeroGiri++;
-                        } else {
-                            dati.push({
-                                NumeroConcorrente: concorrente.NumeroConcorrente,
-                                Nome: concorrente.Nome,
-                                Cognome: concorrente.Cognome,
-                                Categoria: concorrente.Categoria,
-                                SommaTempo: tempo,
-                                NumeroGiri: 1,
-                                Squadra: concorrente.Squadra
-                            });
-                        }
-                    }
-                });
+        snapshot.forEach((childSnapshot) => {
+            let concorrente = childSnapshot.val();
+            let tempo = parseInt(concorrente.Tempoms) || 0;
+            let numeroGara = parseInt(concorrente.Gara);
 
-                dati.sort((a, b) => b.NumeroGiri !== a.NumeroGiri ? b.NumeroGiri - a.NumeroGiri : a.SommaTempo - b.SommaTempo);
+            if (concorrente.Arrivato === "SI" && numeroGara > 0) {
+                let esistente = dati.find(c => c.NumeroConcorrente === concorrente.NumeroConcorrente);
 
-                classificaBody.innerHTML = dati.map((concorrente, index) => {
-                    let categoriaClasse = concorrente.Categoria === "D" ? "concorrente-donna" :
-                        concorrente.Categoria === "O" ? "concorrente-senior" :
-                            "concorrente-generale";
+                if (esistente) {
+                    esistente.SommaTempo += tempo;
+                    esistente.NumeroGiri++;
+                } else {
+                    dati.push({
+                        NumeroConcorrente: concorrente.NumeroConcorrente,
+                        Nome: concorrente.Nome,
+                        Cognome: concorrente.Cognome,
+                        Categoria: concorrente.Categoria,
+                        SommaTempo: tempo,
+                        NumeroGiri: 1,
+                        Squadra: concorrente.Squadra
+                    });
+                }
+            }
+        });
 
-                    return `
+        dati.sort((a, b) =>
+            b.NumeroGiri !== a.NumeroGiri ? b.NumeroGiri - a.NumeroGiri : a.SommaTempo - b.SommaTempo
+        );
+
+        const tempoPrimo = dati.length > 0 ? dati[0].SommaTempo : 0;
+
+        classificaBody.innerHTML = dati.map((concorrente, index) => {
+            let categoriaClasse = concorrente.Categoria === "D" ? "concorrente-donna" :
+                                   concorrente.Categoria === "O" ? "concorrente-senior" :
+                                                                   "concorrente-generale";
+
+            let delta = concorrente.SommaTempo - tempoPrimo;
+            let deltaFormatted = index === 0 ? "-" : `+${formattaTempo(delta)}`;
+
+            return `
                 <tr>
                     <td class="posizione-generale">${index + 1}</td>
                     <td class="${categoriaClasse}" onclick="apriPopupTempi(${concorrente.NumeroConcorrente}, '${concorrente.Nome}', '${concorrente.Cognome}', '${concorrente.Categoria}')">${concorrente.NumeroConcorrente}</td>
                     <td class="bold-text">${concorrente.Nome}</td>
                     <td class="bold-text">${concorrente.Cognome}</td>
                     <td class="bold-text">${formattaTempo(concorrente.SommaTempo)}</td>
+                    <td class="bold-text">${deltaFormatted}</td>
                     <td>${concorrente.NumeroGiri}</td>
                     <td>${concorrente.Squadra}</td>
                     <td>${concorrente.Categoria}</td>
                 </tr>
             `;
-                }).join("");
-            });
-        }
+        }).join("");
+    });
+}
+
 
 
 
