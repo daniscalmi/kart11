@@ -965,12 +965,12 @@ tbody tr:hover {
 <td>
   ${c.NumeroGiri}
   <span style="color: green; font-weight:bold;">
-    (${puntiTotali}pt = ${punteggi[c.NumeroConcorrente]?.gen || 0} 
-    ${punteggi[c.NumeroConcorrente]?.extra > 0 
-        ? `+ ${punteggi[c.NumeroConcorrente].extra} ${punteggi[c.NumeroConcorrente].tipo === 'donne' ? '🎀' : '👴'}` 
-        : 'gen'})
+    (${punteggi[c.NumeroConcorrente]?.extra > 0
+      ? `${punteggi[c.NumeroConcorrente].totale}pt = ${punteggi[c.NumeroConcorrente].gen} + ${punteggi[c.NumeroConcorrente].extra} ${punteggi[c.NumeroConcorrente].tipo === 'donne' ? '🎀' : '👴'}`
+      : `${punteggi[c.NumeroConcorrente]?.gen || 0}pt`})
   </span>
 </td>
+
 
 
                     <td>${c.Squadra}</td>
