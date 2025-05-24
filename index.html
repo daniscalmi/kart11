@@ -962,7 +962,14 @@ tbody tr:hover {
                     <td class="bold-text">${c.Cognome}</td>
                     <td class="bold-text">${formattaTempo(c.SommaTempo)}</td>
                     <td class="bold-text">${deltaFormatted}</td>
-                    <td>${c.NumeroGiri} <span style="color: green; font-weight:bold;">(${puntiTotali}pt)</span></td>
+                    <td>
+  ${c.NumeroGiri}
+  <span style="color: green; font-weight:bold;">
+    (${puntiTotali}pt${punteggi[c.NumeroConcorrente]?.tipo === "donne" ? " 🎀" :
+                        punteggi[c.NumeroConcorrente]?.tipo === "senior" ? " 👴" : ""})
+  </span>
+</td>
+
                     <td>${c.Squadra}</td>
                     <td>${c.Categoria}</td>
                 </tr>
