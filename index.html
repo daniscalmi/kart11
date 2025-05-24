@@ -905,6 +905,7 @@ tbody tr:hover {
 
         let dati = [];
 
+        // Raggruppa per concorrente
         snapshot.forEach((childSnapshot) => {
             let concorrente = childSnapshot.val();
             let tempo = parseInt(concorrente.Tempoms) || 0;
@@ -930,12 +931,38 @@ tbody tr:hover {
             }
         });
 
+        // Ordina per classifica generale
         dati.sort((a, b) =>
             b.NumeroGiri !== a.NumeroGiri ? b.NumeroGiri - a.NumeroGiri : a.SommaTempo - b.SommaTempo
         );
 
+        // Applica punti generali
+        let punteggiConcorrenti = {};
+        let puntiGenerale = 30;
+        dati.forEach((concorrente, index) => {
+            let puntiGen = Math.max(puntiGenerale - index, 0);
+            punteggiConcorrenti[concorrente.NumeroConcorrente] = { totale: puntiGen, extra: 0 };
+        });
+
+        // Classifica Donne
+        let donne = dati.filter(c => c.Categoria === "D");
+        donne.forEach((concorrente, index) => {
+            let extra = Math.max(10 - index, 0);
+            punteggiConcorrenti[concorrente.NumeroConcorrente].totale += extra;
+            punteggiConcorrenti[concorrente.NumeroConcorrente].extra = extra;
+        });
+
+        // Classifica Senior
+        let senior = dati.filter(c => c.Categoria === "O");
+        senior.forEach((concorrente, index) => {
+            let extra = Math.max(10 - index, 0);
+            punteggiConcorrenti[concorrente.NumeroConcorrente].totale += extra;
+            punteggiConcorrenti[concorrente.NumeroConcorrente].extra = extra;
+        });
+
         const tempoPrimo = dati.length > 0 ? dati[0].SommaTempo : 0;
 
+        // Costruzione riga tabella
         classificaBody.innerHTML = dati.map((concorrente, index) => {
             let categoriaClasse = concorrente.Categoria === "D" ? "concorrente-donna" :
                                    concorrente.Categoria === "O" ? "concorrente-senior" :
@@ -943,6 +970,8 @@ tbody tr:hover {
 
             let delta = concorrente.SommaTempo - tempoPrimo;
             let deltaFormatted = index === 0 ? "-" : `+${formattaTempo(delta)}`;
+
+            let puntiTotali = punteggiConcorrenti[concorrente.NumeroConcorrente]?.totale || 0;
 
             return `
                 <tr>
@@ -952,7 +981,7 @@ tbody tr:hover {
                     <td class="bold-text">${concorrente.Cognome}</td>
                     <td class="bold-text">${formattaTempo(concorrente.SommaTempo)}</td>
                     <td class="bold-text">${deltaFormatted}</td>
-                    <td>${concorrente.NumeroGiri}</td>
+                    <td>${concorrente.NumeroGiri} <span style="color: green; font-weight:bold;">(${puntiTotali}pt)</span></td>
                     <td>${concorrente.Squadra}</td>
                     <td>${concorrente.Categoria}</td>
                 </tr>
@@ -960,6 +989,7 @@ tbody tr:hover {
         }).join("");
     });
 }
+
 
 
 
