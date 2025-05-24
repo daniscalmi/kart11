@@ -938,9 +938,8 @@ tbody tr:hover {
         classificaBody.innerHTML = dati.map((c, index) => {
             let categoriaClasse = c.Categoria === "D" ? "concorrente-donna" :
                                    c.Categoria === "O" ? "concorrente-senior" : "concorrente-generale";
-            let delta = concorrente.SommaTempo - tempoPrimo;
-			let deltaFormatted = (index === 0 || isNaN(delta)) ? "-" : `+${formattaTempo(Math.abs(delta))}`;
-
+            let delta = c.SommaTempo - tempoPrimo;
+            let deltaFormatted = index === 0 ? "-" : `+${formattaTempo(delta)}`;
             let puntiTotali = punteggi[c.NumeroConcorrente]?.totale || 0;
 
             return `
