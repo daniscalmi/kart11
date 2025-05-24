@@ -961,6 +961,45 @@ tbody tr:hover {
     });
 }
 
+function calcolaPuntiConcorrenti(dati) {
+    let punteggi = {};
+    let puntiGenerale = 30;
+    let puntiBonusDonne = 10;
+    let puntiBonusSenior = 10;
+
+    // Ordina generale
+    let classificaGenerale = [...dati].sort((a, b) =>
+        b.NumeroGiri !== a.NumeroGiri ? b.NumeroGiri - a.NumeroGiri : a.SommaTempo - b.SommaTempo
+    );
+
+    classificaGenerale.forEach((c, index) => {
+        punteggi[c.NumeroConcorrente] = {
+            totale: Math.max(puntiGenerale - index, 0),
+            gen: Math.max(puntiGenerale - index, 0),
+            extra: 0
+        };
+    });
+
+    // Donne
+    let donne = classificaGenerale.filter(c => c.Categoria === "D");
+    donne.forEach((c, index) => {
+        let extra = Math.max(puntiBonusDonne - index, 0);
+        punteggi[c.NumeroConcorrente].totale += extra;
+        punteggi[c.NumeroConcorrente].extra += extra;
+    });
+
+    // Senior
+    let senior = classificaGenerale.filter(c => c.Categoria === "O");
+    senior.forEach((c, index) => {
+        let extra = Math.max(puntiBonusSenior - index, 0);
+        punteggi[c.NumeroConcorrente].totale += extra;
+        punteggi[c.NumeroConcorrente].extra += extra;
+    });
+
+    return punteggi;
+}
+
+
 
 
 
