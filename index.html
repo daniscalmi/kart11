@@ -553,10 +553,25 @@ tbody tr:hover {
             background-color: #FFD700; /* Giallo */
             font-weight: bold;
         }
+		.giro-veloce-row {
+    background-color: #fff9c4 !important; /* Giallo chiaro */
+    border: 2px solid red;
+}
 
 
 
-    </style>
+
+    
+.giroveloce-tag {
+  display: inline-block;
+  margin-left: 5px;
+  font-size: 0.8em;
+  background-color: #ff0000;
+  color: white;
+  padding: 1px 5px;
+  border-radius: 5px;
+}
+</style>
 </head>
 <body>
     <!-- 🏁 LOGO e INFORMAZIONI -->
@@ -648,6 +663,7 @@ tbody tr:hover {
                     <th>Gara</th>
                     <th>Posizione</th>
                     <th>Tempo</th>
+					<th>Delta</th>
                 </tr>
             </thead>
             <tbody id="popupBody"></tbody>
@@ -895,6 +911,7 @@ tbody tr:hover {
         }
 
        function caricaClassificaGenerale() {
+    console.log('💡 numeroGiroVeloce globale:', window.numeroGiroVeloce);
     const classificaRef = db.ref("giro");
 
     classificaRef.on("value", (snapshot) => {
@@ -936,10 +953,27 @@ tbody tr:hover {
         );
 
         // Calcola punti
-        const punteggi = calcolaPuntiConcorrenti(dati);
+        const giriCompleti = [];
+snapshot.forEach(childSnapshot => {
+    const g = childSnapshot.val();
+    if (g.Arrivato === "SI" && !isNaN(Number(g.Tempoms)) && Number(g.Tempoms) > 0) {
+        g.Tempoms = Number(g.Tempoms);
+        giriCompleti.push(g);
+    }
+});
+const punteggi = calcolaPuntiConcorrenti(dati, giriCompleti);
+console.log("🎯 giriCompleti:", giriCompleti);
+
+
         const tempoPrimo = dati.length > 0 ? dati[0].SommaTempo : 0;
 
         classificaBody.innerHTML = dati.map((c, index) => {
+        const isGiroVeloce = c.NumeroConcorrente === window.numeroGiroVeloce; // ✅ dinamica
+
+        let puntiPilota = punteggi[c.NumeroConcorrente] || {};
+        const puntiTotaliFinali = (puntiPilota.totale || 0) + (isGiroVeloce ? 10 : 0);
+        console.log("🎯 rendering", c.NumeroConcorrente, "isGiroVeloce:", isGiroVeloce);
+    
             let categoriaClasse = c.Categoria === "D" ? "concorrente-donna" :
                                    c.Categoria === "O" ? "concorrente-senior" :
                                                          "concorrente-generale";
@@ -954,24 +988,27 @@ tbody tr:hover {
                 ? punteggi[c.NumeroConcorrente].totale
                 : 0;
 
-            return `
-                <tr>
+          return `
+				<tr>
                     <td class="posizione-generale">${index + 1}</td>
                     <td class="${categoriaClasse}" onclick="apriPopupTempi(${c.NumeroConcorrente}, '${c.Nome}', '${c.Cognome}', '${c.Categoria}')">${c.NumeroConcorrente}</td>
                     <td class="bold-text">${c.Nome}</td>
                     <td class="bold-text">${c.Cognome}</td>
-                    <td class="bold-text">${formattaTempo(c.SommaTempo)}</td>
+                    <td class="bold-text">${formattaTempo(c.SommaTempo)}${isGiroVeloce ? " ⏱" : ""}</td>
                     <td class="bold-text">${deltaFormatted}</td>
 <td>
   ${c.NumeroGiri}
-  <span style="color: green; font-weight:bold;">
+<span style="color: green; font-weight:bold;">
     (${punteggi[c.NumeroConcorrente].totale}pt
-     = ${punteggi[c.NumeroConcorrente].gen}
-     ${punteggi[c.NumeroConcorrente].extra > 0 ? ` + ${punteggi[c.NumeroConcorrente].extra} ${punteggi[c.NumeroConcorrente].tipo === 'donne' ? '🎀' : '👴'}` : ''}
-     ${punteggi[c.NumeroConcorrente].ps > 0 ? ` + ${punteggi[c.NumeroConcorrente].ps} ⚡` : ''}
-     ${punteggi[c.NumeroConcorrente].giroVeloce > 0 ? ` + ${punteggi[c.NumeroConcorrente].giroVeloce} ⏱` : ''}
-    )
-  </span>
+    ${
+        (punteggi[c.NumeroConcorrente].extra > 0 || punteggi[c.NumeroConcorrente].ps > 0 || punteggi[c.NumeroConcorrente].giroVeloce > 0)
+        ? `= ${punteggi[c.NumeroConcorrente].gen}`
+            + (punteggi[c.NumeroConcorrente].extra > 0 ? ` + ${punteggi[c.NumeroConcorrente].extra} ${punteggi[c.NumeroConcorrente].tipo === 'donne' ? '🎀' : '👴'}` : '')
+            + (punteggi[c.NumeroConcorrente].ps > 0 ? ` + ${punteggi[c.NumeroConcorrente].ps} ⚡` : '')
+            + (punteggi[c.NumeroConcorrente].giroVeloce > 0 ? ` + ${punteggi[c.NumeroConcorrente].giroVeloce} ⏱` : '')
+        : ''
+    })
+</span>
 </td>
 
 
@@ -1053,26 +1090,33 @@ function calcolaPuntiConcorrenti(dati, giriCompleti = []) {
         }
     });
 
-    // Miglior giro veloce
-    let giroVeloce = giriCompleti
-        .filter(g => g.Arrivato === "SI")
-        .sort((a, b) => parseInt(a.Tempoms) - parseInt(b.Tempoms))[0];
+    // ✅ Miglior giro veloce (fixato!)
+    let giriValidi = giriCompleti.filter(g =>
+        g.Arrivato === "SI" &&
+        g.Tempoms &&
+        !isNaN(Number(g.Tempoms))
+    );
+
+    giriValidi.sort((a, b) => Number(a.Tempoms) - Number(b.Tempoms));
+
+    let giroVeloce = giriValidi[0];
 
     if (giroVeloce) {
-        if (!punteggi[giroVeloce.NumeroConcorrente]) {
-            punteggi[giroVeloce.NumeroConcorrente] = { totale: 0, gen: 0, extra: 0, tipo: "", ps: 0, giroVeloce: 0 };
+        const id = giroVeloce.NumeroConcorrente;
+
+        if (!punteggi[id]) {
+            punteggi[id] = { totale: 0, gen: 0, extra: 0, tipo: "", ps: 0, giroVeloce: 0 };
         }
-        punteggi[giroVeloce.NumeroConcorrente].totale += puntiGiroVeloce;
-        punteggi[giroVeloce.NumeroConcorrente].giroVeloce = puntiGiroVeloce;
+
+        punteggi[id].totale += puntiGiroVeloce;
+        punteggi[id].giroVeloce = puntiGiroVeloce;
+        punteggi[id].isGiroVeloce = true;
+
+        console.log("✅ Giro più veloce assegnato a:", id, "tempo:", giroVeloce.Tempoms);
     }
 
     return punteggi;
 }
-
-
-
-
-
 
 
 
@@ -1125,12 +1169,23 @@ function calcolaPuntiConcorrenti(dati, giriCompleti = []) {
         );
 
         // Calcolo punti unico e coerente
-        const punteggiConcorrenti = calcolaPuntiConcorrenti(classificaArray);
+      const giriCompleti = [];
+
+snapshot.forEach(childSnapshot => {
+    const g = childSnapshot.val();
+    if (g.Arrivato === "SI" && !isNaN(parseInt(g.Tempoms))) {
+        giriCompleti.push(g);
+    }
+});
+
+const punteggi = calcolaPuntiConcorrenti(classificaArray, giriCompleti);
+
+
 
         // Somma punti per team
         let teamPunti = {};
         classificaArray.forEach(c => {
-            const pt = punteggiConcorrenti[c.NumeroConcorrente];
+            const pt = punteggi[c.NumeroConcorrente];
             if (pt && c.Squadra !== "SINGOLO") {
                 teamPunti[c.Squadra] = (teamPunti[c.Squadra] || 0) + pt.totale;
             }
@@ -1148,21 +1203,27 @@ function calcolaPuntiConcorrenti(dati, giriCompleti = []) {
             const pilotiDelTeam = classificaArray.filter(p => p.Squadra === team.team);
 
             const pilotiHTML = pilotiDelTeam
-                .filter(p => punteggiConcorrenti[p.NumeroConcorrente]?.totale > 0)
-                .map(p => {
-                    const pt = punteggiConcorrenti[p.NumeroConcorrente];
-                    const classe = p.Categoria === "D" ? "pilota-donne" :
-                                   p.Categoria === "O" ? "pilota-senior" : "pilota-generale";
-                    const bonus = pt.extra > 0 ? ` + ${pt.extra} ${pt.tipo}` : "";
+    .filter(p => punteggi[p.NumeroConcorrente]?.totale > 0)
+    .map(p => {
+        const pt = punteggi[p.NumeroConcorrente];
+        const classe = p.Categoria === "D" ? "pilota-donne" :
+                       p.Categoria === "O" ? "pilota-senior" : "pilota-generale";
 
-                    return `
-                        <div class="team-pilot ${classe}">
-                            #${p.NumeroConcorrente} ${p.Nome} ${p.Cognome} - 
-                            <span class="punti-singolo">${pt.totale}pt</span>
-                            (${pt.gen} gen${bonus})
-                        </div>
-                    `;
-                }).join("");
+        const dettagli = [];
+
+        if (pt.gen > 0) dettagli.push(`${pt.gen}`);
+        if (pt.extra > 0) dettagli.push(`${pt.extra} ${pt.tipo === 'donne' ? '🎀' : '👴'}`);
+        if (pt.ps > 0) dettagli.push(`${pt.ps} ⚡`);
+        if (pt.giroVeloce > 0) dettagli.push(`${pt.giroVeloce} ⏱`);
+
+        return `
+            <div class="team-pilot ${classe}">
+                #${p.NumeroConcorrente} ${p.Nome} ${p.Cognome} - 
+                <span class="punti-singolo">${pt.totale}pt = ${dettagli.join(" + ")}</span>
+            </div>
+        `;
+    }).join("");
+
 
             classificaTeamBody.innerHTML += `
                 <tr>
@@ -1606,24 +1667,36 @@ function calcolaPuntiConcorrenti(dati, giriCompleti = []) {
             });
         }
 
-        function aggiornaGiroPiuVeloce() {
-            const classificaRef = db.ref("giro");
+       function aggiornaGiroPiuVeloce() {
+    const classificaRef = db.ref("giro");
 
-            classificaRef.on("value", (snapshot) => {
-                if (!snapshot.exists()) return;
+    classificaRef.on("value", (snapshot) => {
+        if (!snapshot.exists()) return;
 
-                let giri = Object.values(snapshot.val());
-                let giroPiuVeloce = giri
-                    .filter(giro => giro.Arrivato === "SI")
-                    .reduce((acc, giro) => acc === null || giro.Tempoms < acc.Tempoms ? giro : acc, null);
+        let giri = Object.values(snapshot.val()).filter(g => g.Arrivato === "SI" && Number(g.Tempoms) > 0);
+        if (giri.length === 0) return;
 
-                if (giroPiuVeloce) {
-                    document.getElementById("fastestLapNR").innerText = giroPiuVeloce.NumeroConcorrente;
-                    document.getElementById("fastestLapPilot").innerText = `${giroPiuVeloce.Nome} ${giroPiuVeloce.Cognome}`;
-                    document.getElementById("fastestLapTime").innerText = formattaTempo(giroPiuVeloce.Tempoms);
-                }
-            });
+        let giroPiuVeloce = giri.reduce((min, curr) =>
+            Number(curr.Tempoms) < Number(min.Tempoms) ? curr : min
+        );
+
+        let nuovoNumero = giroPiuVeloce.NumeroConcorrente;
+
+        if (window.numeroGiroVeloce !== nuovoNumero) {
+            console.log("⏱ Miglior giro aggiornato:", nuovoNumero);
+            window.numeroGiroVeloce = nuovoNumero;
+            caricaClassificaGenerale();
         }
+
+        // Mostra sempre anche in alto
+        document.getElementById("fastestLapNR").innerText = giroPiuVeloce.NumeroConcorrente;
+        document.getElementById("fastestLapPilot").innerText = `${giroPiuVeloce.Nome} ${giroPiuVeloce.Cognome}`;
+        document.getElementById("fastestLapTime").innerText = formattaTempo(giroPiuVeloce.Tempoms);
+    });
+}
+
+
+
 
         function aggiornaUltimi5KartArrivati() {
             const classificaRef = db.ref("giro");
@@ -1776,13 +1849,22 @@ function calcolaPuntiConcorrenti(dati, giriCompleti = []) {
                 });
 
                 let popupBody = document.getElementById("popupBody");
-                popupBody.innerHTML = datiGiri.map(giro => `
-            <tr>
-                <td>${giro.Gara}</td>
-                <td>${giro.PosizioneGara}</td>
-                <td>${formattaTempo(giro.Tempo)}</td>
-            </tr>
-        `).join("");
+             popupBody.innerHTML = datiGiri.map(giro => {
+    const tempiGara = datiPerGara[giro.Gara] || [];
+    const migliorTempo = Math.min(...tempiGara.map(g => g.Tempo));
+    const delta = giro.Tempo - migliorTempo;
+    const deltaFormatted = giro.Tempo === migliorTempo ? "—" : `+${formattaTempo(delta)}`;
+
+    return `
+        <tr>
+            <td>${giro.Gara}</td>
+            <td>${giro.PosizioneGara}</td>
+            <td>${formattaTempo(giro.Tempo)}</td>
+            <td>${deltaFormatted}</td>
+        </tr>
+    `;
+}).join("");
+
 
                 let titoloPopup = `#${numeroConcorrente} ${nome} ${cognome} - <span style="color: red;">Pos. Gen: ${posizioneGenerale}</span>`;
 
@@ -1872,13 +1954,15 @@ function calcolaPuntiConcorrenti(dati, giriCompleti = []) {
         caricaClassificaPS5();
         caricaClassificaPS6();
         caricaClassificaPS7();
-        caricaClassificaGenerale();
+        
         caricaClassificaGeneraleD();
         caricaClassificaGeneraleS();
         caricaClassificaTeam();
 
         // 🚀 Avvia il caricamento dei dati
-        aggiornaGiroPiuVeloce();
+       aggiornaGiroPiuVeloce();
+    caricaClassificaGenerale();
+
         aggiornaUltimi5KartArrivati();
     </script>
 
