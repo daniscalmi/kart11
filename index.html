@@ -965,11 +965,15 @@ tbody tr:hover {
 <td>
   ${c.NumeroGiri}
   <span style="color: green; font-weight:bold;">
-    (${punteggi[c.NumeroConcorrente]?.extra > 0
-      ? `${punteggi[c.NumeroConcorrente].totale}pt = ${punteggi[c.NumeroConcorrente].gen} + ${punteggi[c.NumeroConcorrente].extra} ${punteggi[c.NumeroConcorrente].tipo === 'donne' ? '🎀' : '👴'}`
-      : `${punteggi[c.NumeroConcorrente]?.gen || 0}pt`})
+    (${punteggi[c.NumeroConcorrente].totale}pt
+     = ${punteggi[c.NumeroConcorrente].gen}
+     ${punteggi[c.NumeroConcorrente].extra > 0 ? ` + ${punteggi[c.NumeroConcorrente].extra} ${punteggi[c.NumeroConcorrente].tipo === 'donne' ? '🎀' : '👴'}` : ''}
+     ${punteggi[c.NumeroConcorrente].ps > 0 ? ` + ${punteggi[c.NumeroConcorrente].ps} ⚡` : ''}
+     ${punteggi[c.NumeroConcorrente].giroVeloce > 0 ? ` + ${punteggi[c.NumeroConcorrente].giroVeloce} ⏱` : ''}
+    )
   </span>
 </td>
+
 
 
 
@@ -981,55 +985,90 @@ tbody tr:hover {
     });
 }
 
-function calcolaPuntiConcorrenti(dati) {
+function calcolaPuntiConcorrenti(dati, giriCompleti = []) {
+    const puntiGenerale = [
+        50, 45, 41, 38, 36, 34, 32, 30, 28, 26,
+        24, 22, 20, 18, 16, 15, 14, 13, 12, 11,
+        10, 9, 8, 7, 6, 5, 4, 3, 2, 1
+    ];
+
+    const puntiDonne = [15, 12, 10, 8, 7, 6, 5, 4, 3, 1];
+    const puntiSenior = [10, 8, 6, 5, 4, 3, 2, 1];
+    const puntiPowerStage = [5, 4, 3, 2, 1]; // gara 7
+    const puntiGiroVeloce = 10;
+
     let punteggi = {};
-    let classificaGenerale = [...dati];
-    let classificaDonne = dati.filter(c => c.Categoria === "D");
-    let classificaSenior = dati.filter(c => c.Categoria === "O");
 
-    // Ordina le classifiche
-    classificaGenerale.sort((a, b) =>
-        b.NumeroGiri !== a.NumeroGiri ? b.NumeroGiri - a.NumeroGiri : a.SommaTempo - b.SommaTempo
-    );
-    classificaDonne.sort((a, b) =>
-        b.NumeroGiri !== a.NumeroGiri ? b.NumeroGiri - a.NumeroGiri : a.SommaTempo - b.SommaTempo
-    );
-    classificaSenior.sort((a, b) =>
+    // Ordina generale
+    let classificaGenerale = [...dati].sort((a, b) =>
         b.NumeroGiri !== a.NumeroGiri ? b.NumeroGiri - a.NumeroGiri : a.SommaTempo - b.SommaTempo
     );
 
-    // Assegna punti generali (max 30)
     classificaGenerale.forEach((c, i) => {
-        punteggi[c.NumeroConcorrente] = {
-            totale: Math.max(30 - i, 0),
-            gen: Math.max(30 - i, 0),
-            extra: 0,
-            tipo: ""
-        };
+        if (!punteggi[c.NumeroConcorrente]) {
+            punteggi[c.NumeroConcorrente] = { totale: 0, gen: 0, extra: 0, tipo: "", ps: 0, giroVeloce: 0 };
+        }
+        if (i < puntiGenerale.length) {
+            punteggi[c.NumeroConcorrente].gen = puntiGenerale[i];
+            punteggi[c.NumeroConcorrente].totale += puntiGenerale[i];
+        }
     });
 
-    // Assegna bonus Donne (max 10)
-    classificaDonne.forEach((c, i) => {
-        let bonus = Math.max(10 - i, 0);
-        if (punteggi[c.NumeroConcorrente]) {
-            punteggi[c.NumeroConcorrente].totale += bonus;
-            punteggi[c.NumeroConcorrente].extra += bonus;
+    // Donne
+    let donne = classificaGenerale.filter(c => c.Categoria === "D");
+    donne.forEach((c, i) => {
+        if (i < puntiDonne.length) {
+            punteggi[c.NumeroConcorrente].totale += puntiDonne[i];
+            punteggi[c.NumeroConcorrente].extra += puntiDonne[i];
             punteggi[c.NumeroConcorrente].tipo = "donne";
         }
     });
 
-    // Assegna bonus Senior (max 10)
-    classificaSenior.forEach((c, i) => {
-        let bonus = Math.max(10 - i, 0);
-        if (punteggi[c.NumeroConcorrente]) {
-            punteggi[c.NumeroConcorrente].totale += bonus;
-            punteggi[c.NumeroConcorrente].extra += bonus;
+    // Senior
+    let senior = classificaGenerale.filter(c => c.Categoria === "O");
+    senior.forEach((c, i) => {
+        if (i < puntiSenior.length) {
+            punteggi[c.NumeroConcorrente].totale += puntiSenior[i];
+            punteggi[c.NumeroConcorrente].extra += puntiSenior[i];
             punteggi[c.NumeroConcorrente].tipo = "senior";
         }
     });
 
+    // Power Stage (gara 7)
+    let ps7 = giriCompleti
+        .filter(g => g.Gara === 7 && g.Arrivato === "SI")
+        .map(g => ({
+            NumeroConcorrente: g.NumeroConcorrente,
+            Tempo: parseInt(g.Tempoms) || 9999999
+        }))
+        .sort((a, b) => a.Tempo - b.Tempo);
+
+    ps7.forEach((g, i) => {
+        if (i < puntiPowerStage.length) {
+            if (!punteggi[g.NumeroConcorrente]) {
+                punteggi[g.NumeroConcorrente] = { totale: 0, gen: 0, extra: 0, tipo: "", ps: 0, giroVeloce: 0 };
+            }
+            punteggi[g.NumeroConcorrente].totale += puntiPowerStage[i];
+            punteggi[g.NumeroConcorrente].ps = puntiPowerStage[i];
+        }
+    });
+
+    // Miglior giro veloce
+    let giroVeloce = giriCompleti
+        .filter(g => g.Arrivato === "SI")
+        .sort((a, b) => parseInt(a.Tempoms) - parseInt(b.Tempoms))[0];
+
+    if (giroVeloce) {
+        if (!punteggi[giroVeloce.NumeroConcorrente]) {
+            punteggi[giroVeloce.NumeroConcorrente] = { totale: 0, gen: 0, extra: 0, tipo: "", ps: 0, giroVeloce: 0 };
+        }
+        punteggi[giroVeloce.NumeroConcorrente].totale += puntiGiroVeloce;
+        punteggi[giroVeloce.NumeroConcorrente].giroVeloce = puntiGiroVeloce;
+    }
+
     return punteggi;
 }
+
 
 
 
