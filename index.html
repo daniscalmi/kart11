@@ -77,30 +77,87 @@ body {
     margin-top: 30px;
 }
 
-/* 📌 Stile per i tab */
 .tab-container {
     display: flex;
+    flex-wrap: wrap;
     justify-content: center;
-    margin-bottom: 20px;
+    gap: 8px;
+    margin: 20px auto;
+    max-width: 1000px;
 }
 
+/* Stile base per tutti i bottoni */
 .tab-button {
-    background-color: #e0e0e0;
-    border: 1px solid #007bff;
-    color: #007bff;
-    padding: 10px 20px;
-    margin: 0 5px;
-    cursor: pointer;
-    font-size: 16px;
-    font-weight: bold;
-    transition: 0.3s;
-    border-radius: 5px;
+  padding: 10px 16px;
+  border: none;
+  border-radius: 30px;
+  color: white;
+  font-size: 15px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: transform 0.2s, box-shadow 0.2s, background 0.3s;
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.2);
+  background-size: 300% 100%;
+  background-position: 0% 0%;
 }
 
-.tab-button:hover, .tab-button.active {
-    background-color: #007bff;
-    color: #ffffff;
+/* Effetto hover */
+.tab-button:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.25);
+  background-position: 100% 0;
 }
+
+/* Stile per il bottone attivo */
+.tab-button.active {
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
+}
+
+/* Varianti di colore per ciascuna categoria */
+.tab-button.team {
+  background: linear-gradient(to right, #a8e063, #56ab2f);
+}
+
+.tab-button.team.active {
+  background: linear-gradient(to right, #56ab2f, #a8e063);
+}
+
+.tab-button.donne {
+  background: linear-gradient(to right, #ff9a9e, #fecfef);
+}
+
+.tab-button.donne.active {
+  background: linear-gradient(to right, #fecfef, #ff9a9e);
+}
+
+.tab-button.senior {
+  background: linear-gradient(to right, #bdc3c7, #2c3e50);
+}
+
+.tab-button.senior.active {
+  background: linear-gradient(to right, #2c3e50, #bdc3c7);
+}
+
+.tab-button.ps {
+  background: linear-gradient(to right, #fceabb, #f8b500);
+}
+
+.tab-button.ps.active {
+  background: linear-gradient(to right, #f8b500, #fceabb);
+}
+.tab-button.generale {
+  background: linear-gradient(to right, #0f2027, #203a43, #2c5364);
+  color: white;
+}
+
+.tab-button.generale.active {
+  background: linear-gradient(to right, #203a43, #2c5364, #0f2027);
+  color: white;
+}
+
+
+
+
 
 .tab-content {
     display: none;
@@ -126,6 +183,25 @@ th, td {
     text-align: center;
 }
 
+.btn-chiudi-popup {
+    background-color: #cc3333;
+    color: white;
+    border: none;
+    padding: 10px 20px;
+    font-size: 15px;
+    font-weight: bold;
+    border-radius: 6px;
+    margin-top: 20px;
+    cursor: pointer;
+    box-shadow: 0 2px 6px rgba(0, 0, 0, 0.3);
+    transition: background-color 0.3s ease;
+}
+
+.btn-chiudi-popup:hover {
+    background-color: #a60000;
+}
+
+
 th {
     background-color: #007bff;
     color: #ffffff;
@@ -149,6 +225,14 @@ tbody tr:hover {
     border-radius: 8px;
     overflow: hidden;
 }
+
+.concorrente-donna-senior {
+   background-color: #f5b25c;
+    color: black;
+    padding: 2px 6px;
+    border-radius: 4px;
+}
+
 
 .team-table th, .team-table td {
     padding: 10px;
@@ -231,48 +315,29 @@ tbody tr:hover {
             font-weight: bold;
         }
 
-        /* 📌 Stile per il popup */
-        .popup {
-            display: none;
-            position: fixed;
-            left: 50%;
-            top: 50%;
-            transform: translate(-50%, -50%);
-            width: 60%;
-            background: white;
-            border: 2px solid #007bff;
-            padding: 20px;
-            z-index: 1000;
-            box-shadow: 0px 0px 10px rgba(0, 0, 0, 0.3);
-        }
+        #popupOverlay {
+    display: none;
+    position: fixed;
+    top: 0; left: 0;
+    width: 100vw; height: 100vh;
+    background-color: rgba(0, 0, 0, 0.5);
+    z-index: 999;
+}
 
-            .popup table {
-                width: 100%;
-                border-collapse: collapse;
-            }
+#popup {
+    display: none;
+    position: fixed;
+    top: 50%; left: 50%;
+    transform: translate(-50%, -50%);
+    background-color: white;
+    padding: 20px;
+    border-radius: 10px;
+    z-index: 1000;
+    max-width: 600px;
+    width: 90%;
+    box-shadow: 0 0 10px rgba(0, 0, 0, 0.6);
+}
 
-            .popup th, .popup td {
-                padding: 10px;
-                border: 1px solid #ddd;
-                text-align: center;
-            }
-
-            .popup th {
-                background-color: #007bff;
-                color: #ffffff;
-            }
-
-        /* 📌 Sfondo trasparente dietro il popup */
-        .popup-overlay {
-            display: none;
-            position: fixed;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            background: rgba(0, 0, 0, 0.5);
-            z-index: 999;
-        }
 
         /* 📌 Sfondo verde chiaro per la posizione nella classifica generale */
         .posizione-generale {
@@ -400,6 +465,15 @@ tbody tr:hover {
         table tbody tr td:nth-child(5) /* Tempo */ {
             font-weight: bold;
         }
+		
+		.giri-7 { background-color: #f2f2f2; } /* Grigio */
+.giri-6 { background-color: #ffffff; } /* Bianco */
+.giri-5 { background-color: #f2f2f2; } /* Grigio */
+.giri-4 { background-color: #ffffff; } /* Bianco */
+.giri-3 { background-color: #f2f2f2; } /* Grigio */
+.giri-2 { background-color: #ffffff; } /* Bianco */
+.giri-1 { background-color: #f2f2f2; } /* Grigio */
+
 
 
         /* 📌 Stile personalizzato per i bottoni delle classifiche */
@@ -560,6 +634,17 @@ tbody tr:hover {
 
 
 
+.punteggio-popup {
+    color: green;
+    font-weight: bold;
+    font-size: 16px;
+    font-family: inherit; /* eredita il font della pagina */
+    margin-bottom: 10px;
+}
+
+
+
+
 
     
 .giroveloce-tag {
@@ -571,6 +656,15 @@ tbody tr:hover {
   padding: 1px 5px;
   border-radius: 5px;
 }
+
+.group-alt-0 {
+    background-color: #ffffff; /* Bianco */
+}
+
+.group-alt-1 {
+    background-color: #f2f2f2; /* Grigio chiaro */
+}
+
 </style>
 </head>
 <body>
@@ -630,46 +724,58 @@ tbody tr:hover {
     </div>
 
     <!-- 📌 Messaggio informativo sotto il titolo -->
-    <p class="info-click-tempi">Utilizza la funzione di ricerca oppure clicca il tuo numero nella classifica generale e visualizza i tuoi tempi!</p>
+    <p class="info-click-tempi">Utilizza la funzione di ricerca oppure clicca il tuo numero nella CLASSIFICA GENERALE e visualizza i tuoi tempi!</p>
 
 
 
-    <!-- TAB SELEZIONE -->
-    <div class="tab-container">
-        <button class="tab-button active" onclick="apriTab('generale')">Classifica Generale</button>
-        <button class="tab-button" onclick="apriTab('team')">Classifica Team</button>
-        <button class="tab-button" onclick="apriTab('donne')">Donne</button>
-        <button class="tab-button" onclick="apriTab('senior')">Senior</button>
-        <button class="tab-button" onclick="apriTab('ps1')">PS1</button>
-        <button class="tab-button" onclick="apriTab('ps2')">PS2</button>
-        <button class="tab-button" onclick="apriTab('ps3')">PS3</button>
-        <button class="tab-button" onclick="apriTab('ps4')">PS4</button>
-        <button class="tab-button" onclick="apriTab('ps5')">PS5</button>
-        <button class="tab-button" onclick="apriTab('ps6')">PS6</button>
-        <button class="tab-button" onclick="apriTab('ps7')">PW Stage</button>
-    </div>
+<!-- TAB SELEZIONE -->
+<div class="tab-container">
+ <button class="tab-button generale active" onclick="apriTab('generale')">Classifica Generale</button>
 
-    <!-- 📌 Sfondo scuro dietro al popup -->
-    <div id="popupOverlay" class="popup-overlay" onclick="chiudiPopup()"></div>
+  <button class="tab-button team" onclick="apriTab('team')">Team</button>
+  <button class="tab-button donne" onclick="apriTab('donne')">Donne</button>
+  <button class="tab-button senior" onclick="apriTab('senior')">Senior</button>
+  <button class="tab-button ps" onclick="apriTab('ps1')">PS1</button>
+  <button class="tab-button ps" onclick="apriTab('ps2')">PS2</button>
+  <button class="tab-button ps" onclick="apriTab('ps3')">PS3</button>
+  <button class="tab-button ps" onclick="apriTab('ps4')">PS4</button>
+  <button class="tab-button ps" onclick="apriTab('ps5')">PS5</button>
+  <button class="tab-button ps" onclick="apriTab('ps6')">PS6</button>
+  <button class="tab-button ps" onclick="apriTab('ps7')">PWR Stage</button>
+</div>
+
+
+
+
 
 
 
     <!-- 📌 Popup per i tempi del concorrente -->
-    <div id="popup" class="popup">
-        <h2 id="popupTitle">Tempi del Concorrente</h2>
-        <table>
-            <thead>
-                <tr>
-                    <th>Gara</th>
-                    <th>Posizione</th>
-                    <th>Tempo</th>
-					<th>Delta</th>
-                </tr>
-            </thead>
-            <tbody id="popupBody"></tbody>
-        </table>
-        <button onclick="chiudiPopup()">Chiudi</button>
-    </div>
+<div id="popupOverlay" onclick="chiudiPopup()"></div>
+
+<div id="popup">
+    <h3 id="popupTitle"></h3>
+    <div id="popupPunti" class="punteggio-popup"></div>
+
+    <table>
+        <thead>
+            <tr>
+                <th>Gara</th>
+                <th>Posizione</th>
+                <th>Tempo</th>
+                <th>Delta</th>
+            </tr>
+        </thead>
+        <tbody id="popupBody"></tbody>
+    </table>
+	<div id="popupDettagli"></div>
+    <button onclick="chiudiPopup()" class="btn-chiudi-popup">✖ Chiudi</button>
+
+
+</div>
+
+
+
 
 
 
@@ -679,18 +785,18 @@ tbody tr:hover {
         <h2>Classifica Generale</h2>
         <table>
             <thead>
-                <tr>
-                    <th>Pos</th>
-                    <th>NR</th>
-                    <th>Nome</th>
-                    <th>Cognome</th>
-                    <th>Tempo</th>
-					<th>Delta</th> <!-- NUOVA COLONNA -->
-                    <th>Giri</th>
-                    <th>Team</th>
-                    <th>C</th>
-                </tr>
-            </thead>
+    <tr>
+        <th>Pos</th>
+        <th>NR</th>
+        <th>Nome</th>
+        <th>Cognome</th>
+        <th>Tempo</th>
+        <th>Punti</th>
+        <th>Giri</th>
+        <th>Team</th>
+        <th>C</th>
+    </tr>
+</thead>
             <tbody id="classificaGeneraleBody"></tbody>
         </table>
     </div>
@@ -910,14 +1016,13 @@ tbody tr:hover {
             document.querySelector(`button[onclick="apriTab('${nomeTab}')"]`).classList.add("active");
         }
 
-       function caricaClassificaGenerale() {
+ function caricaClassificaGenerale() {
     console.log('💡 numeroGiroVeloce globale:', window.numeroGiroVeloce);
     const classificaRef = db.ref("giro");
 
     classificaRef.on("value", (snapshot) => {
         let classificaBody = document.getElementById("classificaGeneraleBody");
         classificaBody.innerHTML = "";
-
         if (!snapshot.exists()) return;
 
         let dati = [];
@@ -929,7 +1034,6 @@ tbody tr:hover {
 
             if (concorrente.Arrivato === "SI" && numeroGara > 0) {
                 let esistente = dati.find(c => c.NumeroConcorrente === concorrente.NumeroConcorrente);
-
                 if (esistente) {
                     esistente.SommaTempo += tempo;
                     esistente.NumeroGiri++;
@@ -947,74 +1051,72 @@ tbody tr:hover {
             }
         });
 
-        // Ordina
         dati.sort((a, b) =>
             b.NumeroGiri !== a.NumeroGiri ? b.NumeroGiri - a.NumeroGiri : a.SommaTempo - b.SommaTempo
         );
 
-        // Calcola punti
         const giriCompleti = [];
-snapshot.forEach(childSnapshot => {
-    const g = childSnapshot.val();
-    if (g.Arrivato === "SI" && !isNaN(Number(g.Tempoms)) && Number(g.Tempoms) > 0) {
-        g.Tempoms = Number(g.Tempoms);
-        giriCompleti.push(g);
-    }
-});
-const punteggi = calcolaPuntiConcorrenti(dati, giriCompleti);
-console.log("🎯 giriCompleti:", giriCompleti);
+        snapshot.forEach(childSnapshot => {
+            const g = childSnapshot.val();
+            if (g.Arrivato === "SI" && !isNaN(Number(g.Tempoms)) && Number(g.Tempoms) > 0) {
+                g.Tempoms = Number(g.Tempoms);
+                giriCompleti.push(g);
+            }
+        });
 
+        const punteggi = calcolaPuntiConcorrenti(dati, giriCompleti);
 
-        const tempoPrimo = dati.length > 0 ? dati[0].SommaTempo : 0;
+        // Mappa colori forzata per numero di giri
+        const mappaColori = {
+            7: 'group-alt-0',
+            6: 'group-alt-0',
+            5: 'group-alt-0',
+            4: 'group-alt-0',
+            3: 'group-alt-0',
+            2: 'group-alt-0',
+            1: 'group-alt-0'
+        };
 
         classificaBody.innerHTML = dati.map((c, index) => {
-        const isGiroVeloce = c.NumeroConcorrente === window.numeroGiroVeloce; // ✅ dinamica
+            const isGiroVeloce = c.NumeroConcorrente === window.numeroGiroVeloce;
+            const puntiPilota = punteggi[c.NumeroConcorrente] || {};
+            const puntiTotaliFinali = puntiPilota.totale || 0;
 
-        let puntiPilota = punteggi[c.NumeroConcorrente] || {};
-        const puntiTotaliFinali = (puntiPilota.totale || 0) + (isGiroVeloce ? 10 : 0);
-        console.log("🎯 rendering", c.NumeroConcorrente, "isGiroVeloce:", isGiroVeloce);
-    
-            let categoriaClasse = c.Categoria === "D" ? "concorrente-donna" :
-                                   c.Categoria === "O" ? "concorrente-senior" :
-                                                         "concorrente-generale";
+            const categoriaClasse = c.Categoria === "OD" ? "concorrente-donna-senior" :
+                                     c.Categoria === "D" ? "concorrente-donna" :
+                                     c.Categoria === "O" ? "concorrente-senior" :
+                                                           "concorrente-generale";
 
-            let deltaFormatted = "-";
-            if (index !== 0 && typeof c.SommaTempo === "number" && typeof tempoPrimo === "number") {
-                let delta = c.SommaTempo - tempoPrimo;
-                deltaFormatted = `+${formattaTempo(Math.abs(delta))}`;
+            const groupClass = mappaColori[c.NumeroGiri];
+
+            let breakdown = "";
+            if (
+                (puntiPilota.extraDonne || 0) > 0 ||
+                (puntiPilota.extraSenior || 0) > 0 ||
+                (puntiPilota.ps || 0) > 0 ||
+                puntiPilota.giroVeloce
+            ) {
+                breakdown = `= ${puntiPilota.gen || 0}`;
+                if (puntiPilota.extraDonne) breakdown += ` + ${puntiPilota.extraDonne} 🎀`;
+                if (puntiPilota.extraSenior) breakdown += ` + ${puntiPilota.extraSenior} 👴`;
+                if (puntiPilota.ps) breakdown += ` + ${puntiPilota.ps} ⚡`;
+                if (puntiPilota.giroVeloce) breakdown += ` + 10 ⏱`;
             }
 
-            let puntiTotali = (punteggi && punteggi[c.NumeroConcorrente])
-                ? punteggi[c.NumeroConcorrente].totale
-                : 0;
-
-          return `
-				<tr>
+            return `
+                <tr class="${groupClass}">
                     <td class="posizione-generale">${index + 1}</td>
                     <td class="${categoriaClasse}" onclick="apriPopupTempi(${c.NumeroConcorrente}, '${c.Nome}', '${c.Cognome}', '${c.Categoria}')">${c.NumeroConcorrente}</td>
-                    <td class="bold-text">${c.Nome}</td>
-                    <td class="bold-text">${c.Cognome}</td>
-                    <td class="bold-text">${formattaTempo(c.SommaTempo)}${isGiroVeloce ? " ⏱" : ""}</td>
-                    <td class="bold-text">${deltaFormatted}</td>
-<td>
-  ${c.NumeroGiri}
-<span style="color: green; font-weight:bold;">
-    (${punteggi[c.NumeroConcorrente].totale}pt
-    ${
-        (punteggi[c.NumeroConcorrente].extra > 0 || punteggi[c.NumeroConcorrente].ps > 0 || punteggi[c.NumeroConcorrente].giroVeloce > 0)
-        ? `= ${punteggi[c.NumeroConcorrente].gen}`
-            + (punteggi[c.NumeroConcorrente].extra > 0 ? ` + ${punteggi[c.NumeroConcorrente].extra} ${punteggi[c.NumeroConcorrente].tipo === 'donne' ? '🎀' : '👴'}` : '')
-            + (punteggi[c.NumeroConcorrente].ps > 0 ? ` + ${punteggi[c.NumeroConcorrente].ps} ⚡` : '')
-            + (punteggi[c.NumeroConcorrente].giroVeloce > 0 ? ` + ${punteggi[c.NumeroConcorrente].giroVeloce} ⏱` : '')
-        : ''
-    })
-</span>
-</td>
-
-
-
-
-                    <td>${c.Squadra}</td>
+                    <td class="bold-text">${c.Nome.length > 10 ? c.Nome.slice(0, 12) : c.Nome}</td>
+                    <td class="bold-text">${c.Cognome.length > 10 ? c.Cognome.slice(0, 12) : c.Cognome}</td>
+                    <td class="bold-text">${formattaTempo(c.SommaTempo)}${isGiroVeloce ? ' ⏱' : ''}</td>
+                    <td>
+                        <span style="color: green; font-weight:bold;">
+                            ${puntiTotaliFinali}pt${breakdown ? ' ' + breakdown : ''}
+                        </span>
+                    </td>
+                    <td>${c.NumeroGiri}</td>
+                    <td>${c.Squadra.length > 10 ? c.Squadra.slice(0, 12) : c.Squadra}</td>
                     <td>${c.Categoria}</td>
                 </tr>
             `;
@@ -1022,101 +1124,121 @@ console.log("🎯 giriCompleti:", giriCompleti);
     });
 }
 
-function calcolaPuntiConcorrenti(dati, giriCompleti = []) {
-    const puntiGenerale = [
-        50, 45, 41, 38, 36, 34, 32, 30, 28, 26,
-        24, 22, 20, 18, 16, 15, 14, 13, 12, 11,
-        10, 9, 8, 7, 6, 5, 4, 3, 2, 1
-    ];
 
-    const puntiDonne = [15, 12, 10, 8, 7, 6, 5, 4, 3, 1];
-    const puntiSenior = [10, 8, 6, 5, 4, 3, 2, 1];
-    const puntiPowerStage = [5, 4, 3, 2, 1]; // gara 7
-    const puntiGiroVeloce = 10;
 
-    let punteggi = {};
 
-    // Ordina generale
-    let classificaGenerale = [...dati].sort((a, b) =>
+
+
+
+
+
+
+
+
+
+
+function calcolaPuntiConcorrenti(dati, giri) {
+    const punti = {};
+    const punteggioPosizione = [50, 45, 41, 38, 36, 34, 32, 30, 28, 26, 24, 22, 20, 18, 16,
+                                 14, 13, 12, 11, 10, 9, 8, 7, 6, 5, 4, 3, 2, 1, 1];
+
+    // Classifica generale
+    const classificaGenerale = [...dati];
+    classificaGenerale.sort((a, b) =>
         b.NumeroGiri !== a.NumeroGiri ? b.NumeroGiri - a.NumeroGiri : a.SommaTempo - b.SommaTempo
     );
 
-    classificaGenerale.forEach((c, i) => {
-        if (!punteggi[c.NumeroConcorrente]) {
-            punteggi[c.NumeroConcorrente] = { totale: 0, gen: 0, extra: 0, tipo: "", ps: 0, giroVeloce: 0 };
-        }
-        if (i < puntiGenerale.length) {
-            punteggi[c.NumeroConcorrente].gen = puntiGenerale[i];
-            punteggi[c.NumeroConcorrente].totale += puntiGenerale[i];
-        }
+    classificaGenerale.forEach((c, index) => {
+        const pt = punteggioPosizione[index] || 0;
+        if (!punti[c.NumeroConcorrente]) punti[c.NumeroConcorrente] = {};
+        punti[c.NumeroConcorrente].gen = pt;
     });
 
-    // Donne
-    let donne = classificaGenerale.filter(c => c.Categoria === "D");
-    donne.forEach((c, i) => {
-        if (i < puntiDonne.length) {
-            punteggi[c.NumeroConcorrente].totale += puntiDonne[i];
-            punteggi[c.NumeroConcorrente].extra += puntiDonne[i];
-            punteggi[c.NumeroConcorrente].tipo = "donne";
-        }
-    });
-
-    // Senior
-    let senior = classificaGenerale.filter(c => c.Categoria === "O");
-    senior.forEach((c, i) => {
-        if (i < puntiSenior.length) {
-            punteggi[c.NumeroConcorrente].totale += puntiSenior[i];
-            punteggi[c.NumeroConcorrente].extra += puntiSenior[i];
-            punteggi[c.NumeroConcorrente].tipo = "senior";
-        }
-    });
-
-    // Power Stage (gara 7)
-    let ps7 = giriCompleti
-        .filter(g => g.Gara === 7 && g.Arrivato === "SI")
-        .map(g => ({
-            NumeroConcorrente: g.NumeroConcorrente,
-            Tempo: parseInt(g.Tempoms) || 9999999
-        }))
-        .sort((a, b) => a.Tempo - b.Tempo);
-
-    ps7.forEach((g, i) => {
-        if (i < puntiPowerStage.length) {
-            if (!punteggi[g.NumeroConcorrente]) {
-                punteggi[g.NumeroConcorrente] = { totale: 0, gen: 0, extra: 0, tipo: "", ps: 0, giroVeloce: 0 };
-            }
-            punteggi[g.NumeroConcorrente].totale += puntiPowerStage[i];
-            punteggi[g.NumeroConcorrente].ps = puntiPowerStage[i];
-        }
-    });
-
-    // ✅ Miglior giro veloce (fixato!)
-    let giriValidi = giriCompleti.filter(g =>
-        g.Arrivato === "SI" &&
-        g.Tempoms &&
-        !isNaN(Number(g.Tempoms))
+    // Classifica donne
+    const donne = dati.filter(c => c.Categoria === "D" || c.Categoria === "OD");
+    donne.sort((a, b) =>
+        b.NumeroGiri !== a.NumeroGiri ? b.NumeroGiri - a.NumeroGiri : a.SommaTempo - b.SommaTempo
     );
+    const puntiDonne = [15, 12, 10, 8, 6, 4, 3, 2, 1];
+    donne.forEach((c, index) => {
+        const pt = puntiDonne[index] || 0;
+        if (!punti[c.NumeroConcorrente]) punti[c.NumeroConcorrente] = {};
+        punti[c.NumeroConcorrente].extraDonne = pt;
+    });
 
-    giriValidi.sort((a, b) => Number(a.Tempoms) - Number(b.Tempoms));
+    // Classifica senior
+    const senior = dati.filter(c => c.Categoria === "O" || c.Categoria === "OD");
+    senior.sort((a, b) =>
+        b.NumeroGiri !== a.NumeroGiri ? b.NumeroGiri - a.NumeroGiri : a.SommaTempo - b.SommaTempo
+    );
+    const puntiSenior = [10, 8, 6, 5, 4, 3, 2, 1];
+    senior.forEach((c, index) => {
+        const pt = puntiSenior[index] || 0;
+        if (!punti[c.NumeroConcorrente]) punti[c.NumeroConcorrente] = {};
+        punti[c.NumeroConcorrente].extraSenior = pt;
+    });
 
-    let giroVeloce = giriValidi[0];
+    // Power Stage
+    const powerStage = giri.filter(g => parseInt(g.Gara) === 7);
+    const classificaPS = [];
 
-    if (giroVeloce) {
-        const id = giroVeloce.NumeroConcorrente;
-
-        if (!punteggi[id]) {
-            punteggi[id] = { totale: 0, gen: 0, extra: 0, tipo: "", ps: 0, giroVeloce: 0 };
+    powerStage.forEach(g => {
+        let c = classificaGenerale.find(d => d.NumeroConcorrente === g.NumeroConcorrente);
+        if (!c) return;
+        let esistente = classificaPS.find(p => p.NumeroConcorrente === g.NumeroConcorrente);
+        if (esistente) {
+            esistente.SommaTempo += g.Tempoms;
+            esistente.NumeroGiri++;
+        } else {
+            classificaPS.push({
+                NumeroConcorrente: g.NumeroConcorrente,
+                SommaTempo: g.Tempoms,
+                NumeroGiri: 1
+            });
         }
+    });
 
-        punteggi[id].totale += puntiGiroVeloce;
-        punteggi[id].giroVeloce = puntiGiroVeloce;
-        punteggi[id].isGiroVeloce = true;
+    classificaPS.sort((a, b) =>
+        b.NumeroGiri !== a.NumeroGiri ? b.NumeroGiri - a.NumeroGiri : a.SommaTempo - b.SommaTempo
+    );
+    const puntiPS = [5, 4, 3, 2, 1];
+    classificaPS.forEach((c, index) => {
+        const pt = puntiPS[index] || 0;
+        if (!punti[c.NumeroConcorrente]) punti[c.NumeroConcorrente] = {};
+        punti[c.NumeroConcorrente].ps = pt;
+    });
 
-        console.log("✅ Giro più veloce assegnato a:", id, "tempo:", giroVeloce.Tempoms);
+    // Giro più veloce
+    let giroVeloce = null;
+    giri.forEach(g => {
+        if (g.Arrivato === "SI" && g.Tempoms > 0) {
+            if (!giroVeloce || g.Tempoms < giroVeloce.Tempoms) {
+                giroVeloce = g;
+            }
+        }
+    });
+
+    if (giroVeloce && giroVeloce.NumeroConcorrente) {
+        if (!punti[giroVeloce.NumeroConcorrente]) punti[giroVeloce.NumeroConcorrente] = {};
+        punti[giroVeloce.NumeroConcorrente].giroVeloce = true;
     }
 
-    return punteggi;
+    // Calcolo totale
+    for (const id in punti) {
+        const p = punti[id];
+        p.totale =
+            (p.gen || 0) +
+            (p.extraDonne || 0) +
+            (p.extraSenior || 0) +
+            (p.ps || 0) +
+            (p.giroVeloce ? 10 : 0);
+    }
+
+    return punti;
 }
+
+
+
 
 
 
@@ -1130,7 +1252,7 @@ function calcolaPuntiConcorrenti(dati, giriCompleti = []) {
 
 
 
-        function caricaClassificaTeam() {
+       function caricaClassificaTeam() {
     const classificaRef = db.ref("giro");
 
     classificaRef.on("value", (snapshot) => {
@@ -1139,7 +1261,7 @@ function calcolaPuntiConcorrenti(dati, giriCompleti = []) {
         const giri = Object.values(snapshot.val());
         let concorrenti = {};
 
-        // Raggruppa giri per concorrente (solo validi)
+        // Raggruppa giri per concorrente
         giri.forEach(g => {
             if (g.Arrivato === "SI" && parseInt(g.Gara) > 0) {
                 const id = g.NumeroConcorrente;
@@ -1163,26 +1285,21 @@ function calcolaPuntiConcorrenti(dati, giriCompleti = []) {
             }
         });
 
-        // Array ordinato per classifica
         let classificaArray = Object.values(concorrenti).sort((a, b) =>
             b.Giri !== a.Giri ? b.Giri - a.Giri : a.TempoTotale - b.TempoTotale
         );
 
-        // Calcolo punti unico e coerente
-      const giriCompleti = [];
+        const giriCompleti = [];
+        snapshot.forEach(childSnapshot => {
+            const g = childSnapshot.val();
+            if (g.Arrivato === "SI" && !isNaN(parseInt(g.Tempoms))) {
+                giriCompleti.push(g);
+            }
+        });
 
-snapshot.forEach(childSnapshot => {
-    const g = childSnapshot.val();
-    if (g.Arrivato === "SI" && !isNaN(parseInt(g.Tempoms))) {
-        giriCompleti.push(g);
-    }
-});
+        const punteggi = calcolaPuntiConcorrenti(classificaArray, giriCompleti);
 
-const punteggi = calcolaPuntiConcorrenti(classificaArray, giriCompleti);
-
-
-
-        // Somma punti per team
+        // Calcolo punti totali team
         let teamPunti = {};
         classificaArray.forEach(c => {
             const pt = punteggi[c.NumeroConcorrente];
@@ -1191,11 +1308,9 @@ const punteggi = calcolaPuntiConcorrenti(classificaArray, giriCompleti);
             }
         });
 
-        // Ordina i team per punti
         const classificaTeam = Object.entries(teamPunti).map(([team, punti]) => ({ team, punti }))
             .sort((a, b) => b.punti - a.punti);
 
-        // Scrivi tabella
         const classificaTeamBody = document.getElementById("classificaTeamBody");
         classificaTeamBody.innerHTML = "";
 
@@ -1203,32 +1318,38 @@ const punteggi = calcolaPuntiConcorrenti(classificaArray, giriCompleti);
             const pilotiDelTeam = classificaArray.filter(p => p.Squadra === team.team);
 
             const pilotiHTML = pilotiDelTeam
-    .filter(p => punteggi[p.NumeroConcorrente]?.totale > 0)
-    .map(p => {
-        const pt = punteggi[p.NumeroConcorrente];
-        const classe = p.Categoria === "D" ? "pilota-donne" :
-                       p.Categoria === "O" ? "pilota-senior" : "pilota-generale";
+                .filter(p => punteggi[p.NumeroConcorrente]?.totale > 0)
+                .map(p => {
+                    const pt = punteggi[p.NumeroConcorrente];
+                    const classe = p.Categoria === "D" ? "pilota-donne"
+                                : p.Categoria === "O" ? "pilota-senior"
+                                : p.Categoria === "OD" ? "pilota-od"
+                                : "pilota-generale";
 
-        const dettagli = [];
+                    const dettagli = [];
+                    if (pt.gen > 0) dettagli.push(`${pt.gen} gen`);
+                    if (pt.extraDonne > 0) dettagli.push(`${pt.extraDonne} 🎀`);
+                    if (pt.extraSenior > 0) dettagli.push(`${pt.extraSenior} 👴`);
+                    if (pt.ps > 0) dettagli.push(`${pt.ps} ⚡`);
+                    if (pt.giroVeloce) dettagli.push(`10 ⏱`);
 
-        if (pt.gen > 0) dettagli.push(`${pt.gen}`);
-        if (pt.extra > 0) dettagli.push(`${pt.extra} ${pt.tipo === 'donne' ? '🎀' : '👴'}`);
-        if (pt.ps > 0) dettagli.push(`${pt.ps} ⚡`);
-        if (pt.giroVeloce > 0) dettagli.push(`${pt.giroVeloce} ⏱`);
+                    return `
+                        <div class="team-pilot ${classe}">
+                            <span class="numero">#${p.NumeroConcorrente}</span>
+                            ${p.Nome} ${p.Cognome} → 
+                            <span class="punti-singolo">${pt.totale}pt${dettagli.length ? ` (${dettagli.join(" + ")})` : ""}</span>
+                        </div>
+                    `;
+                }).join("");
 
-        return `
-            <div class="team-pilot ${classe}">
-                #${p.NumeroConcorrente} ${p.Nome} ${p.Cognome} - 
-                <span class="punti-singolo">${pt.totale}pt = ${dettagli.join(" + ")}</span>
-            </div>
-        `;
-    }).join("");
-
-
+            // ✅ Usa contenitore separato per evitare che influisca sul font globale
             classificaTeamBody.innerHTML += `
                 <tr>
                     <td class="team-position">${index + 1}</td>
-                    <td class="team-name">${team.team}<br>${pilotiHTML}</td>
+                    <td class="team-name">
+                        <div class="team-nome">${team.team}</div>
+                        <div class="team-piloti-wrap">${pilotiHTML}</div>
+                    </td>
                     <td class="punti-totali">${team.punti}</td>
                 </tr>
             `;
@@ -1264,25 +1385,26 @@ const punteggi = calcolaPuntiConcorrenti(classificaArray, giriCompleti);
 
                 dati.sort((a, b) => a.Tempo - b.Tempo);
 
-                classificaBody.innerHTML = dati.map((concorrente, index) => {
-                    let categoriaClasse = concorrente.Categoria === "D" ? "concorrente-donna" :
-                        concorrente.Categoria === "O" ? "concorrente-senior" :
-                            "concorrente-generale";
+                   classificaBody.innerHTML = dati.map((concorrente, index) => {
+            let categoriaClasse = concorrente.Categoria === "OD" ? "concorrente-donna-senior" :
+                                   concorrente.Categoria === "D" ? "concorrente-donna" :
+                                   concorrente.Categoria === "O" ? "concorrente-senior" :
+                                                                   "concorrente-generale";
 
-                    return `
-                        <tr>
-                            <td class="posizione-generale">${index + 1}</td>
-                            <td class="${categoriaClasse}">${concorrente.NumeroConcorrente}</td>
-                            <td class="bold-text">${concorrente.Nome}</td>
-                            <td class="bold-text">${concorrente.Cognome}</td>
-                            <td class="bold-text">${formattaTempo(concorrente.Tempo)}</td>
-                            <td>${concorrente.Squadra}</td>
-                            <td>${concorrente.Categoria}</td>
-                        </tr>
-                    `;
-                }).join("");
-            });
-        }
+            return `
+                <tr>
+                    <td class="posizione-generale">${index + 1}</td>
+                    <td class="${categoriaClasse}">${concorrente.NumeroConcorrente}</td>
+                    <td class="bold-text">${concorrente.Nome}</td>
+                    <td class="bold-text">${concorrente.Cognome}</td>
+                    <td class="bold-text">${formattaTempo(concorrente.Tempo)}</td>
+                    <td>${concorrente.Squadra}</td>
+                    <td>${concorrente.Categoria}</td>
+                </tr>
+            `;
+        }).join("");
+    });
+}
 
 
         function caricaClassificaPS2() {
@@ -1312,25 +1434,26 @@ const punteggi = calcolaPuntiConcorrenti(classificaArray, giriCompleti);
 
                 dati.sort((a, b) => a.Tempo - b.Tempo);
 
-                classificaBody.innerHTML = dati.map((concorrente, index) => {
-                    let categoriaClasse = concorrente.Categoria === "D" ? "concorrente-donna" :
-                        concorrente.Categoria === "O" ? "concorrente-senior" :
-                            "concorrente-generale";
+                   classificaBody.innerHTML = dati.map((concorrente, index) => {
+            let categoriaClasse = concorrente.Categoria === "OD" ? "concorrente-donna-senior" :
+                                   concorrente.Categoria === "D" ? "concorrente-donna" :
+                                   concorrente.Categoria === "O" ? "concorrente-senior" :
+                                                                   "concorrente-generale";
 
-                    return `
-            <tr>
-                <td class="posizione-generale">${index + 1}</td>
-                <td class="${categoriaClasse}">${concorrente.NumeroConcorrente}</td>
-                <td class="bold-text">${concorrente.Nome}</td>
-                <td class="bold-text">${concorrente.Cognome}</td>
-                <td class="bold-text">${formattaTempo(concorrente.Tempo)}</td>
-                <td>${concorrente.Squadra}</td>
-                <td>${concorrente.Categoria}</td>
-            </tr>
-`;
-                }).join("");
-            });
-        }
+            return `
+                <tr>
+                    <td class="posizione-generale">${index + 1}</td>
+                    <td class="${categoriaClasse}">${concorrente.NumeroConcorrente}</td>
+                    <td class="bold-text">${concorrente.Nome}</td>
+                    <td class="bold-text">${concorrente.Cognome}</td>
+                    <td class="bold-text">${formattaTempo(concorrente.Tempo)}</td>
+                    <td>${concorrente.Squadra}</td>
+                    <td>${concorrente.Categoria}</td>
+                </tr>
+            `;
+        }).join("");
+    });
+}
 
         function caricaClassificaPS3() {
             const classificaRef = db.ref("giro");
@@ -1359,25 +1482,26 @@ const punteggi = calcolaPuntiConcorrenti(classificaArray, giriCompleti);
 
                 dati.sort((a, b) => a.Tempo - b.Tempo);
 
-                classificaBody.innerHTML = dati.map((concorrente, index) => {
-                    let categoriaClasse = concorrente.Categoria === "D" ? "concorrente-donna" :
-                        concorrente.Categoria === "O" ? "concorrente-senior" :
-                            "concorrente-generale";
+                  classificaBody.innerHTML = dati.map((concorrente, index) => {
+            let categoriaClasse = concorrente.Categoria === "OD" ? "concorrente-donna-senior" :
+                                   concorrente.Categoria === "D" ? "concorrente-donna" :
+                                   concorrente.Categoria === "O" ? "concorrente-senior" :
+                                                                   "concorrente-generale";
 
-                    return `
-            <tr>
-                <td class="posizione-generale">${index + 1}</td>
-                <td class="${categoriaClasse}">${concorrente.NumeroConcorrente}</td>
-                <td class="bold-text">${concorrente.Nome}</td>
-                <td class="bold-text">${concorrente.Cognome}</td>
-                <td class="bold-text">${formattaTempo(concorrente.Tempo)}</td>
-                <td>${concorrente.Squadra}</td>
-                <td>${concorrente.Categoria}</td>
-            </tr>
-`;
-                }).join("");
-            });
-        }
+            return `
+                <tr>
+                    <td class="posizione-generale">${index + 1}</td>
+                    <td class="${categoriaClasse}">${concorrente.NumeroConcorrente}</td>
+                    <td class="bold-text">${concorrente.Nome}</td>
+                    <td class="bold-text">${concorrente.Cognome}</td>
+                    <td class="bold-text">${formattaTempo(concorrente.Tempo)}</td>
+                    <td>${concorrente.Squadra}</td>
+                    <td>${concorrente.Categoria}</td>
+                </tr>
+            `;
+        }).join("");
+    });
+}
 
         function caricaClassificaPS4() {
             const classificaRef = db.ref("giro");
@@ -1406,25 +1530,26 @@ const punteggi = calcolaPuntiConcorrenti(classificaArray, giriCompleti);
 
                 dati.sort((a, b) => a.Tempo - b.Tempo);
 
-                classificaBody.innerHTML = dati.map((concorrente, index) => {
-                    let categoriaClasse = concorrente.Categoria === "D" ? "concorrente-donna" :
-                        concorrente.Categoria === "O" ? "concorrente-senior" :
-                            "concorrente-generale";
+                   classificaBody.innerHTML = dati.map((concorrente, index) => {
+            let categoriaClasse = concorrente.Categoria === "OD" ? "concorrente-donna-senior" :
+                                   concorrente.Categoria === "D" ? "concorrente-donna" :
+                                   concorrente.Categoria === "O" ? "concorrente-senior" :
+                                                                   "concorrente-generale";
 
-                    return `
-            <tr>
-                <td class="posizione-generale">${index + 1}</td>
-                <td class="${categoriaClasse}">${concorrente.NumeroConcorrente}</td>
-                <td class="bold-text">${concorrente.Nome}</td>
-                <td class="bold-text">${concorrente.Cognome}</td>
-                <td class="bold-text">${formattaTempo(concorrente.Tempo)}</td>
-                <td>${concorrente.Squadra}</td>
-                <td>${concorrente.Categoria}</td>
-            </tr>
-`;
-                }).join("");
-            });
-        }
+            return `
+                <tr>
+                    <td class="posizione-generale">${index + 1}</td>
+                    <td class="${categoriaClasse}">${concorrente.NumeroConcorrente}</td>
+                    <td class="bold-text">${concorrente.Nome}</td>
+                    <td class="bold-text">${concorrente.Cognome}</td>
+                    <td class="bold-text">${formattaTempo(concorrente.Tempo)}</td>
+                    <td>${concorrente.Squadra}</td>
+                    <td>${concorrente.Categoria}</td>
+                </tr>
+            `;
+        }).join("");
+    });
+}
 
         function caricaClassificaPS5() {
             const classificaRef = db.ref("giro");
@@ -1453,25 +1578,26 @@ const punteggi = calcolaPuntiConcorrenti(classificaArray, giriCompleti);
 
                 dati.sort((a, b) => a.Tempo - b.Tempo);
 
-                classificaBody.innerHTML = dati.map((concorrente, index) => {
-                    let categoriaClasse = concorrente.Categoria === "D" ? "concorrente-donna" :
-                        concorrente.Categoria === "O" ? "concorrente-senior" :
-                            "concorrente-generale";
+                   classificaBody.innerHTML = dati.map((concorrente, index) => {
+            let categoriaClasse = concorrente.Categoria === "OD" ? "concorrente-donna-senior" :
+                                   concorrente.Categoria === "D" ? "concorrente-donna" :
+                                   concorrente.Categoria === "O" ? "concorrente-senior" :
+                                                                   "concorrente-generale";
 
-                    return `
-            <tr>
-                <td class="posizione-generale">${index + 1}</td>
-                <td class="${categoriaClasse}">${concorrente.NumeroConcorrente}</td>
-                <td class="bold-text">${concorrente.Nome}</td>
-                <td class="bold-text">${concorrente.Cognome}</td>
-                <td class="bold-text">${formattaTempo(concorrente.Tempo)}</td>
-                <td>${concorrente.Squadra}</td>
-                <td>${concorrente.Categoria}</td>
-            </tr>
-`;
-                }).join("");
-            });
-        }
+            return `
+                <tr>
+                    <td class="posizione-generale">${index + 1}</td>
+                    <td class="${categoriaClasse}">${concorrente.NumeroConcorrente}</td>
+                    <td class="bold-text">${concorrente.Nome}</td>
+                    <td class="bold-text">${concorrente.Cognome}</td>
+                    <td class="bold-text">${formattaTempo(concorrente.Tempo)}</td>
+                    <td>${concorrente.Squadra}</td>
+                    <td>${concorrente.Categoria}</td>
+                </tr>
+            `;
+        }).join("");
+    });
+}
 
         function caricaClassificaPS6() {
             const classificaRef = db.ref("giro");
@@ -1500,25 +1626,26 @@ const punteggi = calcolaPuntiConcorrenti(classificaArray, giriCompleti);
 
                 dati.sort((a, b) => a.Tempo - b.Tempo);
 
-                classificaBody.innerHTML = dati.map((concorrente, index) => {
-                    let categoriaClasse = concorrente.Categoria === "D" ? "concorrente-donna" :
-                        concorrente.Categoria === "O" ? "concorrente-senior" :
-                            "concorrente-generale";
+                   classificaBody.innerHTML = dati.map((concorrente, index) => {
+            let categoriaClasse = concorrente.Categoria === "OD" ? "concorrente-donna-senior" :
+                                   concorrente.Categoria === "D" ? "concorrente-donna" :
+                                   concorrente.Categoria === "O" ? "concorrente-senior" :
+                                                                   "concorrente-generale";
 
-                    return `
-            <tr>
-                <td class="posizione-generale">${index + 1}</td>
-                <td class="${categoriaClasse}">${concorrente.NumeroConcorrente}</td>
-                <td class="bold-text">${concorrente.Nome}</td>
-                <td class="bold-text">${concorrente.Cognome}</td>
-                <td class="bold-text">${formattaTempo(concorrente.Tempo)}</td>
-                <td>${concorrente.Squadra}</td>
-                <td>${concorrente.Categoria}</td>
-            </tr>
-`;
-                }).join("");
-            });
-        }
+            return `
+                <tr>
+                    <td class="posizione-generale">${index + 1}</td>
+                    <td class="${categoriaClasse}">${concorrente.NumeroConcorrente}</td>
+                    <td class="bold-text">${concorrente.Nome}</td>
+                    <td class="bold-text">${concorrente.Cognome}</td>
+                    <td class="bold-text">${formattaTempo(concorrente.Tempo)}</td>
+                    <td>${concorrente.Squadra}</td>
+                    <td>${concorrente.Categoria}</td>
+                </tr>
+            `;
+        }).join("");
+    });
+}
 
         function caricaClassificaPS7() {
             const classificaRef = db.ref("giro");
@@ -1546,126 +1673,136 @@ const punteggi = calcolaPuntiConcorrenti(classificaArray, giriCompleti);
                 });
 
                 dati.sort((a, b) => a.Tempo - b.Tempo);
-                classificaBody.innerHTML = dati.map((concorrente, index) => {
-                    let categoriaClasse = concorrente.Categoria === "D" ? "concorrente-donna" :
-                        concorrente.Categoria === "O" ? "concorrente-senior" :
-                            "concorrente-generale";
+                  classificaBody.innerHTML = dati.map((concorrente, index) => {
+            let categoriaClasse = concorrente.Categoria === "OD" ? "concorrente-donna-senior" :
+                                   concorrente.Categoria === "D" ? "concorrente-donna" :
+                                   concorrente.Categoria === "O" ? "concorrente-senior" :
+                                                                   "concorrente-generale";
 
-                    return `
-            <tr>
-                <td class="posizione-generale">${index + 1}</td>
-                <td class="${categoriaClasse}">${concorrente.NumeroConcorrente}</td>
-                <td class="bold-text">${concorrente.Nome}</td>
-                <td class="bold-text">${concorrente.Cognome}</td>
-                <td class="bold-text">${formattaTempo(concorrente.Tempo)}</td>
-                <td>${concorrente.Squadra}</td>
-                <td>${concorrente.Categoria}</td>
-            </tr>
-`;
-                }).join("");
-            });
-        }
+            return `
+                <tr>
+                    <td class="posizione-generale">${index + 1}</td>
+                    <td class="${categoriaClasse}">${concorrente.NumeroConcorrente}</td>
+                    <td class="bold-text">${concorrente.Nome}</td>
+                    <td class="bold-text">${concorrente.Cognome}</td>
+                    <td class="bold-text">${formattaTempo(concorrente.Tempo)}</td>
+                    <td>${concorrente.Squadra}</td>
+                    <td>${concorrente.Categoria}</td>
+                </tr>
+            `;
+        }).join("");
+    });
+}
 
 
         function caricaClassificaGeneraleD() {
-            const classificaRef = db.ref("giro");
+    const classificaRef = db.ref("giro");
 
-            classificaRef.on("value", (snapshot) => {
-                let classificaBody = document.getElementById("classificaGeneraleBodyD");
-                classificaBody.innerHTML = "";
+    classificaRef.on("value", (snapshot) => {
+        let classificaBody = document.getElementById("classificaGeneraleBodyD");
+        classificaBody.innerHTML = "";
 
-                if (!snapshot.exists()) return;
+        if (!snapshot.exists()) return;
 
-                let dati = [];
-                snapshot.forEach((childSnapshot) => {
-                    let concorrente = childSnapshot.val();
-                    if (concorrente.Arrivato === "SI" && concorrente.Categoria === "D") {
-                        let tempo = parseInt(concorrente.Tempoms) || 0;
-                        let esistente = dati.find(c => c.NumeroConcorrente === concorrente.NumeroConcorrente);
+        let dati = [];
+        snapshot.forEach((childSnapshot) => {
+            let concorrente = childSnapshot.val();
+            if (concorrente.Arrivato === "SI" && (concorrente.Categoria === "D" || concorrente.Categoria === "OD")) {
+                let tempo = parseInt(concorrente.Tempoms) || 0;
+                let esistente = dati.find(c => c.NumeroConcorrente === concorrente.NumeroConcorrente);
 
-                        if (esistente) {
-                            esistente.SommaTempo += tempo;
-                            esistente.NumeroGiri++;
-                        } else {
-                            dati.push({
-                                NumeroConcorrente: concorrente.NumeroConcorrente,
-                                Nome: concorrente.Nome,
-                                Cognome: concorrente.Cognome,
-                                Categoria: concorrente.Categoria,
-                                SommaTempo: tempo,
-                                NumeroGiri: 1,
-                                Squadra: concorrente.Squadra
-                            });
-                        }
-                    }
-                });
+                if (esistente) {
+                    esistente.SommaTempo += tempo;
+                    esistente.NumeroGiri++;
+                } else {
+                    dati.push({
+                        NumeroConcorrente: concorrente.NumeroConcorrente,
+                        Nome: concorrente.Nome,
+                        Cognome: concorrente.Cognome,
+                        Categoria: concorrente.Categoria,
+                        SommaTempo: tempo,
+                        NumeroGiri: 1,
+                        Squadra: concorrente.Squadra
+                    });
+                }
+            }
+        });
 
-                dati.sort((a, b) => b.NumeroGiri !== a.NumeroGiri ? b.NumeroGiri - a.NumeroGiri : a.SommaTempo - b.SommaTempo);
+        dati.sort((a, b) => b.NumeroGiri !== a.NumeroGiri ? b.NumeroGiri - a.NumeroGiri : a.SommaTempo - b.SommaTempo);
 
-                classificaBody.innerHTML = dati.map((concorrente, index) => `
-                    <tr>
-                        <td class="posizione-generale">${index + 1}</td>
-                        <td class="concorrente-donna">${concorrente.NumeroConcorrente}</td>
-                        <td class="bold-text">${concorrente.Nome}</td>
-                        <td class="bold-text">${concorrente.Cognome}</td>
-                        <td class="bold-text">${formattaTempo(concorrente.SommaTempo)}</td>
-                        <td>${concorrente.NumeroGiri}</td>
-                        <td>${concorrente.Squadra}</td>
-                        <td>${concorrente.Categoria}</td>
-                    </tr>
-                `).join("");
-            });
-        }
+        classificaBody.innerHTML = dati.map((concorrente, index) => {
+            const categoriaClasse = concorrente.Categoria === "OD" ? "concorrente-donna-senior" : "concorrente-donna";
+            return `
+                <tr>
+                    <td class="posizione-generale">${index + 1}</td>
+                    <td class="${categoriaClasse}">${concorrente.NumeroConcorrente}</td>
+                    <td class="bold-text">${concorrente.Nome}</td>
+                    <td class="bold-text">${concorrente.Cognome}</td>
+                    <td class="bold-text">${formattaTempo(concorrente.SommaTempo)}</td>
+                    <td>${concorrente.NumeroGiri}</td>
+                    <td>${concorrente.Squadra}</td>
+                    <td>${concorrente.Categoria}</td>
+                </tr>
+            `;
+        }).join("");
+    });
+}
 
-        function caricaClassificaGeneraleS() {
-            const classificaRef = db.ref("giro");
 
-            classificaRef.on("value", (snapshot) => {
-                let classificaBody = document.getElementById("classificaGeneraleBodyS");
-                classificaBody.innerHTML = "";
+       function caricaClassificaGeneraleS() {
+    const classificaRef = db.ref("giro");
 
-                if (!snapshot.exists()) return;
+    classificaRef.on("value", (snapshot) => {
+        let classificaBody = document.getElementById("classificaGeneraleBodyS");
+        classificaBody.innerHTML = "";
 
-                let dati = [];
-                snapshot.forEach((childSnapshot) => {
-                    let concorrente = childSnapshot.val();
-                    if (concorrente.Arrivato === "SI" && concorrente.Categoria === "O") {
-                        let tempo = parseInt(concorrente.Tempoms) || 0;
-                        let esistente = dati.find(c => c.NumeroConcorrente === concorrente.NumeroConcorrente);
+        if (!snapshot.exists()) return;
 
-                        if (esistente) {
-                            esistente.SommaTempo += tempo;
-                            esistente.NumeroGiri++;
-                        } else {
-                            dati.push({
-                                NumeroConcorrente: concorrente.NumeroConcorrente,
-                                Nome: concorrente.Nome,
-                                Cognome: concorrente.Cognome,
-                                Categoria: concorrente.Categoria,
-                                SommaTempo: tempo,
-                                NumeroGiri: 1,
-                                Squadra: concorrente.Squadra
-                            });
-                        }
-                    }
-                });
+        let dati = [];
+        snapshot.forEach((childSnapshot) => {
+            let concorrente = childSnapshot.val();
+            if (concorrente.Arrivato === "SI" && (concorrente.Categoria === "O" || concorrente.Categoria === "OD")) {
+                let tempo = parseInt(concorrente.Tempoms) || 0;
+                let esistente = dati.find(c => c.NumeroConcorrente === concorrente.NumeroConcorrente);
 
-                dati.sort((a, b) => b.NumeroGiri !== a.NumeroGiri ? b.NumeroGiri - a.NumeroGiri : a.SommaTempo - b.SommaTempo);
+                if (esistente) {
+                    esistente.SommaTempo += tempo;
+                    esistente.NumeroGiri++;
+                } else {
+                    dati.push({
+                        NumeroConcorrente: concorrente.NumeroConcorrente,
+                        Nome: concorrente.Nome,
+                        Cognome: concorrente.Cognome,
+                        Categoria: concorrente.Categoria,
+                        SommaTempo: tempo,
+                        NumeroGiri: 1,
+                        Squadra: concorrente.Squadra
+                    });
+                }
+            }
+        });
 
-                classificaBody.innerHTML = dati.map((concorrente, index) => `
-                    <tr>
-                        <td class="posizione-generale">${index + 1}</td>
-                        <td class="concorrente-senior">${concorrente.NumeroConcorrente}</td>
-                        <td class="bold-text">${concorrente.Nome}</td>
-                        <td class="bold-text">${concorrente.Cognome}</td>
-                        <td class="bold-text">${formattaTempo(concorrente.SommaTempo)}</td>
-                        <td>${concorrente.NumeroGiri}</td>
-                        <td>${concorrente.Squadra}</td>
-                        <td>${concorrente.Categoria}</td>
-                    </tr>
-                `).join("");
-            });
-        }
+        dati.sort((a, b) => b.NumeroGiri !== a.NumeroGiri ? b.NumeroGiri - a.NumeroGiri : a.SommaTempo - b.SommaTempo);
+
+        classificaBody.innerHTML = dati.map((concorrente, index) => {
+            const categoriaClasse = concorrente.Categoria === "OD" ? "concorrente-donna-senior" : "concorrente-senior";
+            return `
+                <tr>
+                    <td class="posizione-generale">${index + 1}</td>
+                    <td class="${categoriaClasse}">${concorrente.NumeroConcorrente}</td>
+                    <td class="bold-text">${concorrente.Nome}</td>
+                    <td class="bold-text">${concorrente.Cognome}</td>
+                    <td class="bold-text">${formattaTempo(concorrente.SommaTempo)}</td>
+                    <td>${concorrente.NumeroGiri}</td>
+                    <td>${concorrente.Squadra}</td>
+                    <td>${concorrente.Categoria}</td>
+                </tr>
+            `;
+        }).join("");
+    });
+}
+
+
 
        function aggiornaGiroPiuVeloce() {
     const classificaRef = db.ref("giro");
@@ -1768,128 +1905,252 @@ const punteggi = calcolaPuntiConcorrenti(classificaArray, giriCompleti);
             });
         }
 
-        function apriPopupTempi(numeroConcorrente, nome, cognome, categoria = null) {
-            const classificaRef = db.ref("giro");
+function apriPopupTempi(numeroConcorrente, nome, cognome, categoria = null) {
+    const classificaRef = db.ref("giro");
 
-            classificaRef.once("value", (snapshot) => {
-                if (!snapshot.exists()) return;
+    classificaRef.once("value", (snapshot) => {
+        if (!snapshot.exists()) return;
 
-                let datiGiri = [];
-                let datiPerGara = {};
-                let classificaGenerale = [];
-                let classificaDonne = [];
-                let classificaSenior = [];
-                let categoriaPilota = categoria; // Se non viene passata, la cerchiamo
+        let datiGiri = [];
+        let datiPerGara = {};
+        let classificaGenerale = [];
+        let classificaDonne = [];
+        let classificaSenior = [];
+        let giriCompleti = [];
+        let categoriaPilota = categoria;
 
-                snapshot.forEach((childSnapshot) => {
-                    let giro = childSnapshot.val();
-                    if (giro.Arrivato === "SI") {
-                        if (!datiPerGara[giro.Gara]) {
-                            datiPerGara[giro.Gara] = [];
-                        }
-                        datiPerGara[giro.Gara].push({
-                            NumeroConcorrente: giro.NumeroConcorrente,
-                            Tempo: parseInt(giro.Tempoms),
-                            Gara: giro.Gara
-                        });
-
-                        // Se il pilota è quello selezionato, assicuriamoci di ottenere la sua categoria
-                        if (giro.NumeroConcorrente == numeroConcorrente && !categoriaPilota) {
-                            categoriaPilota = giro.Categoria;
-                        }
-
-                        let esistente = classificaGenerale.find(c => c.NumeroConcorrente === giro.NumeroConcorrente);
-                        if (esistente) {
-                            esistente.TempoTotale += parseInt(giro.Tempoms);
-                            esistente.NumeroGiri++;
-                        } else {
-                            let nuovoConcorrente = {
-                                NumeroConcorrente: giro.NumeroConcorrente,
-                                Nome: giro.Nome,
-                                Cognome: giro.Cognome,
-                                TempoTotale: parseInt(giro.Tempoms),
-                                NumeroGiri: 1,
-                                Categoria: giro.Categoria
-                            };
-                            classificaGenerale.push(nuovoConcorrente);
-
-                            if (giro.Categoria === "D") classificaDonne.push(nuovoConcorrente);
-                            if (giro.Categoria === "O") classificaSenior.push(nuovoConcorrente);
-                        }
-                    }
+        snapshot.forEach((childSnapshot) => {
+            let giro = childSnapshot.val();
+            if (giro.Arrivato === "SI") {
+                if (!datiPerGara[giro.Gara]) datiPerGara[giro.Gara] = [];
+                datiPerGara[giro.Gara].push({
+                    NumeroConcorrente: giro.NumeroConcorrente,
+                    Tempo: parseInt(giro.Tempoms),
+                    Gara: giro.Gara
                 });
 
-                // Ordiniamo le classifiche per calcolare la posizione corretta
-                classificaGenerale.sort((a, b) =>
-                    b.NumeroGiri !== a.NumeroGiri ? b.NumeroGiri - a.NumeroGiri : a.TempoTotale - b.TempoTotale
-                );
+                giriCompleti.push(giro);
 
-                classificaDonne.sort((a, b) =>
-                    b.NumeroGiri !== a.NumeroGiri ? b.NumeroGiri - a.NumeroGiri : a.TempoTotale - b.TempoTotale
-                );
-
-                classificaSenior.sort((a, b) =>
-                    b.NumeroGiri !== a.NumeroGiri ? b.NumeroGiri - a.NumeroGiri : a.TempoTotale - b.TempoTotale
-                );
-
-                // Trova la posizione nelle classifiche
-                let posizioneGenerale = classificaGenerale.findIndex(c => c.NumeroConcorrente == numeroConcorrente) + 1;
-                let posizioneDonne = categoriaPilota === "D" ? classificaDonne.findIndex(c => c.NumeroConcorrente == numeroConcorrente) + 1 : null;
-                let posizioneSenior = categoriaPilota === "O" ? classificaSenior.findIndex(c => c.NumeroConcorrente == numeroConcorrente) + 1 : null;
-
-                // Calcola la posizione nelle singole gare
-                Object.keys(datiPerGara).forEach(gara => {
-                    datiPerGara[gara].sort((a, b) => a.Tempo - b.Tempo);
-                    datiPerGara[gara].forEach((giro, index) => {
-                        giro.PosizioneGara = index + 1;
-                        if (giro.NumeroConcorrente == numeroConcorrente) {
-                            datiGiri.push(giro);
-                        }
-                    });
-                });
-
-                let popupBody = document.getElementById("popupBody");
-             popupBody.innerHTML = datiGiri.map(giro => {
-    const tempiGara = datiPerGara[giro.Gara] || [];
-    const migliorTempo = Math.min(...tempiGara.map(g => g.Tempo));
-    const delta = giro.Tempo - migliorTempo;
-    const deltaFormatted = giro.Tempo === migliorTempo ? "—" : `+${formattaTempo(delta)}`;
-
-    return `
-        <tr>
-            <td>${giro.Gara}</td>
-            <td>${giro.PosizioneGara}</td>
-            <td>${formattaTempo(giro.Tempo)}</td>
-            <td>${deltaFormatted}</td>
-        </tr>
-    `;
-}).join("");
-
-
-                let titoloPopup = `#${numeroConcorrente} ${nome} ${cognome} - <span style="color: red;">Pos. Gen: ${posizioneGenerale}</span>`;
-
-                if (categoriaPilota === "D" && posizioneDonne) {
-                    titoloPopup += ` - <span style="color: purple;">Pos. Donne: ${posizioneDonne}</span>`;
-                }
-                if (categoriaPilota === "O" && posizioneSenior) {
-                    titoloPopup += ` - <span style="color: blue;">Pos. Senior: ${posizioneSenior}</span>`;
+                if (giro.NumeroConcorrente == numeroConcorrente && !categoriaPilota) {
+                    categoriaPilota = giro.Categoria;
                 }
 
-                document.getElementById("popupTitle").innerHTML = titoloPopup;
-                document.getElementById("popup").style.display = "block";
-                document.getElementById("popupOverlay").style.display = "block";
+                let esistente = classificaGenerale.find(c => c.NumeroConcorrente === giro.NumeroConcorrente);
+                if (esistente) {
+                    esistente.TempoTotale += parseInt(giro.Tempoms);
+                    esistente.NumeroGiri++;
+                } else {
+                    let nuovo = {
+                        NumeroConcorrente: giro.NumeroConcorrente,
+                        Nome: giro.Nome,
+                        Cognome: giro.Cognome,
+                        TempoTotale: parseInt(giro.Tempoms),
+                        NumeroGiri: 1,
+                        Categoria: giro.Categoria,
+                        Squadra: giro.Squadra
+                    };
+                    classificaGenerale.push(nuovo);
+                    if (giro.Categoria === "D" || giro.Categoria === "OD") classificaDonne.push(nuovo);
+                    if (giro.Categoria === "O" || giro.Categoria === "OD") classificaSenior.push(nuovo);
+                }
+            }
+        });
+
+        classificaGenerale.sort((a, b) =>
+            b.NumeroGiri !== a.NumeroGiri ? b.NumeroGiri - a.NumeroGiri : a.TempoTotale - b.TempoTotale
+        );
+        classificaDonne.sort((a, b) =>
+            b.NumeroGiri !== a.NumeroGiri ? b.NumeroGiri - a.NumeroGiri : a.TempoTotale - b.TempoTotale
+        );
+        classificaSenior.sort((a, b) =>
+            b.NumeroGiri !== a.NumeroGiri ? b.NumeroGiri - a.NumeroGiri : a.TempoTotale - b.TempoTotale
+        );
+
+        let posizioneGenerale = classificaGenerale.findIndex(c => c.NumeroConcorrente == numeroConcorrente) + 1;
+        let posizioneDonne = classificaDonne.findIndex(c => c.NumeroConcorrente == numeroConcorrente) + 1;
+        let posizioneSenior = classificaSenior.findIndex(c => c.NumeroConcorrente == numeroConcorrente) + 1;
+
+        Object.keys(datiPerGara).forEach(gara => {
+            datiPerGara[gara].sort((a, b) => a.Tempo - b.Tempo);
+            datiPerGara[gara].forEach((giro, index) => {
+                giro.PosizioneGara = index + 1;
+                if (giro.NumeroConcorrente == numeroConcorrente) {
+                    datiGiri.push(giro);
+                }
             });
+        });
+
+        const punteggi = calcolaPuntiConcorrenti(classificaGenerale, giriCompleti);
+        const pt = punteggi[numeroConcorrente] || {};
+        const totale = pt.totale || 0;
+
+        const breakdown = [];
+        if (pt.gen) breakdown.push(`${pt.gen} gen`);
+        if (pt.extraDonne) breakdown.push(`${pt.extraDonne} 🎀`);
+        if (pt.extraSenior) breakdown.push(`${pt.extraSenior} 👴`);
+        if (pt.ps) breakdown.push(`${pt.ps} ⚡`);
+        if (pt.giroVeloce) breakdown.push(`10 ⏱`);
+
+        const giriPilota = giriCompleti.filter(g => g.NumeroConcorrente == numeroConcorrente);
+        const tempoTotale = giriPilota.reduce((sum, g) => sum + parseInt(g.Tempoms), 0);
+        const numeroGiri = giriPilota.length;
+        const mediaGiro = numeroGiri > 0 ? tempoTotale / numeroGiri : 0;
+        const migliorGiro = Math.min(...giriPilota.map(g => g.Tempoms));
+        const peggiorGiro = Math.max(...giriPilota.map(g => g.Tempoms));
+
+        const teamPilota = giriCompleti.find(g => g.NumeroConcorrente == numeroConcorrente)?.Squadra || "TEAM";
+
+        let iconaCategoria = "";
+        if (categoriaPilota === "D" || categoriaPilota === "OD") iconaCategoria += " 🎀";
+        if (categoriaPilota === "O" || categoriaPilota === "OD") iconaCategoria += " 👴";
+
+        let riga1 = `<div style="font-weight:bold; font-size: 18px; margin-bottom: 6px;">SCHEDA PILOTA</div>`;
+        let riga2 = `<div style="font-size: 17px; font-weight:bold;">
+            #${numeroConcorrente} ${nome} ${cognome} → ${teamPilota}${iconaCategoria}
+        </div>`;
+
+        let riga3 = `<div style="margin-top: 5px; font-size: 15px;">
+            <span style="color: red;">Pos. Gen: ${posizioneGenerale}</span>`;
+        if (classificaDonne.some(c => c.NumeroConcorrente == numeroConcorrente)) {
+            riga3 += ` - <span style="color: purple;">Pos. Donne: ${posizioneDonne}</span>`;
         }
-
-
-
-
-
-
-        function chiudiPopup() {
-            document.getElementById("popup").style.display = "none";
-            document.getElementById("popupOverlay").style.display = "none";
+        if (classificaSenior.some(c => c.NumeroConcorrente == numeroConcorrente)) {
+            riga3 += ` - <span style="color: blue;">Pos. Senior: ${posizioneSenior}</span>`;
         }
+        riga3 += `</div>`;
+
+        document.getElementById("popupTitle").innerHTML = `${riga1}${riga2}${riga3}`;
+
+        document.getElementById("popupPunti").innerHTML = `
+            <span class="punteggio-popup">
+                Punteggio: ${totale}pt ${breakdown.length ? `(${breakdown.join(" + ")})` : ""}
+            </span>
+        `;
+
+        const mediaTroncata = Math.floor(mediaGiro);
+
+        document.getElementById("popupDettagli").innerHTML = `
+            <table style="margin-top: 10px; width: 100%; text-align: center;">
+                <tr>
+                    <th>Tempo Totale</th>
+                    <th>Media Giro</th>
+                    <th>Miglior Giro</th>
+                    <th>Peggior Giro</th>
+                    <th>Giri Completati</th>
+                </tr>
+                <tr>
+                    <td>${formattaTempo(tempoTotale)}</td>
+                    <td>${formattaTempo(mediaTroncata)}</td>
+                    <td>${formattaTempo(migliorGiro)}</td>
+                    <td>${formattaTempo(peggiorGiro)} 🐢</td>
+                    <td>${numeroGiri}</td>
+                </tr>
+            </table>
+        `;
+
+        let migliorPos = Math.min(...datiGiri.map(g => g.PosizioneGara));
+        let migliorGara = datiGiri.find(g => g.PosizioneGara === migliorPos)?.Gara || "-";
+        document.getElementById("popupDettagli").innerHTML += `
+            <div style="margin-top: 10px; text-align: center; font-size: 15px;">
+                🥇 <strong>Miglior posizione:</strong> ${migliorPos}° (PS${migliorGara})
+            </div>
+        `;
+
+        document.getElementById("popupBody").innerHTML = datiGiri.map(giro => {
+            const tempiGara = datiPerGara[giro.Gara] || [];
+            const migliorTempo = Math.min(...tempiGara.map(g => g.Tempo));
+            const delta = giro.Tempo - migliorTempo;
+            const deltaFormatted = giro.Tempo === migliorTempo ? "—" : `+${formattaTempo(delta)}`;
+            const iconaGiro = giro.Tempo === migliorGiro ? " ⏱" : giro.Tempo === peggiorGiro ? " 🐢" : "";
+
+            return `
+                <tr>
+                    <td>${giro.Gara}</td>
+                    <td>${giro.PosizioneGara}</td>
+                    <td>${formattaTempo(giro.Tempo)}${iconaGiro}</td>
+                    <td>${deltaFormatted}</td>
+                </tr>
+            `;
+        }).join("");
+
+        // Sezione team
+        const punteggiTeam = {};
+        classificaGenerale.forEach(c => {
+            if (!punteggiTeam[c.Squadra]) punteggiTeam[c.Squadra] = 0;
+            punteggiTeam[c.Squadra] += (punteggi[c.NumeroConcorrente]?.totale || 0);
+        });
+
+        const classificaTeam = Object.entries(punteggiTeam)
+            .map(([team, punti]) => ({ team, punti }))
+            .sort((a, b) => b.punti - a.punti);
+
+        const posizioneTeam = classificaTeam.findIndex(t => t.team === teamPilota) + 1;
+        const membriTeam = classificaGenerale.filter(c => c.Squadra === teamPilota);
+
+        const teamHTML = `
+    <div style="
+        margin-top: 20px;
+        width: 100%;
+        padding: 16px;
+        border-radius: 12px;
+        background: linear-gradient(to right, #e6ffed, #c7f9cc);
+        border: 2px solid #34a853;
+        box-shadow: 0 0 8px rgba(52, 168, 83, 0.4);
+        font-size: 15px;
+        box-sizing: border-box;
+        color: #1b5e20;
+    ">
+        <div style="font-size: 16px; font-weight: bold; margin-bottom: 6px;">
+            🟩 <u>Info Team</u> ${teamPilota}
+        </div>
+        <div><strong>🏆 Totale Team:</strong> ${punteggiTeam[teamPilota] || 0}pt</div>
+        <div><strong>📊 Posizione Team:</strong> ${posizioneTeam}</div>
+        <div style="margin-top: 10px;">
+            <strong>👥 Piloti del Team:</strong><br>
+            <ul style="list-style-type: none; padding-left: 10px; margin-top: 6px;">
+                ${membriTeam.map(m => {
+                    const pt = punteggi[m.NumeroConcorrente] || {};
+                    const dettagli = [];
+                    if (pt.gen > 0) dettagli.push(`${pt.gen}`);
+                    if (pt.extraDonne) dettagli.push(`${pt.extraDonne} 🎀`);
+                    if (pt.extraSenior) dettagli.push(`${pt.extraSenior} 👴`);
+                    if (pt.ps) dettagli.push(`${pt.ps} ⚡`);
+                    if (pt.giroVeloce) dettagli.push(`10 ⏱`);
+                    return `<li style="margin-bottom: 4px;">#${m.NumeroConcorrente} <strong>${m.Nome} ${m.Cognome}</strong> → <strong>${pt.totale || 0}pt</strong> (${dettagli.join(" + ")})</li>`;
+                }).join("")}
+            </ul>
+        </div>
+    </div>
+`;
+
+
+        if (teamPilota !== "SINGOLO") {
+    document.getElementById("popupDettagli").innerHTML += teamHTML;
+}
+
+
+        document.getElementById("popup").style.display = "block";
+        document.getElementById("popupOverlay").style.display = "block";
+    });
+}
+
+
+
+
+
+
+
+
+
+
+
+
+
+     function chiudiPopup() {
+    document.getElementById("popup").style.display = "none";
+    document.getElementById("popupOverlay").style.display = "none";
+}
+
 
 
 
