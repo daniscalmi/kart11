@@ -637,7 +637,7 @@ tbody tr:hover {
 .punteggio-popup {
     color: green;
     font-weight: bold;
-    font-size: 16px;
+    font-size: 22px;
     font-family: inherit; /* eredita il font della pagina */
     margin-bottom: 10px;
 }
@@ -713,6 +713,102 @@ tbody tr:hover {
                     <!-- Ultimi 5 kart verranno caricati qui -->
                 </tbody>
             </table>
+<!-- Mini popup mobile -->
+<style>
+@keyframes fadeInScale {
+  0% {
+    opacity: 0;
+    transform: translate(-50%, -50%) scale(0.8);
+  }
+  100% {
+    opacity: 1;
+    transform: translate(-50%, -50%) scale(1);
+  }
+}
+</style>
+
+<div id="mobilePopup" style="
+    display: none;
+    position: fixed;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    background-color: #007bff;
+    color: white;
+    padding: 30px 50px;
+    font-size: 36px;
+    font-weight: bold;
+    border-radius: 20px;
+    box-shadow: 0 8px 24px rgba(0,0,0,0.6);
+    z-index: 10000;
+    max-width: 95%;
+    text-align: center;
+    line-height: 1.7;
+    animation: fadeInScale 0.3s ease-in-out;
+">
+    <div id="popupContent"></div>
+    <button onclick="chiudiPopupMobile()" style="
+        margin-top: 20px;
+        font-size: 20px;
+        background-color: #dc3545;
+        color: white;
+        border: none;
+        border-radius: 8px;
+        padding: 10px 20px;
+        cursor: pointer;
+    ">✖ Chiudi</button>
+</div>
+
+
+
+
+
+
+<!-- Bottone per aprire il popup -->
+<div style="margin-top: 10px;">
+  <button onclick="apriPopup30Giri()" style="background-color: #28a745; color: white; font-weight: bold; padding: 8px 16px; border: none; border-radius: 8px; cursor: pointer;">
+    Mostra ultimi 30 arrivi
+  </button>
+</div>
+
+<!-- Popup overlay per 30 giri -->
+<div id="popupOverlay30" onclick="chiudiPopup30()" style="
+    display: none;
+    position: fixed;
+    top: 0; left: 0;
+    width: 100vw; height: 100vh;
+    background-color: rgba(0, 0, 0, 0.6);
+    z-index: 999;
+"></div>
+
+<div id="popup30" style="
+    display: none;
+    position: fixed;
+    top: 50%; left: 50%;
+    transform: translate(-50%, -50%);
+    background-color: white;
+    padding: 20px;
+    border-radius: 12px;
+    z-index: 1000;
+    width: 90%;
+    max-width: 600px;
+    max-height: 80vh;
+    overflow-y: auto;
+    box-shadow: 0 0 15px rgba(0, 0, 0, 0.5);
+">
+  <h3>Ultimi 30 giri</h3>
+  <table class="latest-karts-table">
+    <thead>
+      <tr><th>NR</th><th>Pilota</th><th>Tempo</th></tr>
+    </thead>
+    <tbody id="ultimi30Body"></tbody>
+  </table>
+  <button onclick="chiudiPopup30()" class="btn-chiudi-popup">✖ Chiudi</button>
+</div>
+
+
+			
+			
         </div>
     </div>
 
@@ -1359,45 +1455,65 @@ function calcolaPuntiConcorrenti(dati, giri) {
 
 
         function caricaClassificaPS1() {
-            const classificaRef = db.ref("giro");
+    const classificaRef = db.ref("giro");
 
-            classificaRef.on("value", (snapshot) => {
-                let classificaBody = document.getElementById("classificaPS1Body");
-                classificaBody.innerHTML = "";
+    classificaRef.on("value", (snapshot) => {
+        let classificaBody = document.getElementById("classificaPS1Body");
+        classificaBody.innerHTML = "";
 
-                if (!snapshot.exists()) return;
+        if (!snapshot.exists()) return;
 
-                let dati = [];
-                snapshot.forEach((childSnapshot) => {
-                    let concorrente = childSnapshot.val();
-                    if (concorrente.Arrivato === "SI" && concorrente.Gara === 1) {
-                        let tempo = parseInt(concorrente.Tempoms) || 0;
-                        dati.push({
-                            NumeroConcorrente: concorrente.NumeroConcorrente,
-                            Nome: concorrente.Nome,
-                            Cognome: concorrente.Cognome,
-                            Tempo: tempo,
-                            Squadra: concorrente.Squadra,
-                            Categoria: concorrente.Categoria
-                        });
-                    }
+        let dati = [];
+        snapshot.forEach((childSnapshot) => {
+            let concorrente = childSnapshot.val();
+            if (concorrente.Arrivato === "SI" && parseInt(concorrente.Gara) === 1) {
+                let tempo = parseInt(concorrente.Tempoms) || 0;
+                dati.push({
+                    NumeroConcorrente: concorrente.NumeroConcorrente,
+                    Nome: concorrente.Nome,
+                    Cognome: concorrente.Cognome,
+                    Tempo: tempo,
+                    Squadra: concorrente.Squadra,
+                    Categoria: concorrente.Categoria,
+                    PFalsa: concorrente.PFalsa || "NO" // Prende anche PFalsa
                 });
+            }
+        });
 
-                dati.sort((a, b) => a.Tempo - b.Tempo);
+        dati.sort((a, b) => a.Tempo - b.Tempo);
 
-                   classificaBody.innerHTML = dati.map((concorrente, index) => {
+        classificaBody.innerHTML = dati.map((concorrente, index) => {
             let categoriaClasse = concorrente.Categoria === "OD" ? "concorrente-donna-senior" :
                                    concorrente.Categoria === "D" ? "concorrente-donna" :
                                    concorrente.Categoria === "O" ? "concorrente-senior" :
                                                                    "concorrente-generale";
 
+            // Evidenzia partenza falsa se presente
+            const partenzaFalsaBadge = concorrente.PFalsa === "SI" ? `
+                <span style="
+                    color: yellow;
+                    background-color: red;
+                    padding: 2px 6px;
+                    border-radius: 5px;
+                    font-size: 12px;
+                    font-weight: bold;
+                    margin-left: 6px;">
+                    🚩 PF +3 sec
+                </span>` : "";
+
+            // Sfondo riga rosso trasparente se PFalsa
+            const bgStyle = concorrente.PFalsa === "SI" ? "background-color: rgba(255,0,0,0.2);" : "";
+
             return `
-                <tr>
+                <tr style="${bgStyle}">
                     <td class="posizione-generale">${index + 1}</td>
                     <td class="${categoriaClasse}">${concorrente.NumeroConcorrente}</td>
                     <td class="bold-text">${concorrente.Nome}</td>
                     <td class="bold-text">${concorrente.Cognome}</td>
-                    <td class="bold-text">${formattaTempo(concorrente.Tempo)}</td>
+                    <td class="bold-text">
+                        ${formattaTempo(concorrente.Tempo)}
+                        ${partenzaFalsaBadge}
+                    </td>
                     <td>${concorrente.Squadra}</td>
                     <td>${concorrente.Categoria}</td>
                 </tr>
@@ -1407,46 +1523,67 @@ function calcolaPuntiConcorrenti(dati, giri) {
 }
 
 
-        function caricaClassificaPS2() {
-            const classificaRef = db.ref("giro");
 
-            classificaRef.on("value", (snapshot) => {
-                let classificaBody = document.getElementById("classificaPS2Body");
-                classificaBody.innerHTML = "";
+ function caricaClassificaPS2() {
+    const classificaRef = db.ref("giro");
 
-                if (!snapshot.exists()) return;
+    classificaRef.on("value", (snapshot) => {
+        let classificaBody = document.getElementById("classificaPS2Body");
+        classificaBody.innerHTML = "";
 
-                let dati = [];
-                snapshot.forEach((childSnapshot) => {
-                    let concorrente = childSnapshot.val();
-                    if (concorrente.Arrivato === "SI" && concorrente.Gara === 2) {
-                        let tempo = parseInt(concorrente.Tempoms) || 0;
-                        dati.push({
-                            NumeroConcorrente: concorrente.NumeroConcorrente,
-                            Nome: concorrente.Nome,
-                            Cognome: concorrente.Cognome,
-                            Tempo: tempo,
-                            Squadra: concorrente.Squadra,
-                            Categoria: concorrente.Categoria
-                        });
-                    }
+        if (!snapshot.exists()) return;
+
+        let dati = [];
+        snapshot.forEach((childSnapshot) => {
+            let concorrente = childSnapshot.val();
+            if (concorrente.Arrivato === "SI" && parseInt(concorrente.Gara) === 2) {
+                let tempo = parseInt(concorrente.Tempoms) || 0;
+                dati.push({
+                    NumeroConcorrente: concorrente.NumeroConcorrente,
+                    Nome: concorrente.Nome,
+                    Cognome: concorrente.Cognome,
+                    Tempo: tempo,
+                    Squadra: concorrente.Squadra,
+                    Categoria: concorrente.Categoria,
+                    PFalsa: concorrente.PFalsa || "NO" // Prende anche PFalsa
                 });
+            }
+        });
 
-                dati.sort((a, b) => a.Tempo - b.Tempo);
+        dati.sort((a, b) => a.Tempo - b.Tempo);
 
-                   classificaBody.innerHTML = dati.map((concorrente, index) => {
+        classificaBody.innerHTML = dati.map((concorrente, index) => {
             let categoriaClasse = concorrente.Categoria === "OD" ? "concorrente-donna-senior" :
                                    concorrente.Categoria === "D" ? "concorrente-donna" :
                                    concorrente.Categoria === "O" ? "concorrente-senior" :
                                                                    "concorrente-generale";
 
+            // Evidenzia partenza falsa se presente
+            const partenzaFalsaBadge = concorrente.PFalsa === "SI" ? `
+                <span style="
+                    color: yellow;
+                    background-color: red;
+                    padding: 2px 6px;
+                    border-radius: 5px;
+                    font-size: 12px;
+                    font-weight: bold;
+                    margin-left: 6px;">
+                    🚩 PF +3 sec
+                </span>` : "";
+
+            // Sfondo riga rosso trasparente se PFalsa
+            const bgStyle = concorrente.PFalsa === "SI" ? "background-color: rgba(255,0,0,0.2);" : "";
+
             return `
-                <tr>
+                <tr style="${bgStyle}">
                     <td class="posizione-generale">${index + 1}</td>
                     <td class="${categoriaClasse}">${concorrente.NumeroConcorrente}</td>
                     <td class="bold-text">${concorrente.Nome}</td>
                     <td class="bold-text">${concorrente.Cognome}</td>
-                    <td class="bold-text">${formattaTempo(concorrente.Tempo)}</td>
+                    <td class="bold-text">
+                        ${formattaTempo(concorrente.Tempo)}
+                        ${partenzaFalsaBadge}
+                    </td>
                     <td>${concorrente.Squadra}</td>
                     <td>${concorrente.Categoria}</td>
                 </tr>
@@ -1454,47 +1591,68 @@ function calcolaPuntiConcorrenti(dati, giri) {
         }).join("");
     });
 }
+
 
         function caricaClassificaPS3() {
-            const classificaRef = db.ref("giro");
+    const classificaRef = db.ref("giro");
 
-            classificaRef.on("value", (snapshot) => {
-                let classificaBody = document.getElementById("classificaPS3Body");
-                classificaBody.innerHTML = "";
+    classificaRef.on("value", (snapshot) => {
+        let classificaBody = document.getElementById("classificaPS3Body");
+        classificaBody.innerHTML = "";
 
-                if (!snapshot.exists()) return;
+        if (!snapshot.exists()) return;
 
-                let dati = [];
-                snapshot.forEach((childSnapshot) => {
-                    let concorrente = childSnapshot.val();
-                    if (concorrente.Arrivato === "SI" && concorrente.Gara === 3) {
-                        let tempo = parseInt(concorrente.Tempoms) || 0;
-                        dati.push({
-                            NumeroConcorrente: concorrente.NumeroConcorrente,
-                            Nome: concorrente.Nome,
-                            Cognome: concorrente.Cognome,
-                            Tempo: tempo,
-                            Squadra: concorrente.Squadra,
-                            Categoria: concorrente.Categoria
-                        });
-                    }
+        let dati = [];
+        snapshot.forEach((childSnapshot) => {
+            let concorrente = childSnapshot.val();
+            if (concorrente.Arrivato === "SI" && parseInt(concorrente.Gara) === 3) {
+                let tempo = parseInt(concorrente.Tempoms) || 0;
+                dati.push({
+                    NumeroConcorrente: concorrente.NumeroConcorrente,
+                    Nome: concorrente.Nome,
+                    Cognome: concorrente.Cognome,
+                    Tempo: tempo,
+                    Squadra: concorrente.Squadra,
+                    Categoria: concorrente.Categoria,
+                    PFalsa: concorrente.PFalsa || "NO" // Prende anche PFalsa
                 });
+            }
+        });
 
-                dati.sort((a, b) => a.Tempo - b.Tempo);
+        dati.sort((a, b) => a.Tempo - b.Tempo);
 
-                  classificaBody.innerHTML = dati.map((concorrente, index) => {
+        classificaBody.innerHTML = dati.map((concorrente, index) => {
             let categoriaClasse = concorrente.Categoria === "OD" ? "concorrente-donna-senior" :
                                    concorrente.Categoria === "D" ? "concorrente-donna" :
                                    concorrente.Categoria === "O" ? "concorrente-senior" :
                                                                    "concorrente-generale";
 
+            // Evidenzia partenza falsa se presente
+            const partenzaFalsaBadge = concorrente.PFalsa === "SI" ? `
+                <span style="
+                    color: yellow;
+                    background-color: red;
+                    padding: 2px 6px;
+                    border-radius: 5px;
+                    font-size: 12px;
+                    font-weight: bold;
+                    margin-left: 6px;">
+                    🚩 PF +3 sec
+                </span>` : "";
+
+            // Sfondo riga rosso trasparente se PFalsa
+            const bgStyle = concorrente.PFalsa === "SI" ? "background-color: rgba(255,0,0,0.2);" : "";
+
             return `
-                <tr>
+                <tr style="${bgStyle}">
                     <td class="posizione-generale">${index + 1}</td>
                     <td class="${categoriaClasse}">${concorrente.NumeroConcorrente}</td>
                     <td class="bold-text">${concorrente.Nome}</td>
                     <td class="bold-text">${concorrente.Cognome}</td>
-                    <td class="bold-text">${formattaTempo(concorrente.Tempo)}</td>
+                    <td class="bold-text">
+                        ${formattaTempo(concorrente.Tempo)}
+                        ${partenzaFalsaBadge}
+                    </td>
                     <td>${concorrente.Squadra}</td>
                     <td>${concorrente.Categoria}</td>
                 </tr>
@@ -1503,46 +1661,67 @@ function calcolaPuntiConcorrenti(dati, giri) {
     });
 }
 
-        function caricaClassificaPS4() {
-            const classificaRef = db.ref("giro");
 
-            classificaRef.on("value", (snapshot) => {
-                let classificaBody = document.getElementById("classificaPS4Body");
-                classificaBody.innerHTML = "";
+ function caricaClassificaPS4() {
+    const classificaRef = db.ref("giro");
 
-                if (!snapshot.exists()) return;
+    classificaRef.on("value", (snapshot) => {
+        let classificaBody = document.getElementById("classificaPS4Body");
+        classificaBody.innerHTML = "";
 
-                let dati = [];
-                snapshot.forEach((childSnapshot) => {
-                    let concorrente = childSnapshot.val();
-                    if (concorrente.Arrivato === "SI" && concorrente.Gara === 4) {
-                        let tempo = parseInt(concorrente.Tempoms) || 0;
-                        dati.push({
-                            NumeroConcorrente: concorrente.NumeroConcorrente,
-                            Nome: concorrente.Nome,
-                            Cognome: concorrente.Cognome,
-                            Tempo: tempo,
-                            Squadra: concorrente.Squadra,
-                            Categoria: concorrente.Categoria
-                        });
-                    }
+        if (!snapshot.exists()) return;
+
+        let dati = [];
+        snapshot.forEach((childSnapshot) => {
+            let concorrente = childSnapshot.val();
+            if (concorrente.Arrivato === "SI" && parseInt(concorrente.Gara) === 4) {
+                let tempo = parseInt(concorrente.Tempoms) || 0;
+                dati.push({
+                    NumeroConcorrente: concorrente.NumeroConcorrente,
+                    Nome: concorrente.Nome,
+                    Cognome: concorrente.Cognome,
+                    Tempo: tempo,
+                    Squadra: concorrente.Squadra,
+                    Categoria: concorrente.Categoria,
+                    PFalsa: concorrente.PFalsa || "NO" // Prende anche PFalsa
                 });
+            }
+        });
 
-                dati.sort((a, b) => a.Tempo - b.Tempo);
+        dati.sort((a, b) => a.Tempo - b.Tempo);
 
-                   classificaBody.innerHTML = dati.map((concorrente, index) => {
+        classificaBody.innerHTML = dati.map((concorrente, index) => {
             let categoriaClasse = concorrente.Categoria === "OD" ? "concorrente-donna-senior" :
                                    concorrente.Categoria === "D" ? "concorrente-donna" :
                                    concorrente.Categoria === "O" ? "concorrente-senior" :
                                                                    "concorrente-generale";
 
+            // Evidenzia partenza falsa se presente
+            const partenzaFalsaBadge = concorrente.PFalsa === "SI" ? `
+                <span style="
+                    color: yellow;
+                    background-color: red;
+                    padding: 2px 6px;
+                    border-radius: 5px;
+                    font-size: 12px;
+                    font-weight: bold;
+                    margin-left: 6px;">
+                    🚩 PF +3 sec
+                </span>` : "";
+
+            // Sfondo riga rosso trasparente se PFalsa
+            const bgStyle = concorrente.PFalsa === "SI" ? "background-color: rgba(255,0,0,0.2);" : "";
+
             return `
-                <tr>
+                <tr style="${bgStyle}">
                     <td class="posizione-generale">${index + 1}</td>
                     <td class="${categoriaClasse}">${concorrente.NumeroConcorrente}</td>
                     <td class="bold-text">${concorrente.Nome}</td>
                     <td class="bold-text">${concorrente.Cognome}</td>
-                    <td class="bold-text">${formattaTempo(concorrente.Tempo)}</td>
+                    <td class="bold-text">
+                        ${formattaTempo(concorrente.Tempo)}
+                        ${partenzaFalsaBadge}
+                    </td>
                     <td>${concorrente.Squadra}</td>
                     <td>${concorrente.Categoria}</td>
                 </tr>
@@ -1551,46 +1730,66 @@ function calcolaPuntiConcorrenti(dati, giri) {
     });
 }
 
-        function caricaClassificaPS5() {
-            const classificaRef = db.ref("giro");
+function caricaClassificaPS5() {
+    const classificaRef = db.ref("giro");
 
-            classificaRef.on("value", (snapshot) => {
-                let classificaBody = document.getElementById("classificaPS5Body");
-                classificaBody.innerHTML = "";
+    classificaRef.on("value", (snapshot) => {
+        let classificaBody = document.getElementById("classificaPS5Body");
+        classificaBody.innerHTML = "";
 
-                if (!snapshot.exists()) return;
+        if (!snapshot.exists()) return;
 
-                let dati = [];
-                snapshot.forEach((childSnapshot) => {
-                    let concorrente = childSnapshot.val();
-                    if (concorrente.Arrivato === "SI" && concorrente.Gara === 5) {
-                        let tempo = parseInt(concorrente.Tempoms) || 0;
-                        dati.push({
-                            NumeroConcorrente: concorrente.NumeroConcorrente,
-                            Nome: concorrente.Nome,
-                            Cognome: concorrente.Cognome,
-                            Tempo: tempo,
-                            Squadra: concorrente.Squadra,
-                            Categoria: concorrente.Categoria
-                        });
-                    }
+        let dati = [];
+        snapshot.forEach((childSnapshot) => {
+            let concorrente = childSnapshot.val();
+            if (concorrente.Arrivato === "SI" && parseInt(concorrente.Gara) === 5) {
+                let tempo = parseInt(concorrente.Tempoms) || 0;
+                dati.push({
+                    NumeroConcorrente: concorrente.NumeroConcorrente,
+                    Nome: concorrente.Nome,
+                    Cognome: concorrente.Cognome,
+                    Tempo: tempo,
+                    Squadra: concorrente.Squadra,
+                    Categoria: concorrente.Categoria,
+                    PFalsa: concorrente.PFalsa || "NO" // Prende anche PFalsa
                 });
+            }
+        });
 
-                dati.sort((a, b) => a.Tempo - b.Tempo);
+        dati.sort((a, b) => a.Tempo - b.Tempo);
 
-                   classificaBody.innerHTML = dati.map((concorrente, index) => {
+        classificaBody.innerHTML = dati.map((concorrente, index) => {
             let categoriaClasse = concorrente.Categoria === "OD" ? "concorrente-donna-senior" :
                                    concorrente.Categoria === "D" ? "concorrente-donna" :
                                    concorrente.Categoria === "O" ? "concorrente-senior" :
                                                                    "concorrente-generale";
 
+            // Evidenzia partenza falsa se presente
+            const partenzaFalsaBadge = concorrente.PFalsa === "SI" ? `
+                <span style="
+                    color: yellow;
+                    background-color: red;
+                    padding: 2px 6px;
+                    border-radius: 5px;
+                    font-size: 12px;
+                    font-weight: bold;
+                    margin-left: 6px;">
+                    🚩 PF +3 sec
+                </span>` : "";
+
+            // Sfondo riga rosso trasparente se PFalsa
+            const bgStyle = concorrente.PFalsa === "SI" ? "background-color: rgba(255,0,0,0.2);" : "";
+
             return `
-                <tr>
+                <tr style="${bgStyle}">
                     <td class="posizione-generale">${index + 1}</td>
                     <td class="${categoriaClasse}">${concorrente.NumeroConcorrente}</td>
                     <td class="bold-text">${concorrente.Nome}</td>
                     <td class="bold-text">${concorrente.Cognome}</td>
-                    <td class="bold-text">${formattaTempo(concorrente.Tempo)}</td>
+                    <td class="bold-text">
+                        ${formattaTempo(concorrente.Tempo)}
+                        ${partenzaFalsaBadge}
+                    </td>
                     <td>${concorrente.Squadra}</td>
                     <td>${concorrente.Categoria}</td>
                 </tr>
@@ -1599,46 +1798,68 @@ function calcolaPuntiConcorrenti(dati, giri) {
     });
 }
 
-        function caricaClassificaPS6() {
-            const classificaRef = db.ref("giro");
 
-            classificaRef.on("value", (snapshot) => {
-                let classificaBody = document.getElementById("classificaPS6Body");
-                classificaBody.innerHTML = "";
 
-                if (!snapshot.exists()) return;
+ function caricaClassificaPS6() {
+    const classificaRef = db.ref("giro");
 
-                let dati = [];
-                snapshot.forEach((childSnapshot) => {
-                    let concorrente = childSnapshot.val();
-                    if (concorrente.Arrivato === "SI" && concorrente.Gara === 6) {
-                        let tempo = parseInt(concorrente.Tempoms) || 0;
-                        dati.push({
-                            NumeroConcorrente: concorrente.NumeroConcorrente,
-                            Nome: concorrente.Nome,
-                            Cognome: concorrente.Cognome,
-                            Tempo: tempo,
-                            Squadra: concorrente.Squadra,
-                            Categoria: concorrente.Categoria
-                        });
-                    }
+    classificaRef.on("value", (snapshot) => {
+        let classificaBody = document.getElementById("classificaPS6Body");
+        classificaBody.innerHTML = "";
+
+        if (!snapshot.exists()) return;
+
+        let dati = [];
+        snapshot.forEach((childSnapshot) => {
+            let concorrente = childSnapshot.val();
+            if (concorrente.Arrivato === "SI" && parseInt(concorrente.Gara) === 6) {
+                let tempo = parseInt(concorrente.Tempoms) || 0;
+                dati.push({
+                    NumeroConcorrente: concorrente.NumeroConcorrente,
+                    Nome: concorrente.Nome,
+                    Cognome: concorrente.Cognome,
+                    Tempo: tempo,
+                    Squadra: concorrente.Squadra,
+                    Categoria: concorrente.Categoria,
+                    PFalsa: concorrente.PFalsa || "NO" // Prende anche PFalsa
                 });
+            }
+        });
 
-                dati.sort((a, b) => a.Tempo - b.Tempo);
+        dati.sort((a, b) => a.Tempo - b.Tempo);
 
-                   classificaBody.innerHTML = dati.map((concorrente, index) => {
+        classificaBody.innerHTML = dati.map((concorrente, index) => {
             let categoriaClasse = concorrente.Categoria === "OD" ? "concorrente-donna-senior" :
                                    concorrente.Categoria === "D" ? "concorrente-donna" :
                                    concorrente.Categoria === "O" ? "concorrente-senior" :
                                                                    "concorrente-generale";
 
+            // Evidenzia partenza falsa se presente
+            const partenzaFalsaBadge = concorrente.PFalsa === "SI" ? `
+                <span style="
+                    color: yellow;
+                    background-color: red;
+                    padding: 2px 6px;
+                    border-radius: 5px;
+                    font-size: 12px;
+                    font-weight: bold;
+                    margin-left: 6px;">
+                    🚩 PF +3 sec
+                </span>` : "";
+
+            // Sfondo riga rosso trasparente se PFalsa
+            const bgStyle = concorrente.PFalsa === "SI" ? "background-color: rgba(255,0,0,0.2);" : "";
+
             return `
-                <tr>
+                <tr style="${bgStyle}">
                     <td class="posizione-generale">${index + 1}</td>
                     <td class="${categoriaClasse}">${concorrente.NumeroConcorrente}</td>
                     <td class="bold-text">${concorrente.Nome}</td>
                     <td class="bold-text">${concorrente.Cognome}</td>
-                    <td class="bold-text">${formattaTempo(concorrente.Tempo)}</td>
+                    <td class="bold-text">
+                        ${formattaTempo(concorrente.Tempo)}
+                        ${partenzaFalsaBadge}
+                    </td>
                     <td>${concorrente.Squadra}</td>
                     <td>${concorrente.Categoria}</td>
                 </tr>
@@ -1647,45 +1868,67 @@ function calcolaPuntiConcorrenti(dati, giri) {
     });
 }
 
-        function caricaClassificaPS7() {
-            const classificaRef = db.ref("giro");
 
-            classificaRef.on("value", (snapshot) => {
-                let classificaBody = document.getElementById("classificaPS7Body");
-                classificaBody.innerHTML = "";
+function caricaClassificaPS7() {
+    const classificaRef = db.ref("giro");
 
-                if (!snapshot.exists()) return;
+    classificaRef.on("value", (snapshot) => {
+        let classificaBody = document.getElementById("classificaPS7Body");
+        classificaBody.innerHTML = "";
 
-                let dati = [];
-                snapshot.forEach((childSnapshot) => {
-                    let concorrente = childSnapshot.val();
-                    if (concorrente.Arrivato === "SI" && concorrente.Gara === 7) {
-                        let tempo = parseInt(concorrente.Tempoms) || 0;
-                        dati.push({
-                            NumeroConcorrente: concorrente.NumeroConcorrente,
-                            Nome: concorrente.Nome,
-                            Cognome: concorrente.Cognome,
-                            Tempo: tempo,
-                            Squadra: concorrente.Squadra,
-                            Categoria: concorrente.Categoria
-                        });
-                    }
+        if (!snapshot.exists()) return;
+
+        let dati = [];
+        snapshot.forEach((childSnapshot) => {
+            let concorrente = childSnapshot.val();
+            if (concorrente.Arrivato === "SI" && parseInt(concorrente.Gara) === 7) {
+                let tempo = parseInt(concorrente.Tempoms) || 0;
+                dati.push({
+                    NumeroConcorrente: concorrente.NumeroConcorrente,
+                    Nome: concorrente.Nome,
+                    Cognome: concorrente.Cognome,
+                    Tempo: tempo,
+                    Squadra: concorrente.Squadra,
+                    Categoria: concorrente.Categoria,
+                    PFalsa: concorrente.PFalsa || "NO" // Prende anche PFalsa
                 });
+            }
+        });
 
-                dati.sort((a, b) => a.Tempo - b.Tempo);
-                  classificaBody.innerHTML = dati.map((concorrente, index) => {
+        dati.sort((a, b) => a.Tempo - b.Tempo);
+
+        classificaBody.innerHTML = dati.map((concorrente, index) => {
             let categoriaClasse = concorrente.Categoria === "OD" ? "concorrente-donna-senior" :
                                    concorrente.Categoria === "D" ? "concorrente-donna" :
                                    concorrente.Categoria === "O" ? "concorrente-senior" :
                                                                    "concorrente-generale";
 
+            // Evidenzia partenza falsa se presente
+            const partenzaFalsaBadge = concorrente.PFalsa === "SI" ? `
+                <span style="
+                    color: yellow;
+                    background-color: red;
+                    padding: 2px 6px;
+                    border-radius: 5px;
+                    font-size: 12px;
+                    font-weight: bold;
+                    margin-left: 6px;">
+                    🚩 PF +3 sec
+                </span>` : "";
+
+            // Sfondo riga rosso trasparente se PFalsa
+            const bgStyle = concorrente.PFalsa === "SI" ? "background-color: rgba(255,0,0,0.2);" : "";
+
             return `
-                <tr>
+                <tr style="${bgStyle}">
                     <td class="posizione-generale">${index + 1}</td>
                     <td class="${categoriaClasse}">${concorrente.NumeroConcorrente}</td>
                     <td class="bold-text">${concorrente.Nome}</td>
                     <td class="bold-text">${concorrente.Cognome}</td>
-                    <td class="bold-text">${formattaTempo(concorrente.Tempo)}</td>
+                    <td class="bold-text">
+                        ${formattaTempo(concorrente.Tempo)}
+                        ${partenzaFalsaBadge}
+                    </td>
                     <td>${concorrente.Squadra}</td>
                     <td>${concorrente.Categoria}</td>
                 </tr>
@@ -1693,6 +1936,7 @@ function calcolaPuntiConcorrenti(dati, giri) {
         }).join("");
     });
 }
+
 
 
         function caricaClassificaGeneraleD() {
@@ -1835,30 +2079,92 @@ function calcolaPuntiConcorrenti(dati, giri) {
 
 
 
-        function aggiornaUltimi5KartArrivati() {
-            const classificaRef = db.ref("giro");
+function aggiornaUltimi5KartArrivati() {
+    const classificaRef = db.ref("giro");
 
-            classificaRef.on("value", (snapshot) => {
-                if (!snapshot.exists()) return;
+    classificaRef.on("value", (snapshot) => {
+        if (!snapshot.exists()) return;
 
-                let giri = Object.values(snapshot.val())
-                    .filter(giro => giro.Arrivato === "SI")
-                    .sort((a, b) => b.ID - a.ID)  // Ordina per ID decrescente
-                    .slice(0, 5); // Prendi gli ultimi 5
+        const tuttiGiri = Object.values(snapshot.val()).filter(g =>
+            g.Arrivato === "SI" &&
+            !isNaN(parseInt(g.Tempoms)) &&
+            g.NumeroConcorrente !== undefined
+        );
 
-                let latestKartsBody = document.getElementById("latestKartsBody");
-                latestKartsBody.innerHTML = "";
+        const giriOrdinati = [...tuttiGiri].sort((a, b) => b.ID - a.ID);
 
-                giri.forEach(giro => {
-                    let row = `<tr>
-                                            <td>${giro.NumeroConcorrente}</td>
-                                            <td>${giro.Nome} ${giro.Cognome}</td>
-                                            <td>${formattaTempo(giro.Tempoms)}</td>
-                                        </tr>`;
-                    latestKartsBody.innerHTML += row;
-                });
+        // Mostra ultimi 5 arrivi
+        const ultimi5 = giriOrdinati.slice(0, 5);
+        const latestKartsBody = document.getElementById("latestKartsBody");
+        latestKartsBody.innerHTML = "";
+
+        ultimi5.forEach(giro => {
+            latestKartsBody.innerHTML += `
+                <tr>
+                    <td>${giro.NumeroConcorrente}</td>
+                    <td>${giro.Nome} ${giro.Cognome}</td>
+                    <td>${formattaTempo(giro.Tempoms)}</td>
+                </tr>`;
+        });
+
+        // Mostra ultimi 30 giri
+        const ultimi30Body = document.getElementById("ultimi30Body");
+        if (ultimi30Body) {
+            ultimi30Body.innerHTML = "";
+            giriOrdinati.slice(0, 30).forEach(giro => {
+                ultimi30Body.innerHTML += `
+                    <tr>
+                        <td>${giro.NumeroConcorrente}</td>
+                        <td>${giro.Nome} ${giro.Cognome}</td>
+                        <td>${formattaTempo(giro.Tempoms)}</td>
+                    </tr>`;
             });
         }
+
+        // Calcolo posizione nel popup solo se abbiamo almeno 1 arrivo
+        if (ultimi5.length > 0) {
+            const ultimo = ultimi5[0];
+            const numeroUltimo = ultimo.NumeroConcorrente.toString();
+
+            // === SOMMA DEI TEMPI PER OGNI PILOTA ===
+            const sommaTempi = {};
+            tuttiGiri.forEach(g => {
+                const numero = g.NumeroConcorrente.toString();
+                if (!sommaTempi[numero]) sommaTempi[numero] = 0;
+                sommaTempi[numero] += parseInt(g.Tempoms);
+            });
+
+            // === CREA ARRAY CLASSIFICA ===
+            const classifica = Object.entries(sommaTempi)
+                .map(([numero, tempo]) => ({ numero, tempo }))
+                .sort((a, b) => a.tempo - b.tempo);
+
+            // === POSIZIONE GENERALE ===
+            const posizioneGenerale = classifica.findIndex(p => p.numero === numeroUltimo) + 1;
+
+            // === POSIZIONE PS CORRENTE ===
+            const psGiri = tuttiGiri.filter(g =>
+                g.Gara && parseInt(g.Gara) === parseInt(ultimo.Gara)
+            );
+
+            const classificaPS = psGiri
+                .sort((a, b) => a.Tempoms - b.Tempoms)
+                .map(g => g.NumeroConcorrente.toString());
+
+            const posizionePS = classificaPS.indexOf(numeroUltimo) + 1;
+
+            // === MOSTRA IL POPUP ===
+            const nome = (ultimo.Nome || "").toString();
+            const cognome = (ultimo.Cognome || "").toString();
+            const categoria = (ultimo.Categoria || "").toString();
+
+            apriPopupTempi(ultimo.NumeroConcorrente, nome, cognome, categoria);
+        }
+    });
+}
+
+
+
 
         function assegnaPuntiGiroVeloce() {
             const classificaRef = db.ref("giro");
@@ -1905,7 +2211,7 @@ function calcolaPuntiConcorrenti(dati, giri) {
             });
         }
 
-function apriPopupTempi(numeroConcorrente, nome, cognome, categoria = null) {
+function apriPopupTempi(numeroConcorrente, nome = null, cognome = null, categoria = null) {
     const classificaRef = db.ref("giro");
 
     classificaRef.once("value", (snapshot) => {
@@ -1919,6 +2225,7 @@ function apriPopupTempi(numeroConcorrente, nome, cognome, categoria = null) {
         let giriCompleti = [];
         let categoriaPilota = categoria;
 
+        // --- Raccolta dati ---
         snapshot.forEach((childSnapshot) => {
             let giro = childSnapshot.val();
             if (giro.Arrivato === "SI") {
@@ -1926,13 +2233,16 @@ function apriPopupTempi(numeroConcorrente, nome, cognome, categoria = null) {
                 datiPerGara[giro.Gara].push({
                     NumeroConcorrente: giro.NumeroConcorrente,
                     Tempo: parseInt(giro.Tempoms),
-                    Gara: giro.Gara
+                    Gara: giro.Gara,
+                    PFalsa: giro.PFalsa || "NO" // aggiunto PFalsa
                 });
 
                 giriCompleti.push(giro);
 
-                if (giro.NumeroConcorrente == numeroConcorrente && !categoriaPilota) {
-                    categoriaPilota = giro.Categoria;
+                if (giro.NumeroConcorrente == numeroConcorrente) {
+                    if (!categoriaPilota) categoriaPilota = giro.Categoria;
+                    if (!nome) nome = giro.Nome;
+                    if (!cognome) cognome = giro.Cognome;
                 }
 
                 let esistente = classificaGenerale.find(c => c.NumeroConcorrente === giro.NumeroConcorrente);
@@ -1940,7 +2250,7 @@ function apriPopupTempi(numeroConcorrente, nome, cognome, categoria = null) {
                     esistente.TempoTotale += parseInt(giro.Tempoms);
                     esistente.NumeroGiri++;
                 } else {
-                    let nuovo = {
+                    classificaGenerale.push({
                         NumeroConcorrente: giro.NumeroConcorrente,
                         Nome: giro.Nome,
                         Cognome: giro.Cognome,
@@ -1948,27 +2258,21 @@ function apriPopupTempi(numeroConcorrente, nome, cognome, categoria = null) {
                         NumeroGiri: 1,
                         Categoria: giro.Categoria,
                         Squadra: giro.Squadra
-                    };
-                    classificaGenerale.push(nuovo);
-                    if (giro.Categoria === "D" || giro.Categoria === "OD") classificaDonne.push(nuovo);
-                    if (giro.Categoria === "O" || giro.Categoria === "OD") classificaSenior.push(nuovo);
+                    });
+                    if (giro.Categoria === "D" || giro.Categoria === "OD") classificaDonne.push(giro);
+                    if (giro.Categoria === "O" || giro.Categoria === "OD") classificaSenior.push(giro);
                 }
             }
         });
 
-        classificaGenerale.sort((a, b) =>
-            b.NumeroGiri !== a.NumeroGiri ? b.NumeroGiri - a.NumeroGiri : a.TempoTotale - b.TempoTotale
-        );
-        classificaDonne.sort((a, b) =>
-            b.NumeroGiri !== a.NumeroGiri ? b.NumeroGiri - a.NumeroGiri : a.TempoTotale - b.TempoTotale
-        );
-        classificaSenior.sort((a, b) =>
-            b.NumeroGiri !== a.NumeroGiri ? b.NumeroGiri - a.NumeroGiri : a.TempoTotale - b.TempoTotale
-        );
+        const ordinaClassifica = (a, b) => b.NumeroGiri !== a.NumeroGiri ? b.NumeroGiri - a.NumeroGiri : a.TempoTotale - b.TempoTotale;
+        classificaGenerale.sort(ordinaClassifica);
+        classificaDonne.sort(ordinaClassifica);
+        classificaSenior.sort(ordinaClassifica);
 
-        let posizioneGenerale = classificaGenerale.findIndex(c => c.NumeroConcorrente == numeroConcorrente) + 1;
-        let posizioneDonne = classificaDonne.findIndex(c => c.NumeroConcorrente == numeroConcorrente) + 1;
-        let posizioneSenior = classificaSenior.findIndex(c => c.NumeroConcorrente == numeroConcorrente) + 1;
+        const posizioneGenerale = classificaGenerale.findIndex(c => c.NumeroConcorrente == numeroConcorrente) + 1;
+        const posizioneDonne = classificaDonne.findIndex(c => c.NumeroConcorrente == numeroConcorrente) + 1;
+        const posizioneSenior = classificaSenior.findIndex(c => c.NumeroConcorrente == numeroConcorrente) + 1;
 
         Object.keys(datiPerGara).forEach(gara => {
             datiPerGara[gara].sort((a, b) => a.Tempo - b.Tempo);
@@ -1992,24 +2296,51 @@ function apriPopupTempi(numeroConcorrente, nome, cognome, categoria = null) {
         if (pt.giroVeloce) breakdown.push(`10 ⏱`);
 
         const giriPilota = giriCompleti.filter(g => g.NumeroConcorrente == numeroConcorrente);
+        const ultimoGiro = giriPilota[giriPilota.length - 1] || {};
         const tempoTotale = giriPilota.reduce((sum, g) => sum + parseInt(g.Tempoms), 0);
         const numeroGiri = giriPilota.length;
-        const mediaGiro = numeroGiri > 0 ? tempoTotale / numeroGiri : 0;
+        const mediaGiro = numeroGiri ? tempoTotale / numeroGiri : 0;
         const migliorGiro = Math.min(...giriPilota.map(g => g.Tempoms));
         const peggiorGiro = Math.max(...giriPilota.map(g => g.Tempoms));
-
-        const teamPilota = giriCompleti.find(g => g.NumeroConcorrente == numeroConcorrente)?.Squadra || "TEAM";
+        const teamPilota = ultimoGiro.Squadra || "TEAM";
 
         let iconaCategoria = "";
         if (categoriaPilota === "D" || categoriaPilota === "OD") iconaCategoria += " 🎀";
         if (categoriaPilota === "O" || categoriaPilota === "OD") iconaCategoria += " 👴";
 
-        let riga1 = `<div style="font-weight:bold; font-size: 18px; margin-bottom: 6px;">SCHEDA PILOTA</div>`;
-        let riga2 = `<div style="font-size: 17px; font-weight:bold;">
+        const tempoUltimoGiro = formattaTempo(ultimoGiro.Tempoms || 0);
+        const partenzaFalsaRiga = ultimoGiro.PFalsa === "SI" ? `
+            <div style="
+                color: yellow;
+                background-color: red;
+                padding: 6px 12px;
+                border-radius: 8px;
+                font-size: 22px;
+                font-weight: bold;
+                margin-top: 10px;
+                display: inline-block;">
+                🚩 PARTENZA FALSA + 3 sec
+            </div>` : "";
+
+        const evidenzaArrivo = `
+            <div style="
+                font-size: 28px;
+                font-weight: bold;
+                background-color: #007bff;
+                color: white;
+                padding: 10px 20px;
+                margin-bottom: 15px;
+                border-radius: 10px;
+                box-shadow: 0 0 10px rgba(0,0,0,0.3);
+                text-align: center;">
+                🏁 #${numeroConcorrente} ${nome} ${cognome} → ${tempoUltimoGiro}
+                ${partenzaFalsaRiga}
+            </div>`;
+
+        const riga2 = `<div style="font-size: 25px; font-weight:bold;">
             #${numeroConcorrente} ${nome} ${cognome} → ${teamPilota}${iconaCategoria}
         </div>`;
-
-        let riga3 = `<div style="margin-top: 5px; font-size: 15px;">
+        let riga3 = `<div style="margin-top: 5px; font-size: 22px;">
             <span style="color: red;">Pos. Gen: ${posizioneGenerale}</span>`;
         if (classificaDonne.some(c => c.NumeroConcorrente == numeroConcorrente)) {
             riga3 += ` - <span style="color: purple;">Pos. Donne: ${posizioneDonne}</span>`;
@@ -2019,13 +2350,11 @@ function apriPopupTempi(numeroConcorrente, nome, cognome, categoria = null) {
         }
         riga3 += `</div>`;
 
-        document.getElementById("popupTitle").innerHTML = `${riga1}${riga2}${riga3}`;
-
+        document.getElementById("popupTitle").innerHTML = `${evidenzaArrivo}${riga2}${riga3}`;
         document.getElementById("popupPunti").innerHTML = `
             <span class="punteggio-popup">
                 Punteggio: ${totale}pt ${breakdown.length ? `(${breakdown.join(" + ")})` : ""}
-            </span>
-        `;
+            </span>`;
 
         const mediaTroncata = Math.floor(mediaGiro);
 
@@ -2045,16 +2374,14 @@ function apriPopupTempi(numeroConcorrente, nome, cognome, categoria = null) {
                     <td>${formattaTempo(peggiorGiro)} 🐢</td>
                     <td>${numeroGiri}</td>
                 </tr>
-            </table>
-        `;
+            </table>`;
 
-        let migliorPos = Math.min(...datiGiri.map(g => g.PosizioneGara));
-        let migliorGara = datiGiri.find(g => g.PosizioneGara === migliorPos)?.Gara || "-";
+        const migliorPos = Math.min(...datiGiri.map(g => g.PosizioneGara));
+        const migliorGara = datiGiri.find(g => g.PosizioneGara === migliorPos)?.Gara || "-";
         document.getElementById("popupDettagli").innerHTML += `
             <div style="margin-top: 10px; text-align: center; font-size: 15px;">
                 🥇 <strong>Miglior posizione:</strong> ${migliorPos}° (PS${migliorGara})
-            </div>
-        `;
+            </div>`;
 
         document.getElementById("popupBody").innerHTML = datiGiri.map(giro => {
             const tempiGara = datiPerGara[giro.Gara] || [];
@@ -2062,77 +2389,35 @@ function apriPopupTempi(numeroConcorrente, nome, cognome, categoria = null) {
             const delta = giro.Tempo - migliorTempo;
             const deltaFormatted = giro.Tempo === migliorTempo ? "—" : `+${formattaTempo(delta)}`;
             const iconaGiro = giro.Tempo === migliorGiro ? " ⏱" : giro.Tempo === peggiorGiro ? " 🐢" : "";
+            const partenzaFalsaIcona = giro.PFalsa === "SI" ? `
+                <span style="
+                    color: yellow;
+                    background-color: red;
+                    padding: 2px 6px;
+                    border-radius: 5px;
+                    font-size: 12px;
+                    font-weight: bold;
+                    margin-left: 6px;">🚩 PFalsa</span>` : "";
 
             return `
                 <tr>
                     <td>${giro.Gara}</td>
                     <td>${giro.PosizioneGara}</td>
-                    <td>${formattaTempo(giro.Tempo)}${iconaGiro}</td>
+                    <td>${formattaTempo(giro.Tempo)}${iconaGiro} ${partenzaFalsaIcona}</td>
                     <td>${deltaFormatted}</td>
-                </tr>
-            `;
+                </tr>`;
         }).join("");
-
-        // Sezione team
-        const punteggiTeam = {};
-        classificaGenerale.forEach(c => {
-            if (!punteggiTeam[c.Squadra]) punteggiTeam[c.Squadra] = 0;
-            punteggiTeam[c.Squadra] += (punteggi[c.NumeroConcorrente]?.totale || 0);
-        });
-
-        const classificaTeam = Object.entries(punteggiTeam)
-            .map(([team, punti]) => ({ team, punti }))
-            .sort((a, b) => b.punti - a.punti);
-
-        const posizioneTeam = classificaTeam.findIndex(t => t.team === teamPilota) + 1;
-        const membriTeam = classificaGenerale.filter(c => c.Squadra === teamPilota);
-
-        const teamHTML = `
-    <div style="
-        margin-top: 20px;
-        width: 100%;
-        padding: 16px;
-        border-radius: 12px;
-        background: linear-gradient(to right, #e6ffed, #c7f9cc);
-        border: 2px solid #34a853;
-        box-shadow: 0 0 8px rgba(52, 168, 83, 0.4);
-        font-size: 15px;
-        box-sizing: border-box;
-        color: #1b5e20;
-    ">
-        <div style="font-size: 16px; font-weight: bold; margin-bottom: 6px;">
-            🟩 <u>Info Team</u> ${teamPilota}
-        </div>
-        <div><strong>🏆 Totale Team:</strong> ${punteggiTeam[teamPilota] || 0}pt</div>
-        <div><strong>📊 Posizione Team:</strong> ${posizioneTeam}</div>
-        <div style="margin-top: 10px;">
-            <strong>👥 Piloti del Team:</strong><br>
-            <ul style="list-style-type: none; padding-left: 10px; margin-top: 6px;">
-                ${membriTeam.map(m => {
-                    const pt = punteggi[m.NumeroConcorrente] || {};
-                    const dettagli = [];
-                    if (pt.gen > 0) dettagli.push(`${pt.gen}`);
-                    if (pt.extraDonne) dettagli.push(`${pt.extraDonne} 🎀`);
-                    if (pt.extraSenior) dettagli.push(`${pt.extraSenior} 👴`);
-                    if (pt.ps) dettagli.push(`${pt.ps} ⚡`);
-                    if (pt.giroVeloce) dettagli.push(`10 ⏱`);
-                    return `<li style="margin-bottom: 4px;">#${m.NumeroConcorrente} <strong>${m.Nome} ${m.Cognome}</strong> → <strong>${pt.totale || 0}pt</strong> (${dettagli.join(" + ")})</li>`;
-                }).join("")}
-            </ul>
-        </div>
-    </div>
-`;
-
-
-        if (teamPilota !== "SINGOLO") {
-    document.getElementById("popupDettagli").innerHTML += teamHTML;
-}
-
 
         document.getElementById("popup").style.display = "block";
         document.getElementById("popupOverlay").style.display = "block";
+
+        setTimeout(() => {
+            document.getElementById("popup").style.display = "none";
+            document.getElementById("popupOverlay").style.display = "none";
+        }, 5000);
     });
 }
+
 
 
 
@@ -2199,8 +2484,59 @@ function apriPopupTempi(numeroConcorrente, nome, cognome, categoria = null) {
         }
 
 
+function mostraPopupMobile(testo) {
+    const popup = document.getElementById("mobilePopup");
+    popup.textContent = testo;
+    popup.style.display = "block";
+    setTimeout(() => {
+        popup.style.display = "none";
+    }, 5000);
+}
+
+function toggleUltimi30() {
+    const container = document.getElementById("ultimi30Container");
+    container.style.display = container.style.display === "none" ? "block" : "none";
+}
+
+function apriPopup30Giri() {
+    document.getElementById("popupOverlay30").style.display = "block";
+    document.getElementById("popup30").style.display = "block";
+}
+
+function chiudiPopup30() {
+    document.getElementById("popupOverlay30").style.display = "none";
+    document.getElementById("popup30").style.display = "none";
+}
 
 
+let mobilePopupTimer = null;
+
+function mostraPopupMobileConPosizione(giro, posizioneGenerale, posizionePS = null) {
+    const popup = document.getElementById("mobilePopup");
+    const popupContent = document.getElementById("popupContent");
+
+    let testo = `#${giro.NumeroConcorrente} ${giro.Nome} ${giro.Cognome}<br>`;
+    testo += `⏱ ${formattaTempo(giro.Tempoms)}<br>`;
+    testo += `🏁 Pos. Generale: ${posizioneGenerale}`;
+    if (posizionePS !== null) {
+        testo += `<br>⚡ Pos. PS${giro.Gara}: ${posizionePS}`;
+    }
+
+    popupContent.innerHTML = testo;
+    popup.style.display = "block";
+
+    // Pulisce eventuali timer precedenti
+    if (mobilePopupTimer) clearTimeout(mobilePopupTimer);
+    mobilePopupTimer = setTimeout(() => {
+        popup.style.display = "none";
+    }, 8000);
+}
+
+function chiudiPopupMobile() {
+    const popup = document.getElementById("mobilePopup");
+    popup.style.display = "none";
+    if (mobilePopupTimer) clearTimeout(mobilePopupTimer);
+}
 
 
 
@@ -2226,6 +2562,10 @@ function apriPopupTempi(numeroConcorrente, nome, cognome, categoria = null) {
 
         aggiornaUltimi5KartArrivati();
     </script>
+
+
+
+
 
 </body>
 </html>
