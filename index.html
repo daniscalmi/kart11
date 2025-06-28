@@ -1490,15 +1490,15 @@ function calcolaPuntiConcorrenti(dati, giri) {
 
             // Evidenzia partenza falsa se presente
             const partenzaFalsaBadge = concorrente.PFalsa === "SI" ? `
-                <span style="
+                  <span style="
                     color: yellow;
-                    background-color: red;
+                    background-color: black;
                     padding: 2px 6px;
                     border-radius: 5px;
                     font-size: 12px;
                     font-weight: bold;
                     margin-left: 6px;">
-                    🚩 PF +3 sec
+                    🚩 PF
                 </span>` : "";
 
             // Sfondo riga rosso trasparente se PFalsa
@@ -1629,15 +1629,15 @@ function calcolaPuntiConcorrenti(dati, giri) {
 
             // Evidenzia partenza falsa se presente
             const partenzaFalsaBadge = concorrente.PFalsa === "SI" ? `
-                <span style="
+                 <span style="
                     color: yellow;
-                    background-color: red;
+                    background-color: black;
                     padding: 2px 6px;
                     border-radius: 5px;
                     font-size: 12px;
                     font-weight: bold;
                     margin-left: 6px;">
-                    🚩 PF +3 sec
+                    🚩 PF
                 </span>` : "";
 
             // Sfondo riga rosso trasparente se PFalsa
@@ -1698,15 +1698,15 @@ function calcolaPuntiConcorrenti(dati, giri) {
 
             // Evidenzia partenza falsa se presente
             const partenzaFalsaBadge = concorrente.PFalsa === "SI" ? `
-                <span style="
+            <span style="
                     color: yellow;
-                    background-color: red;
+                    background-color: black;
                     padding: 2px 6px;
                     border-radius: 5px;
                     font-size: 12px;
                     font-weight: bold;
                     margin-left: 6px;">
-                    🚩 PF +3 sec
+                    🚩 PF
                 </span>` : "";
 
             // Sfondo riga rosso trasparente se PFalsa
@@ -1768,13 +1768,13 @@ function caricaClassificaPS5() {
             const partenzaFalsaBadge = concorrente.PFalsa === "SI" ? `
                 <span style="
                     color: yellow;
-                    background-color: red;
+                    background-color: black;
                     padding: 2px 6px;
                     border-radius: 5px;
                     font-size: 12px;
                     font-weight: bold;
                     margin-left: 6px;">
-                    🚩 PF +3 sec
+                    🚩 PF
                 </span>` : "";
 
             // Sfondo riga rosso trasparente se PFalsa
@@ -1836,15 +1836,15 @@ function caricaClassificaPS5() {
 
             // Evidenzia partenza falsa se presente
             const partenzaFalsaBadge = concorrente.PFalsa === "SI" ? `
-                <span style="
+                  <span style="
                     color: yellow;
-                    background-color: red;
+                    background-color: black;
                     padding: 2px 6px;
                     border-radius: 5px;
                     font-size: 12px;
                     font-weight: bold;
                     margin-left: 6px;">
-                    🚩 PF +3 sec
+                    🚩 PF
                 </span>` : "";
 
             // Sfondo riga rosso trasparente se PFalsa
@@ -1905,17 +1905,16 @@ function caricaClassificaPS7() {
 
             // Evidenzia partenza falsa se presente
             const partenzaFalsaBadge = concorrente.PFalsa === "SI" ? `
-                <span style="
+              <span style="
                     color: yellow;
-                    background-color: red;
+                    background-color: black;
                     padding: 2px 6px;
                     border-radius: 5px;
                     font-size: 12px;
                     font-weight: bold;
                     margin-left: 6px;">
-                    🚩 PF +3 sec
+                    🚩 PF
                 </span>` : "";
-
             // Sfondo riga rosso trasparente se PFalsa
             const bgStyle = concorrente.PFalsa === "SI" ? "background-color: rgba(255,0,0,0.2);" : "";
 
@@ -2312,7 +2311,7 @@ function apriPopupTempi(numeroConcorrente, nome = null, cognome = null, categori
         const partenzaFalsaRiga = ultimoGiro.PFalsa === "SI" ? `
             <div style="
                 color: yellow;
-                background-color: red;
+                background-color: black;
                 padding: 6px 12px;
                 border-radius: 8px;
                 font-size: 22px;
