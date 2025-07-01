@@ -91,14 +91,13 @@ body {
   padding: 10px 16px;
   border: none;
   border-radius: 30px;
-  color: white;
+  color: black; /* scritte nere */
   font-size: 15px;
   font-weight: 600;
   cursor: pointer;
   transition: transform 0.2s, box-shadow 0.2s, background 0.3s;
   box-shadow: 0 2px 6px rgba(0, 0, 0, 0.2);
-  background-size: 300% 100%;
-  background-position: 0% 0%;
+  background-color: yellow; /* bottoni gialli */
 }
 
 /* Effetto hover */
@@ -124,19 +123,24 @@ body {
 
 .tab-button.donne {
   background: linear-gradient(to right, #ff9a9e, #fecfef);
+  color: black !important; /* forza l'applicazione del colore nero */
 }
+
 
 .tab-button.donne.active {
   background: linear-gradient(to right, #fecfef, #ff9a9e);
 }
 
 .tab-button.senior {
-  background: linear-gradient(to right, #bdc3c7, #2c3e50);
+  background: linear-gradient(to right, #2980b9, #3498db); /* blu sfumato */
+  color: white !important; /* testo bianco */
 }
 
 .tab-button.senior.active {
-  background: linear-gradient(to right, #2c3e50, #bdc3c7);
+  background: linear-gradient(to right, #3498db, #2980b9); /* inverti per effetto active */
+  color: white !important; /* testo bianco anche quando attivo */
 }
+
 
 .tab-button.ps {
   background: linear-gradient(to right, #fceabb, #f8b500);
@@ -825,20 +829,31 @@ tbody tr:hover {
 
 
 <!-- TAB SELEZIONE -->
-<div class="tab-container">
- <button class="tab-button generale active" onclick="apriTab('generale')">Classifica Generale</button>
+<div class="tab-container" style="display: flex; flex-direction: column; align-items: center; gap: 8px;">
 
-  <button class="tab-button team" onclick="apriTab('team')">Team</button>
-  <button class="tab-button donne" onclick="apriTab('donne')">Donne</button>
-  <button class="tab-button senior" onclick="apriTab('senior')">Senior</button>
-  <button class="tab-button ps" onclick="apriTab('ps1')">PS1</button>
-  <button class="tab-button ps" onclick="apriTab('ps2')">PS2</button>
-  <button class="tab-button ps" onclick="apriTab('ps3')">PS3</button>
-  <button class="tab-button ps" onclick="apriTab('ps4')">PS4</button>
-  <button class="tab-button ps" onclick="apriTab('ps5')">PS5</button>
-  <button class="tab-button ps" onclick="apriTab('ps6')">PS6</button>
-  <button class="tab-button ps" onclick="apriTab('ps7')">PWR Stage</button>
+  <!-- Riga PS -->
+  <div style="display: flex; flex-wrap: wrap; gap: 5px; justify-content: center; width: 100%;">
+    <button class="tab-button ps" onclick="apriTab('ps1')">PS1</button>
+    <button class="tab-button ps" onclick="apriTab('ps2')">PS2</button>
+    <button class="tab-button ps" onclick="apriTab('ps3')">PS3</button>
+    <button class="tab-button ps" onclick="apriTab('ps4')">PS4</button>
+    <button class="tab-button ps" onclick="apriTab('ps5')">PS5</button>
+    <button class="tab-button ps" onclick="apriTab('ps6')">PS6</button>
+    <button class="tab-button ps" onclick="apriTab('ps7')">PS7</button>
+    <button class="tab-button ps" onclick="apriTab('ps8')">PWR Stage</button>
+  </div>
+
+  <!-- Riga Classifiche Generale, Team, Donne, Senior -->
+  <div style="display: flex; flex-wrap: wrap; gap: 5px; justify-content: center; width: 100%;">
+    <button class="tab-button generale active" onclick="apriTab('generale')">Classifica Generale</button>
+    <button class="tab-button team" onclick="apriTab('team')">Team</button>
+    <button class="tab-button donne" onclick="apriTab('donne')">Donne</button>
+    <button class="tab-button senior" onclick="apriTab('senior')">Senior</button>
+  </div>
+
 </div>
+
+
 
 
 
@@ -1064,10 +1079,11 @@ tbody tr:hover {
             <tbody id="classificaPS6Body"></tbody>
         </table>
     </div>
-
+	
+	
     <!-- CLASSIFICA PS1 -->
     <div id="ps7" class="tab-content">
-        <h2>Classifica Power Stage</h2>
+        <h2>Classifica PS7</h2>
         <table>
             <thead>
                 <tr>
@@ -1081,6 +1097,25 @@ tbody tr:hover {
                 </tr>
             </thead>
             <tbody id="classificaPS7Body"></tbody>
+        </table>
+    </div>
+
+    <!-- CLASSIFICA PS1 -->
+    <div id="ps8" class="tab-content">
+        <h2>Classifica Power Stage</h2>
+        <table>
+            <thead>
+                <tr>
+                    <th>Pos</th>
+                    <th>NR</th>
+                    <th>Nome</th>
+                    <th>Cognome</th>
+                    <th>Tempo</th>
+                    <th>Team</th>
+                    <th>C</th>
+                </tr>
+            </thead>
+            <tbody id="classificaPS8Body"></tbody>
         </table>
     </div>
 
@@ -1164,6 +1199,7 @@ tbody tr:hover {
 
         // Mappa colori forzata per numero di giri
         const mappaColori = {
+		    8: 'group-alt-0',
             7: 'group-alt-0',
             6: 'group-alt-0',
             5: 'group-alt-0',
@@ -1275,7 +1311,7 @@ function calcolaPuntiConcorrenti(dati, giri) {
     });
 
     // Power Stage
-    const powerStage = giri.filter(g => parseInt(g.Gara) === 7);
+    const powerStage = giri.filter(g => parseInt(g.Gara) === 8);
     const classificaPS = [];
 
     powerStage.forEach(g => {
@@ -1882,6 +1918,73 @@ function caricaClassificaPS7() {
         snapshot.forEach((childSnapshot) => {
             let concorrente = childSnapshot.val();
             if (concorrente.Arrivato === "SI" && parseInt(concorrente.Gara) === 7) {
+                let tempo = parseInt(concorrente.Tempoms) || 0;
+                dati.push({
+                    NumeroConcorrente: concorrente.NumeroConcorrente,
+                    Nome: concorrente.Nome,
+                    Cognome: concorrente.Cognome,
+                    Tempo: tempo,
+                    Squadra: concorrente.Squadra,
+                    Categoria: concorrente.Categoria,
+                    PFalsa: concorrente.PFalsa || "NO" // Prende anche PFalsa
+                });
+            }
+        });
+
+        dati.sort((a, b) => a.Tempo - b.Tempo);
+
+        classificaBody.innerHTML = dati.map((concorrente, index) => {
+            let categoriaClasse = concorrente.Categoria === "OD" ? "concorrente-donna-senior" :
+                                   concorrente.Categoria === "D" ? "concorrente-donna" :
+                                   concorrente.Categoria === "O" ? "concorrente-senior" :
+                                                                   "concorrente-generale";
+
+            // Evidenzia partenza falsa se presente
+            const partenzaFalsaBadge = concorrente.PFalsa === "SI" ? `
+              <span style="
+                    color: yellow;
+                    background-color: black;
+                    padding: 2px 6px;
+                    border-radius: 5px;
+                    font-size: 12px;
+                    font-weight: bold;
+                    margin-left: 6px;">
+                    🚩 PF
+                </span>` : "";
+            // Sfondo riga rosso trasparente se PFalsa
+            const bgStyle = concorrente.PFalsa === "SI" ? "background-color: rgba(255,0,0,0.2);" : "";
+
+            return `
+                <tr style="${bgStyle}">
+                    <td class="posizione-generale">${index + 1}</td>
+                    <td class="${categoriaClasse}">${concorrente.NumeroConcorrente}</td>
+                    <td class="bold-text">${concorrente.Nome}</td>
+                    <td class="bold-text">${concorrente.Cognome}</td>
+                    <td class="bold-text">
+                        ${formattaTempo(concorrente.Tempo)}
+                        ${partenzaFalsaBadge}
+                    </td>
+                    <td>${concorrente.Squadra}</td>
+                    <td>${concorrente.Categoria}</td>
+                </tr>
+            `;
+        }).join("");
+    });
+}
+
+function caricaClassificaPS8() {
+    const classificaRef = db.ref("giro");
+
+    classificaRef.on("value", (snapshot) => {
+        let classificaBody = document.getElementById("classificaPS8Body");
+        classificaBody.innerHTML = "";
+
+        if (!snapshot.exists()) return;
+
+        let dati = [];
+        snapshot.forEach((childSnapshot) => {
+            let concorrente = childSnapshot.val();
+            if (concorrente.Arrivato === "SI" && parseInt(concorrente.Gara) === 8) {
                 let tempo = parseInt(concorrente.Tempoms) || 0;
                 dati.push({
                     NumeroConcorrente: concorrente.NumeroConcorrente,
@@ -2550,6 +2653,7 @@ function chiudiPopupMobile() {
         caricaClassificaPS5();
         caricaClassificaPS6();
         caricaClassificaPS7();
+		caricaClassificaPS8();
         
         caricaClassificaGeneraleD();
         caricaClassificaGeneraleS();
