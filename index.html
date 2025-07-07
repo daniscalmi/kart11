@@ -37,6 +37,22 @@ body {
     text-align: center;
 }
 
+.lampeggio {
+    animation: lampeggia 1s alternate 10; /* 10 secondi */
+    font-weight: bold;
+    font-size: 18px;
+    color: white; /* testo bianco */
+}
+
+@keyframes lampeggia {
+    from { background-color: #e53935; color: white; } /* rosso, testo bianco */
+    to { background-color: black; color: white; }     /* nero, testo bianco */
+}
+
+
+
+
+
 /* 🔥 Stile per il giro più veloce */
 .fastest-lap {
     font-size: 22px; /* Più grande */
@@ -620,17 +636,22 @@ tbody tr:hover {
             margin-left: 5px; /* Leggera spaziatura a sinistra */
         }
 
-        /* 📌 Sfondo verde chiaro per la posizione nella classifica team */
-        #classificaTeamBody tr td:first-child {
-            background-color: #90EE90; /* Verde Chiaro */
-            font-weight: bold;
-        }
+     #classificaTeamBody td:first-child {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 0;
+    background-color: transparent;
+}
 
-        /* 📌 Sfondo giallo per la colonna dei punti */
-        #classificaTeamBody tr td:last-child {
-            background-color: #FFD700; /* Giallo */
-            font-weight: bold;
-        }
+
+   
+#classificaTeamBody tr td:last-child {
+    background: none !important;
+    background-color: transparent !important;
+}
+
+		
 		.giro-veloce-row {
     background-color: #fff9c4 !important; /* Giallo chiaro */
     border: 2px solid red;
@@ -667,7 +688,96 @@ tbody tr:hover {
 
 .group-alt-1 {
     background-color: #f2f2f2; /* Grigio chiaro */
+
 }
+
+
+.team-pilot {
+    font-size: 14px;
+    margin: 3px 0;
+    padding: 4px 8px;
+    border-radius: 8px;
+    background: rgba(0,0,0,0.04);
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    flex-wrap: wrap;
+}
+
+.team-pilot .numero {
+    background: linear-gradient(135deg, #fff59d, #fff176);
+    color: #000;
+    font-weight: bold;
+    border-radius: 12px;
+    padding: 2px 8px;
+    font-size: 14px;
+}
+
+.pilota-donne .numero {
+    background: linear-gradient(135deg, #f8bbd0, #f48fb1);
+}
+
+.pilota-senior .numero {
+    background: linear-gradient(135deg, #90caf9, #64b5f6);
+}
+
+.pilota-od .numero {
+    background: linear-gradient(135deg, #ffcc80, #ffb74d);
+}
+
+.punti-singolo {
+    font-weight: bold;
+    color: #2e7d32;
+}
+
+.team-blocco {
+    background: rgba(211, 47, 47, 0.03);
+    border: 2px solid #d32f2f;
+    border-radius: 12px;
+    padding: 8px 12px;
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+    text-align: left;
+    width: 800px; /* imposta larghezza fissa */
+}
+
+
+.team-header {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    font-size: 22px;
+    font-weight: bold;
+    color: #d32f2f;
+    flex-wrap: wrap;
+}
+
+.team-pos {
+    background: rgba(76, 175, 80, 0.15);
+    border: 2px solid #388e3c;
+    border-radius: 8px;
+    padding: 4px 10px;
+    font-size: 20px;
+    color: #1b5e20;
+}
+
+.team-nome {
+    font-size: 22px;
+    font-weight: bold;
+    color: #d32f2f;
+}
+
+.team-punti {
+    border: none; /* rimuove bordo */
+    border-radius: 0; /* rimuove angoli arrotondati */
+    padding: 0; /* rimuove padding */
+    font-size: 20px;
+    color: #8B7500; /* mantiene colore del testo */
+}
+
+
+
 
 </style>
 </head>
@@ -824,7 +934,10 @@ tbody tr:hover {
     </div>
 
     <!-- 📌 Messaggio informativo sotto il titolo -->
-    <p class="info-click-tempi">Utilizza la funzione di ricerca oppure clicca il tuo numero nella CLASSIFICA GENERALE e visualizza i tuoi tempi!</p>
+   <p class="info-click-tempi" style="font-weight: bold; text-decoration: underline;">
+    Utilizza la funzione di ricerca oppure clicca il tuo numero nelle Classifiche per vedere i tuoi tempi!
+</p>
+
 
 
 
@@ -915,16 +1028,10 @@ tbody tr:hover {
     <!-- CLASSIFICA TEAM -->
     <div id="team" class="tab-content">
         <h2>Classifica Team</h2>
-        <table>
-            <thead>
-                <tr>
-                    <th>Pos</th>
-                    <th>Team</th>
-                    <th>Punti</th>
-                </tr>
-            </thead>
-            <tbody id="classificaTeamBody"></tbody>
-        </table>
+       <table class="team-table">
+    <tbody id="classificaTeamBody"></tbody>
+</table>
+
     </div>
 
     <!-- CLASSIFICA GENERALE -->
@@ -1238,7 +1345,28 @@ tbody tr:hover {
             return `
                 <tr class="${groupClass}">
                     <td class="posizione-generale">${index + 1}</td>
-                    <td class="${categoriaClasse}" onclick="apriPopupTempi(${c.NumeroConcorrente}, '${c.Nome}', '${c.Cognome}', '${c.Categoria}')">${c.NumeroConcorrente}</td>
+                    <td onclick="apriPopupTempi(${c.NumeroConcorrente}, '${c.Nome}', '${c.Cognome}', '${c.Categoria}')">
+    <span style="
+        display: inline-block;
+        background: ${
+            c.Categoria === 'D' ? 'linear-gradient(135deg, #f8bbd0, #f48fb1)' :
+            c.Categoria === 'O' ? 'linear-gradient(135deg, #90caf9, #64b5f6)' :
+            c.Categoria === 'OD' ? 'linear-gradient(135deg, #ffcc80, #ffb74d)' :
+            'linear-gradient(135deg, #fff59d, #fff176)'
+        };
+        color: #000;
+        font-weight: bold;
+        font-size: 16px;
+        padding: 6px 12px;
+        border-radius: 20px;
+        cursor: pointer;
+        box-shadow: 0 2px 4px rgba(0,0,0,0.15);
+        transition: transform 0.1s;">
+        ${c.NumeroConcorrente}
+    </span>
+</td>
+
+
                     <td class="bold-text">${c.Nome.length > 10 ? c.Nome.slice(0, 12) : c.Nome}</td>
                     <td class="bold-text">${c.Cognome.length > 10 ? c.Cognome.slice(0, 12) : c.Cognome}</td>
                     <td class="bold-text">${formattaTempo(c.SommaTempo)}${isGiroVeloce ? ' ⏱' : ''}</td>
@@ -1249,7 +1377,25 @@ tbody tr:hover {
                     </td>
                     <td>${c.NumeroGiri}</td>
                     <td>${c.Squadra.length > 10 ? c.Squadra.slice(0, 12) : c.Squadra}</td>
-                    <td>${c.Categoria}</td>
+                    <td>
+    <span style="
+        display: inline-block;
+        padding: 3px 8px;
+        border-radius: 12px;
+        background: ${
+            c.Categoria === "D" ? '#fde2e4' :
+            c.Categoria === "O" ? '#e0f7fa' :
+            c.Categoria === "OD" ? '#e0f2f1' :
+            '#f0f0f0'
+        };
+        color: #333;
+        font-size: 13px;
+        min-width: 32px;
+        text-align: center;">
+        ${c.Categoria}
+    </span>
+</td>
+
                 </tr>
             `;
         }).join("");
@@ -1475,16 +1621,29 @@ function calcolaPuntiConcorrenti(dati, giri) {
                 }).join("");
 
             // ✅ Usa contenitore separato per evitare che influisca sul font globale
-            classificaTeamBody.innerHTML += `
-                <tr>
-                    <td class="team-position">${index + 1}</td>
-                    <td class="team-name">
-                        <div class="team-nome">${team.team}</div>
-                        <div class="team-piloti-wrap">${pilotiHTML}</div>
-                    </td>
-                    <td class="punti-totali">${team.punti}</td>
-                </tr>
-            `;
+        const posizioneClasse = index === 0 ? 'pos-1' :
+                        index === 1 ? 'pos-2' :
+                        index === 2 ? 'pos-3' : 'pos-other';
+
+classificaTeamBody.innerHTML += `
+    <tr>
+        <td colspan="3">
+            <div class="team-blocco">
+                <div class="team-header">
+                    <span class="team-pos">#${index + 1}</span>
+                    <span class="team-nome">${team.team} → → → </span>
+            <span class="team-punti" style="color: black;">${team.punti} pt</span>
+
+                </div>
+                <div class="team-piloti-wrap">${pilotiHTML}</div>
+            </div>
+        </td>
+    </tr>
+`;
+
+
+
+
         });
     });
 }
@@ -1543,7 +1702,26 @@ function calcolaPuntiConcorrenti(dati, giri) {
             return `
                 <tr style="${bgStyle}">
                     <td class="posizione-generale">${index + 1}</td>
-                    <td class="${categoriaClasse}">${concorrente.NumeroConcorrente}</td>
+                    <td onclick="apriPopupTempi(${concorrente.NumeroConcorrente}, '${concorrente.Nome}', '${concorrente.Cognome}', '${concorrente.Categoria}')">
+    <span style="
+        display: inline-block;
+        background: ${
+            concorrente.Categoria === 'D' ? 'linear-gradient(135deg, #f8bbd0, #f48fb1)' :
+            concorrente.Categoria === 'O' ? 'linear-gradient(135deg, #90caf9, #64b5f6)' :
+            concorrente.Categoria === 'OD' ? 'linear-gradient(135deg, #ffcc80, #ffb74d)' :
+            'linear-gradient(135deg, #fff59d, #fff176)'
+        };
+        color: #000;
+        font-weight: bold;
+        font-size: 16px;
+        padding: 6px 12px;
+        border-radius: 20px;
+        cursor: pointer;
+        box-shadow: 0 2px 4px rgba(0,0,0,0.15);
+        transition: transform 0.1s;">
+        ${concorrente.NumeroConcorrente}
+    </span>
+</td>
                     <td class="bold-text">${concorrente.Nome}</td>
                     <td class="bold-text">${concorrente.Cognome}</td>
                     <td class="bold-text">
@@ -1613,7 +1791,26 @@ function calcolaPuntiConcorrenti(dati, giri) {
             return `
                 <tr style="${bgStyle}">
                     <td class="posizione-generale">${index + 1}</td>
-                    <td class="${categoriaClasse}">${concorrente.NumeroConcorrente}</td>
+                    <td onclick="apriPopupTempi(${concorrente.NumeroConcorrente}, '${concorrente.Nome}', '${concorrente.Cognome}', '${concorrente.Categoria}')">
+    <span style="
+        display: inline-block;
+        background: ${
+            concorrente.Categoria === 'D' ? 'linear-gradient(135deg, #f8bbd0, #f48fb1)' :
+            concorrente.Categoria === 'O' ? 'linear-gradient(135deg, #90caf9, #64b5f6)' :
+            concorrente.Categoria === 'OD' ? 'linear-gradient(135deg, #ffcc80, #ffb74d)' :
+            'linear-gradient(135deg, #fff59d, #fff176)'
+        };
+        color: #000;
+        font-weight: bold;
+        font-size: 16px;
+        padding: 6px 12px;
+        border-radius: 20px;
+        cursor: pointer;
+        box-shadow: 0 2px 4px rgba(0,0,0,0.15);
+        transition: transform 0.1s;">
+        ${concorrente.NumeroConcorrente}
+    </span>
+</td>
                     <td class="bold-text">${concorrente.Nome}</td>
                     <td class="bold-text">${concorrente.Cognome}</td>
                     <td class="bold-text">
@@ -1682,7 +1879,26 @@ function calcolaPuntiConcorrenti(dati, giri) {
             return `
                 <tr style="${bgStyle}">
                     <td class="posizione-generale">${index + 1}</td>
-                    <td class="${categoriaClasse}">${concorrente.NumeroConcorrente}</td>
+                    <td onclick="apriPopupTempi(${concorrente.NumeroConcorrente}, '${concorrente.Nome}', '${concorrente.Cognome}', '${concorrente.Categoria}')">
+    <span style="
+        display: inline-block;
+        background: ${
+            concorrente.Categoria === 'D' ? 'linear-gradient(135deg, #f8bbd0, #f48fb1)' :
+            concorrente.Categoria === 'O' ? 'linear-gradient(135deg, #90caf9, #64b5f6)' :
+            concorrente.Categoria === 'OD' ? 'linear-gradient(135deg, #ffcc80, #ffb74d)' :
+            'linear-gradient(135deg, #fff59d, #fff176)'
+        };
+        color: #000;
+        font-weight: bold;
+        font-size: 16px;
+        padding: 6px 12px;
+        border-radius: 20px;
+        cursor: pointer;
+        box-shadow: 0 2px 4px rgba(0,0,0,0.15);
+        transition: transform 0.1s;">
+        ${concorrente.NumeroConcorrente}
+    </span>
+</td>
                     <td class="bold-text">${concorrente.Nome}</td>
                     <td class="bold-text">${concorrente.Cognome}</td>
                     <td class="bold-text">
@@ -1751,7 +1967,26 @@ function calcolaPuntiConcorrenti(dati, giri) {
             return `
                 <tr style="${bgStyle}">
                     <td class="posizione-generale">${index + 1}</td>
-                    <td class="${categoriaClasse}">${concorrente.NumeroConcorrente}</td>
+                    <td onclick="apriPopupTempi(${concorrente.NumeroConcorrente}, '${concorrente.Nome}', '${concorrente.Cognome}', '${concorrente.Categoria}')">
+    <span style="
+        display: inline-block;
+        background: ${
+            concorrente.Categoria === 'D' ? 'linear-gradient(135deg, #f8bbd0, #f48fb1)' :
+            concorrente.Categoria === 'O' ? 'linear-gradient(135deg, #90caf9, #64b5f6)' :
+            concorrente.Categoria === 'OD' ? 'linear-gradient(135deg, #ffcc80, #ffb74d)' :
+            'linear-gradient(135deg, #fff59d, #fff176)'
+        };
+        color: #000;
+        font-weight: bold;
+        font-size: 16px;
+        padding: 6px 12px;
+        border-radius: 20px;
+        cursor: pointer;
+        box-shadow: 0 2px 4px rgba(0,0,0,0.15);
+        transition: transform 0.1s;">
+        ${concorrente.NumeroConcorrente}
+    </span>
+</td>
                     <td class="bold-text">${concorrente.Nome}</td>
                     <td class="bold-text">${concorrente.Cognome}</td>
                     <td class="bold-text">
@@ -1819,7 +2054,26 @@ function caricaClassificaPS5() {
             return `
                 <tr style="${bgStyle}">
                     <td class="posizione-generale">${index + 1}</td>
-                    <td class="${categoriaClasse}">${concorrente.NumeroConcorrente}</td>
+                    <td onclick="apriPopupTempi(${concorrente.NumeroConcorrente}, '${concorrente.Nome}', '${concorrente.Cognome}', '${concorrente.Categoria}')">
+    <span style="
+        display: inline-block;
+        background: ${
+            concorrente.Categoria === 'D' ? 'linear-gradient(135deg, #f8bbd0, #f48fb1)' :
+            concorrente.Categoria === 'O' ? 'linear-gradient(135deg, #90caf9, #64b5f6)' :
+            concorrente.Categoria === 'OD' ? 'linear-gradient(135deg, #ffcc80, #ffb74d)' :
+            'linear-gradient(135deg, #fff59d, #fff176)'
+        };
+        color: #000;
+        font-weight: bold;
+        font-size: 16px;
+        padding: 6px 12px;
+        border-radius: 20px;
+        cursor: pointer;
+        box-shadow: 0 2px 4px rgba(0,0,0,0.15);
+        transition: transform 0.1s;">
+        ${concorrente.NumeroConcorrente}
+    </span>
+</td>
                     <td class="bold-text">${concorrente.Nome}</td>
                     <td class="bold-text">${concorrente.Cognome}</td>
                     <td class="bold-text">
@@ -1889,7 +2143,26 @@ function caricaClassificaPS5() {
             return `
                 <tr style="${bgStyle}">
                     <td class="posizione-generale">${index + 1}</td>
-                    <td class="${categoriaClasse}">${concorrente.NumeroConcorrente}</td>
+                    <td onclick="apriPopupTempi(${concorrente.NumeroConcorrente}, '${concorrente.Nome}', '${concorrente.Cognome}', '${concorrente.Categoria}')">
+    <span style="
+        display: inline-block;
+        background: ${
+            concorrente.Categoria === 'D' ? 'linear-gradient(135deg, #f8bbd0, #f48fb1)' :
+            concorrente.Categoria === 'O' ? 'linear-gradient(135deg, #90caf9, #64b5f6)' :
+            concorrente.Categoria === 'OD' ? 'linear-gradient(135deg, #ffcc80, #ffb74d)' :
+            'linear-gradient(135deg, #fff59d, #fff176)'
+        };
+        color: #000;
+        font-weight: bold;
+        font-size: 16px;
+        padding: 6px 12px;
+        border-radius: 20px;
+        cursor: pointer;
+        box-shadow: 0 2px 4px rgba(0,0,0,0.15);
+        transition: transform 0.1s;">
+        ${concorrente.NumeroConcorrente}
+    </span>
+</td>
                     <td class="bold-text">${concorrente.Nome}</td>
                     <td class="bold-text">${concorrente.Cognome}</td>
                     <td class="bold-text">
@@ -1957,7 +2230,26 @@ function caricaClassificaPS7() {
             return `
                 <tr style="${bgStyle}">
                     <td class="posizione-generale">${index + 1}</td>
-                    <td class="${categoriaClasse}">${concorrente.NumeroConcorrente}</td>
+                    <td onclick="apriPopupTempi(${concorrente.NumeroConcorrente}, '${concorrente.Nome}', '${concorrente.Cognome}', '${concorrente.Categoria}')">
+    <span style="
+        display: inline-block;
+        background: ${
+            concorrente.Categoria === 'D' ? 'linear-gradient(135deg, #f8bbd0, #f48fb1)' :
+            concorrente.Categoria === 'O' ? 'linear-gradient(135deg, #90caf9, #64b5f6)' :
+            concorrente.Categoria === 'OD' ? 'linear-gradient(135deg, #ffcc80, #ffb74d)' :
+            'linear-gradient(135deg, #fff59d, #fff176)'
+        };
+        color: #000;
+        font-weight: bold;
+        font-size: 16px;
+        padding: 6px 12px;
+        border-radius: 20px;
+        cursor: pointer;
+        box-shadow: 0 2px 4px rgba(0,0,0,0.15);
+        transition: transform 0.1s;">
+        ${concorrente.NumeroConcorrente}
+    </span>
+</td>
                     <td class="bold-text">${concorrente.Nome}</td>
                     <td class="bold-text">${concorrente.Cognome}</td>
                     <td class="bold-text">
@@ -2024,7 +2316,26 @@ function caricaClassificaPS8() {
             return `
                 <tr style="${bgStyle}">
                     <td class="posizione-generale">${index + 1}</td>
-                    <td class="${categoriaClasse}">${concorrente.NumeroConcorrente}</td>
+                    <td onclick="apriPopupTempi(${concorrente.NumeroConcorrente}, '${concorrente.Nome}', '${concorrente.Cognome}', '${concorrente.Categoria}')">
+    <span style="
+        display: inline-block;
+        background: ${
+            concorrente.Categoria === 'D' ? 'linear-gradient(135deg, #f8bbd0, #f48fb1)' :
+            concorrente.Categoria === 'O' ? 'linear-gradient(135deg, #90caf9, #64b5f6)' :
+            concorrente.Categoria === 'OD' ? 'linear-gradient(135deg, #ffcc80, #ffb74d)' :
+            'linear-gradient(135deg, #fff59d, #fff176)'
+        };
+        color: #000;
+        font-weight: bold;
+        font-size: 16px;
+        padding: 6px 12px;
+        border-radius: 20px;
+        cursor: pointer;
+        box-shadow: 0 2px 4px rgba(0,0,0,0.15);
+        transition: transform 0.1s;">
+        ${concorrente.NumeroConcorrente}
+    </span>
+</td>
                     <td class="bold-text">${concorrente.Nome}</td>
                     <td class="bold-text">${concorrente.Cognome}</td>
                     <td class="bold-text">
@@ -2081,7 +2392,26 @@ function caricaClassificaPS8() {
             return `
                 <tr>
                     <td class="posizione-generale">${index + 1}</td>
-                    <td class="${categoriaClasse}">${concorrente.NumeroConcorrente}</td>
+                    <td onclick="apriPopupTempi(${concorrente.NumeroConcorrente}, '${concorrente.Nome}', '${concorrente.Cognome}', '${concorrente.Categoria}')">
+    <span style="
+        display: inline-block;
+        background: ${
+            concorrente.Categoria === 'D' ? 'linear-gradient(135deg, #f8bbd0, #f48fb1)' :
+            concorrente.Categoria === 'O' ? 'linear-gradient(135deg, #90caf9, #64b5f6)' :
+            concorrente.Categoria === 'OD' ? 'linear-gradient(135deg, #ffcc80, #ffb74d)' :
+            'linear-gradient(135deg, #fff59d, #fff176)'
+        };
+        color: #000;
+        font-weight: bold;
+        font-size: 16px;
+        padding: 6px 12px;
+        border-radius: 20px;
+        cursor: pointer;
+        box-shadow: 0 2px 4px rgba(0,0,0,0.15);
+        transition: transform 0.1s;">
+        ${concorrente.NumeroConcorrente}
+    </span>
+</td>
                     <td class="bold-text">${concorrente.Nome}</td>
                     <td class="bold-text">${concorrente.Cognome}</td>
                     <td class="bold-text">${formattaTempo(concorrente.SommaTempo)}</td>
@@ -2135,7 +2465,26 @@ function caricaClassificaPS8() {
             return `
                 <tr>
                     <td class="posizione-generale">${index + 1}</td>
-                    <td class="${categoriaClasse}">${concorrente.NumeroConcorrente}</td>
+                    <td onclick="apriPopupTempi(${concorrente.NumeroConcorrente}, '${concorrente.Nome}', '${concorrente.Cognome}', '${concorrente.Categoria}')">
+    <span style="
+        display: inline-block;
+        background: ${
+            concorrente.Categoria === 'D' ? 'linear-gradient(135deg, #f8bbd0, #f48fb1)' :
+            concorrente.Categoria === 'O' ? 'linear-gradient(135deg, #90caf9, #64b5f6)' :
+            concorrente.Categoria === 'OD' ? 'linear-gradient(135deg, #ffcc80, #ffb74d)' :
+            'linear-gradient(135deg, #fff59d, #fff176)'
+        };
+        color: #000;
+        font-weight: bold;
+        font-size: 16px;
+        padding: 6px 12px;
+        border-radius: 20px;
+        cursor: pointer;
+        box-shadow: 0 2px 4px rgba(0,0,0,0.15);
+        transition: transform 0.1s;">
+        ${concorrente.NumeroConcorrente}
+    </span>
+</td>
                     <td class="bold-text">${concorrente.Nome}</td>
                     <td class="bold-text">${concorrente.Cognome}</td>
                     <td class="bold-text">${formattaTempo(concorrente.SommaTempo)}</td>
@@ -2201,13 +2550,14 @@ function aggiornaUltimi5KartArrivati() {
         latestKartsBody.innerHTML = "";
 
         ultimi5.forEach(giro => {
-            latestKartsBody.innerHTML += `
-                <tr>
-                    <td>${giro.NumeroConcorrente}</td>
-                    <td>${giro.Nome} ${giro.Cognome}</td>
-                    <td>${formattaTempo(giro.Tempoms)}</td>
-                </tr>`;
-        });
+    latestKartsBody.innerHTML += `
+        <tr id="arrivo-${giro.NumeroConcorrente}">
+            <td>${giro.NumeroConcorrente}</td>
+            <td>${giro.Nome} ${giro.Cognome}</td>
+            <td>${formattaTempo(giro.Tempoms)}</td>
+        </tr>`;
+});
+
 
         // Mostra ultimi 30 giri
         const ultimi30Body = document.getElementById("ultimi30Body");
@@ -2227,6 +2577,15 @@ function aggiornaUltimi5KartArrivati() {
         if (ultimi5.length > 0) {
             const ultimo = ultimi5[0];
             const numeroUltimo = ultimo.NumeroConcorrente.toString();
+			
+// Evidenzia l'ultimo arrivato negli ultimi 5
+const rigaUltimo = document.getElementById(`arrivo-${numeroUltimo}`);
+if (rigaUltimo) {
+    rigaUltimo.classList.add('lampeggio');
+    setTimeout(() => {
+        rigaUltimo.classList.remove('lampeggio');
+    }, 9000); // 3 secondi di lampeggio
+}
 
             // === SOMMA DEI TEMPI PER OGNI PILOTA ===
             const sommaTempi = {};
@@ -2260,7 +2619,7 @@ function aggiornaUltimi5KartArrivati() {
             const cognome = (ultimo.Cognome || "").toString();
             const categoria = (ultimo.Categoria || "").toString();
 
-            apriPopupTempi(ultimo.NumeroConcorrente, nome, cognome, categoria);
+           // apriPopupTempi(ultimo.NumeroConcorrente, nome, cognome, categoria);
         }
     });
 }
@@ -2439,9 +2798,13 @@ function apriPopupTempi(numeroConcorrente, nome = null, cognome = null, categori
                 ${partenzaFalsaRiga}
             </div>`;
 
-        const riga2 = `<div style="font-size: 25px; font-weight:bold;">
-            #${numeroConcorrente} ${nome} ${cognome} → ${teamPilota}${iconaCategoria}
-        </div>`;
+const riga2 = `<div style="font-size: 25px; font-weight:bold;">
+    #${numeroConcorrente} ${nome} ${cognome}${iconaCategoria}
+    <br>
+    <span style="font-size: 18px; color: #006400;">Team → ${teamPilota}</span>
+</div>`;
+
+
         let riga3 = `<div style="margin-top: 5px; font-size: 22px;">
             <span style="color: red;">Pos. Gen: ${posizioneGenerale}</span>`;
         if (classificaDonne.some(c => c.NumeroConcorrente == numeroConcorrente)) {
@@ -2516,7 +2879,7 @@ function apriPopupTempi(numeroConcorrente, nome = null, cognome = null, categori
         setTimeout(() => {
             document.getElementById("popup").style.display = "none";
             document.getElementById("popupOverlay").style.display = "none";
-        }, 5000);
+        }, 10000);
     });
 }
 
