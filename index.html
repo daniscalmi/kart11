@@ -1038,6 +1038,8 @@ tbody tr:hover {
     <button class="tab-button team" onclick="apriTab('team')">Team</button>
     <button class="tab-button donne" onclick="apriTab('donne')">Donne</button>
     <button class="tab-button senior" onclick="apriTab('senior')">Senior</button>
+	  <button class="tab-button penalita" onclick="apriTab('penalita')" style="background-color: black; color: white;">Penalità</button>
+
   </div>
 
 </div>
@@ -1303,6 +1305,28 @@ tbody tr:hover {
             <tbody id="classificaPS8Body"></tbody>
         </table>
     </div>
+	
+	<div id="penalita" class="tab-content" style="display:none; padding: 10px;">
+  <h2>Penalità</h2>
+  <table id="tabellaPenalita" style="width: 100%; border-collapse: collapse; font-size: 14px;">
+    <thead>
+      <tr style="background-color: #333; color: white;">
+        <th>#</th>
+        <th>Nr</th>
+        <th>Nome</th>
+        <th>Cognome</th>
+        <th>Cat</th>
+        <th>PS</th>
+        <th>Tempo</th>
+        <th>PF</th>
+        <th>VPF</th>
+        <th>DPF</th>
+      </tr>
+    </thead>
+    <tbody id="penalitaBody"></tbody>
+  </table>
+</div>
+
 
     <!-- Firebase -->
     <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-app.js"></script>
@@ -1773,7 +1797,7 @@ classificaTeamBody.innerHTML += `
                     font-size: 12px;
                     font-weight: bold;
                     margin-left: 6px;">
-                    🚩 PF
+                    🚩
                 </span>` : "";
 
             // Sfondo riga rosso trasparente se PFalsa
@@ -1862,7 +1886,7 @@ classificaTeamBody.innerHTML += `
                     font-size: 12px;
                     font-weight: bold;
                     margin-left: 6px;">
-                    🚩 PF
+                    🚩
                 </span>` : "";
 
             // Sfondo riga rosso trasparente se PFalsa
@@ -1950,7 +1974,7 @@ classificaTeamBody.innerHTML += `
                     font-size: 12px;
                     font-weight: bold;
                     margin-left: 6px;">
-                    🚩 PF
+                    🚩
                 </span>` : "";
 
             // Sfondo riga rosso trasparente se PFalsa
@@ -2038,7 +2062,7 @@ classificaTeamBody.innerHTML += `
                     font-size: 12px;
                     font-weight: bold;
                     margin-left: 6px;">
-                    🚩 PF
+                    🚩
                 </span>` : "";
 
             // Sfondo riga rosso trasparente se PFalsa
@@ -2125,7 +2149,7 @@ function caricaClassificaPS5() {
                     font-size: 12px;
                     font-weight: bold;
                     margin-left: 6px;">
-                    🚩 PF
+                    🚩
                 </span>` : "";
 
             // Sfondo riga rosso trasparente se PFalsa
@@ -2214,7 +2238,7 @@ function caricaClassificaPS5() {
                     font-size: 12px;
                     font-weight: bold;
                     margin-left: 6px;">
-                    🚩 PF
+                    🚩
                 </span>` : "";
 
             // Sfondo riga rosso trasparente se PFalsa
@@ -2302,7 +2326,7 @@ function caricaClassificaPS7() {
                     font-size: 12px;
                     font-weight: bold;
                     margin-left: 6px;">
-                    🚩 PF
+                    🚩
                 </span>` : "";
             // Sfondo riga rosso trasparente se PFalsa
             const bgStyle = concorrente.PFalsa === "SI" ? "background-color: rgba(255,0,0,0.2);" : "";
@@ -2388,7 +2412,7 @@ function caricaClassificaPS8() {
                     font-size: 12px;
                     font-weight: bold;
                     margin-left: 6px;">
-                    🚩 PF
+                    🚩
                 </span>` : "";
             // Sfondo riga rosso trasparente se PFalsa
             const bgStyle = concorrente.PFalsa === "SI" ? "background-color: rgba(255,0,0,0.2);" : "";
@@ -2941,7 +2965,7 @@ function apriPopupTempi(numeroConcorrente, nome = null, cognome = null, categori
                 font-weight: bold;
                 margin-top: 10px;
                 display: inline-block;">
-                🚩 PARTENZA FALSA + 3 sec
+                🚩 PARTENZA FALSA
             </div>` : "";
 
         const evidenzaArrivo = `
@@ -3162,6 +3186,84 @@ function chiudiPopupMobile() {
     const popup = document.getElementById("mobilePopup");
     popup.style.display = "none";
     if (mobilePopupTimer) clearTimeout(mobilePopupTimer);
+}
+
+function caricaPenalita() {
+    const penalitaBody = document.getElementById("penalitaBody");
+    penalitaBody.innerHTML = "";
+
+    const penalitaRef = db.ref("giro");
+    penalitaRef.once("value", (snapshot) => {
+        if (!snapshot.exists()) {
+            penalitaBody.innerHTML = "<tr><td colspan='10'>Nessuna penalità registrata</td></tr>";
+            return;
+        }
+
+        let dati = [];
+        snapshot.forEach((childSnapshot) => {
+            let g = childSnapshot.val();
+            if (g.Arrivato === "SI" && g.InPista === "N" && parseInt(g.Gara) > 0 && g.PFalsa === "SI") {
+                dati.push(g);
+            }
+        });
+
+        dati.sort((a, b) => parseInt(a.NumeroConcorrente) - parseInt(b.NumeroConcorrente));
+
+        penalitaBody.innerHTML = dati.map((g, index) => {
+            return `
+                <tr>
+                    <td>${index + 1}</td>
+                         <td onclick="apriPopupTempi(${g.NumeroConcorrente}, '${g.Nome}', '${g.Cognome}', '${g.Categoria}')">
+                        <span style="
+                            display: inline-block;
+                            background: ${
+                                g.Categoria === 'D' ? 'linear-gradient(135deg, #f8bbd0, #f48fb1)' :
+                                g.Categoria === 'O' ? 'linear-gradient(135deg, #90caf9, #64b5f6)' :
+                                g.Categoria === 'OD' ? 'linear-gradient(135deg, #ffcc80, #ffb74d)' :
+                                'linear-gradient(135deg, #fff59d, #fff176)'
+                            };
+                            color: #000;
+                            font-weight: bold;
+                            font-size: 16px;
+                            padding: 6px 12px;
+                            border-radius: 20px;
+                            cursor: pointer;
+                            box-shadow: 0 2px 4px rgba(0,0,0,0.15);
+                            transition: transform 0.1s;">
+                            ${g.NumeroConcorrente}
+                        </span>
+                    </td>
+                    <td>${g.Nome}</td>
+                    <td>${g.Cognome}</td>
+                    <td>${g.Categoria}</td>
+                    <td>PS${g.Gara}</td>
+                    <td class="bold-text">${formattaTempo(g.Tempoms)}</td>
+                    <td>${g.PFalsa}</td>
+                    <td>${g.VPFalsa || ""}</td>
+                    <td>${g.DPFalsa || ""}</td>
+                </tr>
+            `;
+        }).join("");
+    });
+}
+
+// Carica penalità quando si apre la tab penalità
+function apriTab(tabName) {
+    var tabs = document.getElementsByClassName("tab-content");
+    for (var i = 0; i < tabs.length; i++) {
+        tabs[i].style.display = "none";
+    }
+    document.getElementById(tabName).style.display = "block";
+
+    var buttons = document.getElementsByClassName("tab-button");
+    for (var i = 0; i < buttons.length; i++) {
+        buttons[i].classList.remove("active");
+    }
+    event.currentTarget.classList.add("active");
+
+    if (tabName === "penalita") {
+        caricaPenalita();
+    }
 }
 
 
